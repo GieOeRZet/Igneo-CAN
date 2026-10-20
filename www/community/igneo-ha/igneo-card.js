@@ -1,4 +1,4 @@
-/* igneo-card v9.0 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* igneo-card v9.1 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (wersja lite jest osobno: igneo-card-lite.js).
    Dziala tak: pobiera rdzen /local/community/igneo-ha/tekla-panel-card.js (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -620,7 +620,29 @@
     const tm = x => x.lu != null ? x.lu : (x.last_updated ? Date.parse(x.last_updated) / 1000 : (x.lc != null ? x.lc : 0));
     const st = x => x.s != null ? x.s : x.state;
 
+    // v9.1: historia alarmow z KOTLA (firmware >= 2.25: encje "Alarm wpis 1..20" = "kod N (opis)|poczatek|koniec"); rekorder HA tylko jako zapas dla starszego firmware
+    C.prototype._alFromSensors = function () {
+      const stt = this._hass && this._hass.states; if (!stt) return null;
+      const out = []; let found = false;
+      for (const id in stt) {
+        if (!/^sensor\..*alarm_wpis_\d+$/.test(id)) continue; found = true;
+        const p = String(stt[id].state).split('|'); if (p.length < 3) continue;
+        const start = num(p[1]), end = num(p[2]); if (!(start > 1e9)) continue;
+        out.push({ start, end: end > 1e9 && end >= start ? end : 0, txt: p[0] });
+      }
+      return found ? out.sort((x, y) => y.start - x.start).slice(0, MAXAL) : null;
+    };
+
     C.prototype._alLoad = async function () {
+      const fs = this._alFromSensors();
+      if (fs) {
+        this._svc('alarm_refresh');
+        this._ah = fs; this._ai = 0; this._alBusy = false;
+        const tok0 = this._altok = (this._altok || 0) + 1;
+        [5000, 12000].forEach(ms => setTimeout(() => { if (tok0 !== this._altok || this._scr !== 'alarm') return; const f = this._alFromSensors(); if (f) { this._ah = f; this._render(true); } }, ms));
+        if (this._scr === 'alarm') this._render(true);
+        return;
+      }
       const E = this.E, ids = [E.alarm_start, E.alarm_end, E.last_alarm].filter(Boolean);
       this._ah = null; this._ai = 0; this._alBusy = true; const tok = this._altok = (this._altok || 0) + 1;
       let list = [];

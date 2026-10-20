@@ -1,4 +1,5 @@
 # CHANGELOG
+# v2.25: HISTORIA ALARMOW Z KOTLA: ESP czyta caly bufor 20 alarmow kotla (kod 0x4010+i, poczatek 0x4024+i, koniec 0x4038+i; po starcie, przy nowym alarmie i akcja alarm_refresh) i publikuje 20 diagnostycznych text_sensorow "Alarm wpis 1..20" w formacie "kod N (opis)|poczatek unix|koniec unix" (pusty = "-"); karta nie korzysta juz z rekordera HA.
 # v2.24: ODCZYT USTAWIEN: po starcie wszystkie ustawienia (najpierw poziom 0, potem klucz 1 i 2); poziom 0 (0x2270/0x2271/0x2273/0x2212/0x2210/0x300D) czytany tez cyklicznie; klucz 1 i 2 na zadanie - po wpisaniu PIN-u (automatycznie, akcja unlock) i po param_refresh.
 # v2.23: MIGAWKA KATALOGOWA rozszerzona z 538 do 593 rejestrow (dodane 55 rejestrow wezla 4 znalezionych od v2.20: m.in. 0x2116, 0x2151, 0x2216, 0x2260, 0x226E-0x2271, 0x2296, 0x2999, 0x300F, 0x3524-0x3526, 0x3701, 0x7D1-0x7E1, 0xBB9-0xBBB); lista CAT = suma rejestrow z katalogu docs/rejestry (wezel 4).
 # v2.22: sygnatura konfiguracji - ukryty diagnostyczny text_sensor "Sygnatura konfiguracji" (autor: Roman Gorz); tekst zlozony z 3 kawalkow zaszyfrowanych XOR, skladany dopiero w kodzie; encja domyslnie wylaczona (disabled_by_default) i w kategorii diagnostic.
@@ -30,7 +31,7 @@
 # Zapis: akcja "sdo_write" dziala dopiero po ustawieniu write_enabled: "true".
 # =====================================================================
 substitutions:
-  fw_version: "2.24"
+  fw_version: "2.25"
   pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN z softu panelu, nie zmieniamy
   pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN z softu panelu, nie zmieniamy
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
@@ -158,6 +159,10 @@ api:
             id(access_level_sensor).publish_state((float) lv);
             id(par_refresh).execute();
     # Odswiezenie ustawien do biezacego poziomu dostepu (karta: klik w nazwe dnia tygodnia na ekranie glownym).
+    # v2.25: odczyt calej historii alarmow z kotla (karta: przy otwarciu ekranu Historia alarmow)
+    - action: alarm_refresh
+      then:
+        - script.execute: alarm_hist_q
     - action: param_refresh
       then:
         - lambda: |-
@@ -404,6 +409,21 @@ globals:
     type: bool
     initial_value: "false"
   - id: alarm_flag_conf
+    type: bool
+    initial_value: "false"
+  # v2.25: pelna historia alarmow z kotla (20 slotow: kod 0x4010+i, poczatek 0x4024+i, koniec 0x4038+i)
+  - id: ah_raw
+    type: std::vector<uint32_t>
+  - id: ah_t0
+    type: std::vector<uint32_t>
+  - id: ah_t1
+    type: std::vector<uint32_t>
+  - id: ah_txt
+    type: std::vector<std::string>
+  - id: alarm_last_slot
+    type: int
+    initial_value: "-1"
+  - id: ah_boot
     type: bool
     initial_value: "false"
   - id: boiler_on_last
@@ -718,15 +738,21 @@ canbus:
               // --- bufor alarmow: 0x404C = nastepna pozycja, 0x4010+i = alarm i ---
               if (idx == 0x404C) {
                 // Rejestr = 256 + pozycja (0..19); najnowszy alarm = pozycja-1 (potwierdzone znacznikami czasu).
+                const int oldpos = id(alarm_pos);
                 id(alarm_pos) = (int) (raw & 0xFF);
                 const int last = ((int) (raw & 0xFF) + 19) % 20;
+                id(alarm_last_slot) = last;
+                if (oldpos != id(alarm_pos) && id(ah_boot)) id(alarm_hist_q).execute();  // nowy alarm -> przeladuj cala historie
                 std::vector<uint8_t> d = {0x40, (uint8_t) ((0x4010 + last) & 0xFF), (uint8_t) ((0x4010 + last) >> 8), 0x01, 0, 0, 0, 0};
                 id(igneo_can)->send_data(0x604, false, d);
                 return;
               }
               if (idx >= 0x4010 && idx < 0x4024) {
-                id(alarm_raw) = raw;
-                id(alarm_slot) = (int) (idx - 0x4010);
+                const int hs = (int) (idx - 0x4010);
+                if (id(ah_raw).size() < 20) { id(ah_raw).assign(20, 0); id(ah_t0).assign(20, 0); id(ah_t1).assign(20, 0); id(ah_txt).assign(20, std::string()); }
+                id(ah_raw)[hs] = raw;
+                const bool is_last = (hs == id(alarm_last_slot)) || id(alarm_last_slot) < 0;
+                if (is_last) { id(alarm_raw) = raw; id(alarm_slot) = hs; }
                 const uint32_t code = raw & 0xFFFF;
                 const bool active = (raw >> 16) & 1;
                 const bool confirmed = (raw >> 17) & 1;
@@ -791,6 +817,9 @@ canbus:
                 }
                 char a[96];
                 snprintf(a, sizeof(a), "kod %u%s%s%s", (unsigned) code, aname, active ? ", aktywny" : "", confirmed ? ", oczekuje" : "");
+                id(ah_txt)[hs] = (code == 0) ? std::string() : std::string(a);
+                id(ah_publish).execute(hs);
+                if (!is_last) return;  // odczyt historii: nie ruszamy "ostatniego alarmu"
                 id(alarm_last_text).publish_state(code == 0 ? "brak" : a);
                 id(alarm_code_now) = (int) code;
                 id(alarm_flag_active) = active;
@@ -804,6 +833,12 @@ canbus:
                 id(igneo_can)->send_data(0x604, false, d);
                 return;
               }
+              if (idx >= 0x4024 && idx < 0x4038) {
+                if (id(ah_raw).size() < 20) { id(ah_raw).assign(20, 0); id(ah_t0).assign(20, 0); id(ah_t1).assign(20, 0); id(ah_txt).assign(20, std::string()); }
+                id(ah_t0)[idx - 0x4024] = raw;
+                id(ah_publish).execute((int) (idx - 0x4024));
+                if ((int) (idx - 0x4024) != id(alarm_slot)) return;
+              }
               if (idx >= 0x4024 && idx < 0x4038 && (int) (idx - 0x4024) == id(alarm_slot)) {
                 id(alarm_t0) = raw;
                 id(alarm_start_text).publish_state(std::to_string((unsigned) raw));
@@ -811,6 +846,12 @@ canbus:
                 std::vector<uint8_t> d = {0x40, (uint8_t) ((0x4038 + sl) & 0xFF), (uint8_t) ((0x4038 + sl) >> 8), 0x01, 0, 0, 0, 0};
                 id(igneo_can)->send_data(0x604, false, d);
                 return;
+              }
+              if (idx >= 0x4038 && idx < 0x404C) {
+                if (id(ah_raw).size() < 20) { id(ah_raw).assign(20, 0); id(ah_t0).assign(20, 0); id(ah_t1).assign(20, 0); id(ah_txt).assign(20, std::string()); }
+                id(ah_t1)[idx - 0x4038] = raw;
+                id(ah_publish).execute((int) (idx - 0x4038));
+                if ((int) (idx - 0x4038) != id(alarm_slot)) return;
               }
               if (idx >= 0x4038 && idx < 0x404C && (int) (idx - 0x4038) == id(alarm_slot)) {
                 id(alarm_end_text).publish_state(std::to_string((unsigned) raw));
@@ -1074,6 +1115,8 @@ interval:
             for (auto r : l0) id(par_q).push_back(r);
             for (auto r : l1) id(par_q).push_back(r);
             for (auto r : l2) id(par_q).push_back(r);
+            id(ah_boot) = true;
+            id(alarm_hist_q).execute();   // v2.25: cala historia alarmow z kotla (60 odczytow, ok. 12 s)
           }
           auto &q = id(par_q);
           if (q.empty()) return;
@@ -1805,6 +1848,86 @@ text_sensor:
     id: alarm_end_text
     name: "Alarm koniec"
   - platform: template
+    id: ah_0
+    name: "Alarm wpis 1"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_1
+    name: "Alarm wpis 2"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_2
+    name: "Alarm wpis 3"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_3
+    name: "Alarm wpis 4"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_4
+    name: "Alarm wpis 5"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_5
+    name: "Alarm wpis 6"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_6
+    name: "Alarm wpis 7"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_7
+    name: "Alarm wpis 8"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_8
+    name: "Alarm wpis 9"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_9
+    name: "Alarm wpis 10"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_10
+    name: "Alarm wpis 11"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_11
+    name: "Alarm wpis 12"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_12
+    name: "Alarm wpis 13"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_13
+    name: "Alarm wpis 14"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_14
+    name: "Alarm wpis 15"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_15
+    name: "Alarm wpis 16"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_16
+    name: "Alarm wpis 17"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_17
+    name: "Alarm wpis 18"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_18
+    name: "Alarm wpis 19"
+    entity_category: diagnostic
+  - platform: template
+    id: ah_19
+    name: "Alarm wpis 20"
+    entity_category: diagnostic
+  - platform: template
     id: alarm_raw_text
     name: "Alarm rejestr"
     entity_category: diagnostic
@@ -1931,6 +2054,32 @@ switch:
           want_on: false
 
 script:
+  # v2.25: kolejkuje odczyt calej historii alarmow z kotla (kody, czasy poczatku i konca; 20 slotow)
+  - id: alarm_hist_q
+    mode: single
+    then:
+      - lambda: |-
+          auto &q = id(par_q);
+          if (q.size() > 100) return;
+          for (int i = 0; i < 20; i++) q.push_back((uint16_t) (0x4010 + i));
+          for (int i = 0; i < 20; i++) q.push_back((uint16_t) (0x4024 + i));
+          for (int i = 0; i < 20; i++) q.push_back((uint16_t) (0x4038 + i));
+  # Publikuje wpis historii: "kod ...|poczatek (unix)|koniec (unix)"; pusty slot = "-"
+  - id: ah_publish
+    mode: queued
+    max_runs: 60
+    parameters:
+      slot: int
+    then:
+      - lambda: |-
+          if (slot < 0 || slot > 19 || id(ah_raw).size() < 20) return;
+          text_sensor::TextSensor *s[] = {id(ah_0), id(ah_1), id(ah_2), id(ah_3), id(ah_4), id(ah_5), id(ah_6), id(ah_7), id(ah_8), id(ah_9), id(ah_10), id(ah_11), id(ah_12), id(ah_13), id(ah_14), id(ah_15), id(ah_16), id(ah_17), id(ah_18), id(ah_19)};
+          std::string o = "-";
+          if (!id(ah_txt)[slot].empty()) {
+            char b[40]; snprintf(b, sizeof(b), "|%u|%u", (unsigned) id(ah_t0)[slot], (unsigned) id(ah_t1)[slot]);
+            o = id(ah_txt)[slot] + b;
+          }
+          s[slot]->publish_state(o);
   # Kolejkuje odczyt ustawien do biezacego poziomu dostepu (0 = uzytkownik, 1 = klucz 1, 2 = klucz 2).
   - id: par_refresh
     mode: restart
