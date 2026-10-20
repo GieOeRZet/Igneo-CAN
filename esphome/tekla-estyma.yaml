@@ -30,8 +30,8 @@
 # =====================================================================
 substitutions:
   fw_version: "2.23"
-  pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN kotla, nie zmieniamy
-  pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN kotla, nie zmieniamy
+  pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN z softu panelu, nie zmieniamy
+  pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN z softu panelu, nie zmieniamy
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)

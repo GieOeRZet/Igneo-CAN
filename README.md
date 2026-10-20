@@ -34,4 +34,4 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 
 - Rejestry „Antylegionella" nie zostały jeszcze zidentyfikowane (w karcie „-").
 - Zapis do kotła jest aktywny (`mirror: "false"`); tryb lustra blokuje wszystkie zapisy poza włącz/wyłącz i potwierdzeniem alarmu.
-- Poziomy menu: użytkownik, klucz 1, klucz 2 – PIN-y to domyślne PIN-y kotła, zapisane w YAML (repo ma być prywatne).
+- Poziomy menu: użytkownik, klucz 1, klucz 2 – PIN-y (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z softu panelu Tekla, zapisane jawnie w YAML.
