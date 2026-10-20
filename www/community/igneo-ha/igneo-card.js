@@ -1,0 +1,742 @@
+/* igneo-card v9.0 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+   Rejestruje karte custom:tekla-panel-card (wersja lite jest osobno: igneo-card-lite.js).
+   Dziala tak: pobiera rdzen /local/community/igneo-ha/tekla-panel-card.js (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
+     poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
+     | czas podawania | historia alarmow z HA | grafiki z folderu img/ | autor na ekranie INFO.
+   Zasob w HA: ten plik (plus igneo-card-lite.js, jesli uzywasz karty lite). Po zmianie podbij ?v= w adresie zasobu i zrob Ctrl+F5. */
+(async () => {
+  if (window.__igneoCard) return;
+  window.__igneoCard = true;
+  try {
+    if (customElements.get('tekla-panel-card')) {
+      console.warn('tekla-panel-card v7.8: element juz zarejestrowany (stara wersja w pamieci strony) - zrob twarde odswiezenie (Ctrl+F5)');
+      return;
+    }
+    let code = await (await fetch('/local/community/igneo-ha/tekla-panel-card.js?v=62&_=' + Date.now())).text();
+    const EDITS = [
+{
+"t": "x",
+"old": "Y = v => isNaN(v) ? 32.1 : 32.1 - (v - 56) * 0.05;",
+"new": "Y = v => isNaN(v) ? 46 : 46.02 - 0.2367 * v;"
+},
+{
+"t": "x",
+"old": "{ v: [1, 2, 3, 4, 5].map(i => this._v('fan_mod_' + i)), sel: -1 }",
+"new": "{ v: [1, 2, 3, 4, 5].map(i => this._v('fan_mod_' + i)), v0: [1, 2, 3, 4, 5].map(i => this._v('fan_mod_' + i)), sel: -1 }"
+},
+{
+"t": "x",
+"old": "<div class=\"qok\" data-go=\"burner_s\" data-back=\"burn\" style=\"left:84.8cqw;top:45.8cqw",
+"new": "<div class=\"qok\" data-act=\"fmok\" style=\"left:84.8cqw;top:45.8cqw"
+},
+{
+"t": "x",
+"old": "else if (act === 'pinp') this._pinStep",
+"new": "else if (act === 'fmok') { const f = this._fm; if (f) f.v.forEach((v, i) => { if (!isNaN(v) && v !== f.v0[i]) this._svc('set_param', { key: 5 + i, value: v }); }); this._go('burner_s', 'burn'); }\n      else if (act === 'pedit' || act.startsWith('pr')) this._prAct(act, a, e);\n      else if (act === 'pinp') this._pinStep"
+},
+{
+"t": "x",
+"old": ".ban{position:absolute;right:30%;bottom:17%;width:3.4cqw;height:3.4cqw;border-radius:50%;background:#f0301f;box-shadow:0 0 0 .35cqw #fff3,0 0 1.2cqw #f0301f}.ban::after{content:'';position:absolute;left:18%;right:18%;top:42%;height:16%;background:#fff;border-radius:.3cqw}",
+"new": ".ban{position:absolute;right:31%;bottom:21%;width:3.3cqw;height:2.6cqw;border-radius:.5cqw;background:linear-gradient(#ff5a4a,#d8281c);box-shadow:0 0 .8cqw rgba(240,48,31,.55)}.ban::before{content:'';position:absolute;left:20%;right:20%;top:-1.6cqw;height:1.9cqw;border:.5cqw solid #e5352b;border-bottom:0;border-radius:1.4cqw 1.4cqw 0 0;box-sizing:border-box}.ban::after{content:'';position:absolute;left:43%;width:14%;top:24%;height:38%;background:#7a1510;border-radius:.2cqw}"
+},
+{
+"t": "x",
+"old": "e('Korekta powietrza [%]', this._p(this._v('air_corr'), 0))",
+"new": "this._prow('Korekta powietrza [%]', this._p(this._v('air_corr'), 0), 3)"
+},
+{
+"t": "x",
+"old": "e('Moc min [%]', this._p(this._v('power_min'), 0))",
+"new": "this._prow('Moc min [%]', this._p(this._v('power_min'), 0), 0)"
+},
+{
+"t": "x",
+"old": "e('Moc max [%]', this._p(this._v('power_max'), 0))",
+"new": "this._prow('Moc max [%]', this._p(this._v('power_max'), 0), 1)"
+},
+{
+"t": "x",
+"old": "e('Wartość opałowa [kWh/kg]', this._p(this._v('fuel_heat'), 1))",
+"new": "this._prow('Wartość opałowa [kWh/kg]', this._p(this._v('fuel_heat'), 1), 2)"
+},
+{
+"t": "x",
+"old": "e('Ilość paliwa test [kg/h]', this._p(this._v('fuel_test'), 1))",
+"new": "this._prow('Ilość paliwa test [kg/h]', this._p(this._v('fuel_test'), 1), 4)"
+},
+{
+"t": "r",
+"src": "\\] : \\[\\]\\)\\]\\);(\\s*)case 'level'",
+"fl": "",
+"new": "] : [])]) + (this._pr ? this._prDlg() : '');\n      case 'level'"
+},
+{
+"t": "x",
+"old": "this._scr = s; this._modal = false; this._pe = null;",
+"new": "this._scr = s; this._modal = false; this._pe = null; this._pr = null;"
+},
+{
+"t": "x",
+"old": ".fma{cursor:pointer}",
+"new": ".fma{cursor:pointer}.row[data-act]{cursor:pointer}"
+},
+{
+"t": "r",
+"src": "const MENU = \\[[\\s\\S]*?\\n\\];",
+"fl": "",
+"new": "const MENU = [\n  ['boiler', 'Kocioł', 'mdi:water-boiler'], ['burner_s', 'Palnik', 'mdi:fire'], ['co_s', 'Ogrzewanie obwód 1', 'mdi:radiator'], ['cwu_s', 'Ciepła woda użytkowa', 'mdi:faucet'],\n  ['alarm', 'Historia alarmów', 'mdi:clipboard-alert-outline'], ['info', 'Informacje o programie', 'mdi:information'],\n  ['stats', 'Statystyki', 'mdi:chart-box-outline'], ['test', 'Test wyjść', 'mdi:toggle-switch-outline'], ['net', 'Sieć', 'mdi:lan'], ['level', 'Poziom menu (PIN)', 'mdi:account-lock'],\n];"
+},
+{
+"t": "x",
+"old": "SERVICE = ['fanmod', 'test']",
+"new": "SERVICE = ['fanmod', 'test', 'stats', 'net']"
+},
+{
+"t": "x",
+"old": ".map(([k, n]) => `<div class=\"row go\" data-go=\"${k}\" data-back=\"menu\"><span class=\"l\">${n}</span><span class=\"v ch\">&rsaquo;</span></div>`)",
+"new": ".map(([k, n, ic]) => `<div class=\"row go mi\" data-go=\"${k}\" data-back=\"menu\"><span class=\"l\"><ha-icon icon=\"${ic}\"></ha-icon>${n}</span>${k === 'level' ? '' : '<span class=\"v ch2\">&rsaquo;</span>'}</div>`)"
+},
+{
+"t": "x",
+"old": "burner_s: 'PALNIK – USTAWIENIA', co_s: 'OGRZEWANIE 1 – USTAWIENIA', cwu_s: 'WODA – USTAWIENIA',",
+"new": "burner_s: 'NASTAWY', co_s: 'NASTAWY', cwu_s: 'NASTAWY',"
+},
+{
+"t": "x",
+"old": "const lab = back === 'menu' ? 'MENU' : back === 'main' ? 'EKRAN GŁ.' : 'WSTECZ';",
+"new": "const PL = { boiler: 'KOCIOŁ', burner_s: 'PALNIK', co_s: 'OGRZEWANIE 1', cwu_s: 'WODA' }, lab = PL[this._scr] || (back === 'menu' ? 'MENU' : back === 'main' ? 'EKRAN GŁ.' : 'WSTECZ');"
+},
+{
+"t": "x",
+"old": "<span class=\"wr\"><ha-icon icon=\"mdi:wrench\"></ha-icon><sup>${sup}</sup></span>",
+"new": "<span class=\"wr\">${this._unl() ? `<ha-icon icon=\"mdi:wrench\"></ha-icon><sup>${sup}</sup>` : '<ha-icon class=\"pp\" icon=\"mdi:account\"></ha-icon>'}</span>"
+},
+{
+"t": "r",
+"src": "case 'co_s': return P\\(TITLES\\.co_s, \\[[\\s\\S]*?(?=\\s*case 'stats': \\{)",
+"fl": "",
+"new": "case 'co_s': return P(TITLES.co_s, [\n        e('Temperatura komfortowa [°C]', this._p(this._v('co_comfort'), 1)), e('Temperatura ekonomiczna [°C]', this._p(this._v('co_eco'), 1)),\n        this._prow('Histereza [°C]', this._po(7), 7), this._prow('Kalibracja czujnika pok. [°C]', this._po(8), 8), this._prow('Tryb pracy', this._po(9), 9),\n        this._prow('Temperatura CO zadana ręcznie [°C]', this._po(10), 10), this._prow('Temperatura CO dla -20°C [°C]', this._po(11), 11), this._prow('Temperatura CO dla  0°C [°C]', this._po(12), 12), this._prow('Temperatura CO dla 10°C [°C]', this._po(13), 13)]) + (this._pr ? this._prDlg() : '');\n      case 'cwu_s': return P(TITLES.cwu_s, [\n        e('Temperatura komfortowa [°C]', this._p(this._v('cwu_comfort'), 0)), e('Temperatura ekonomiczna [°C]', this._p(this._v('cwu_eco'), 0)),\n        this._prow('Zagrzej teraz', this._po(14), 14), this._prow('Histereza [°C]', this._po(15), 15), e('Antylegionella', '-'), this._prow('Priorytet CWU', this._po(16), 16)]) + (this._pr ? this._prDlg() : '');"
+},
+{
+"t": "x",
+"old": ".row.red .l{color:#ff6b62}",
+"new": ".row.red .l{color:#ff6b62}.mi ha-icon{--mdc-icon-size:6.4cqw;color:#e3e9f7;flex:none}.ch2{color:#fff;font-size:6cqw}"
+},
+{
+"t": "r",
+"src": "case 'boiler': return P\\(TITLES\\.boiler, \\[[\\s\\S]*?(?=\\s*case 'burner_s')",
+"fl": "",
+"new": "case 'boiler': return P(TITLES.boiler, [\n        e('Temperatura zadana [°C]', this._p(this._v('boiler_manual'), 0)), this._prow('Histereza załączenia [°C]', this._p(this._v('boiler_hyst_on'), 0), 5),\n        this._prow('Histereza wyłączenia [°C]', this._p(this._v('boiler_hyst_off'), 0), 6)]) + (this._pr ? this._prDlg() : '');"
+},
+{
+"t": "x",
+"old": "menu: 'MENU', boiler: 'KOCIOŁ',",
+"new": "menu: 'MENU', boiler: 'NASTAWY',"
+},
+{
+"t": "x",
+"old": "['boiler', 'Kocioł', 'mdi:water-boiler']",
+"new": "['kociol', 'Kocioł', 'mdi:water-boiler']"
+},
+{
+"t": "x",
+"old": "const back = ['boiler', 'stats', 'test', 'net', 'info', 'level'].includes(s)",
+"new": "const back = ['kociol', 'stats', 'test', 'net', 'info', 'level'].includes(s)"
+},
+{
+"t": "x",
+"old": "    else html = this._body(this._scr);",
+"new": "    else if (this._scr === 'kociol') html = this._kociol(ctx) + (this._modal === 'boiler' ? this._bDlg() : '');\n    else html = this._body(this._scr);"
+},
+{
+"t": "x",
+"old": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror',",
+"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
+},
+{
+"t": "x",
+"old": "['outside', 'Temperatura zewnętrzna', S]]],",
+"new": "['outside', 'Temperatura zewnętrzna', S], ['ret_temp', 'Temperatura powrotu', S], ['boiler_hyst_on', 'Histereza załączenia kotła', S], ['boiler_hyst_off', 'Histereza wyłączenia kotła', S]]],\n  ['Ogrzewanie 1 – nastawy', [['co_hyst', 'CO1 histereza', S], ['co_calib', 'CO1 kalibracja czujnika', S], ['co_mode_s', 'CO1 tryb pracy (0 ręczny / 1 pogodowy)', S], ['co_cur_m20', 'CO1 krzywa pogodowa -20 °C', S], ['co_cur_0', 'CO1 krzywa pogodowa 0 °C', S], ['co_cur_10', 'CO1 krzywa pogodowa +10 °C', S]]],\n  ['Woda – nastawy', [['cwu_hyst', 'CWU histereza', S], ['cwu_boost', 'CWU zagrzej teraz (0/1)', S], ['cwu_prio', 'CWU priorytet (0/1)', S]]],"
+},
+{
+"t": "x",
+"old": "['stats', 'Statystyki'], ['boiler', 'Kocioł – ustawienia']",
+"new": "['stats', 'Statystyki'], ['kociol', 'Kocioł'], ['boiler', 'Kocioł – ustawienia']"
+},
+{
+"t": "x",
+"old": ".fma{cursor:pointer}",
+"new": ".fma{cursor:pointer}.rt{position:absolute;left:30.5cqw;width:46cqw;top:29.5cqw;text-align:center;font-size:5.8cqw;line-height:1;color:#eef3ff}.brow .c1 .bk{width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer}.brow .c1 .bk ha-icon{--mdc-icon-size:6.6cqw;color:#e3e9f7}"
+},
+{
+"t": "x",
+"old": ".fma{cursor:pointer}",
+"new": ".fma{cursor:pointer}.po{position:absolute;left:9cqw;right:9cqw;top:15.5cqw}.opt{padding:2cqw 0;margin-bottom:2cqw;border:.35cqw solid #5b6a8f;border-radius:1cqw;text-align:center;font-size:5cqw;color:#e8eefc;cursor:pointer}.opt.on{background:#f3f7ff;border-color:#f3f7ff;color:#1a3d8f;font-weight:600}"
+},
+{
+"t": "x",
+"old": ".fma{cursor:pointer}",
+"new": ".fma{cursor:pointer}.hi{gap:.5cqw;margin-right:-.8cqw}.hi>ha-icon:not(.cy),.hi .pp{--mdc-icon-size:7.3cqw;color:#fff}.hi .cy{--mdc-icon-size:7.4cqw;transform:translateY(.9cqw)}"
+},
+{
+"t": "x",
+"old": ".fma{cursor:pointer}",
+"new": ".fma{cursor:pointer}.row .tgq{position:relative;display:inline-block;vertical-align:middle;left:auto;top:auto;width:11.5cqw;height:5cqw;border-radius:2.5cqw}.row .tgq i{top:.55cqw;width:3.9cqw;height:3.9cqw}.row .tgq.on i{right:.55cqw}.row .tgq:not(.on) i{left:.55cqw}.row .tgq.on::before{left:2.3cqw;top:.55cqw;font-size:3.6cqw;line-height:3.9cqw}.row .tgq:not(.on)::after{content:'';position:absolute;right:1.7cqw;top:1.4cqw;width:2.2cqw;height:2.2cqw;border:.4cqw solid #e3e9f7;border-radius:50%;box-sizing:border-box}"
+},
+{
+"t": "x",
+"old": ".fma{cursor:pointer}",
+"new": ".fma{cursor:pointer}.plist{overflow-y:auto;scrollbar-width:none;padding:.6cqw 0 0 0!important}.plist::-webkit-scrollbar{display:none}.prow{height:11.3cqw!important;border-bottom:0!important;flex:none!important;align-items:flex-start!important}.prow.td .pn{color:#cfe0ff!important}.pn{width:13.7cqw!important;font-size:5.6cqw!important;font-weight:700;color:#cfe0ff;padding-left:3.6cqw;box-sizing:border-box;margin-top:.2cqw}.pbar{flex:none!important;width:74.7cqw;height:5cqw!important;margin-top:.7cqw}.pbl{display:block!important;bottom:auto!important;top:5.2cqw;font-size:4.2cqw!important;font-weight:700;color:#e3ecff}"
+},
+{
+"t": "r",
+"src": "icon=\\\\?\"mdi:home\\\\?\"",
+"fl": "g",
+"new": "icon=\"mdi:home-variant\""
+},
+{
+"t": "x",
+"old": "customElements.define('tekla-panel-card', TeklaPanelCard);",
+"new": "if (!customElements.get('tekla-panel-card')) customElements.define('tekla-panel-card', TeklaPanelCard);"
+},
+{
+"t": "x",
+"old": "customElements.define('tekla-panel-card-editor', TeklaPanelCardEditor);",
+"new": "if (!customElements.get('tekla-panel-card-editor')) customElements.define('tekla-panel-card-editor', TeklaPanelCardEditor);"
+}
+];
+    EDITS.forEach(e => {
+      if (e.t === 'x') { if (code.split(e.old).length !== 2) console.error('tekla-panel-card v7.8: nie znaleziono wzorca', e.old.slice(0, 60)); else code = code.replace(e.old, () => e.new); }
+      else { const re = new RegExp(e.src, e.fl); if (!re.test(code)) console.error('tekla-panel-card v7.8: nie znaleziono wzorca', e.src.slice(0, 60)); else { re.lastIndex = 0; code = code.replace(re, () => e.new); } }
+    });
+    const s = document.createElement('script');
+    s.text = '(() => {\n' + code + '\n})();\n//# sourceURL=tekla-panel-card-v78.js';
+    document.head.appendChild(s);
+
+    const C = customElements.get('tekla-panel-card');
+    if (!C) { console.error('igneo-card: brak elementu po zaladowaniu'); return; }
+    // key -> { tytul, rola encji, min, max, krok, miejsca po przecinku }
+    const PR = [
+      { t: 'Moc min [%]', r: 'power_min', lo: 30, hi: 100, st: 1, dc: 0 },
+      { t: 'Moc max [%]', r: 'power_max', lo: 30, hi: 100, st: 1, dc: 0 },
+      { t: 'Wartość opałowa [kWh/kg]', r: 'fuel_heat', lo: 2, hi: 10, st: 0.1, dc: 1 },
+      { t: 'Korekta powietrza [%]', r: 'air_corr', lo: -10, hi: 40, st: 1, dc: 0 },
+      { t: 'Ilość paliwa test [kg/h]', r: 'fuel_test', lo: 5, hi: 100, st: 0.1, dc: 1 },
+      { t: 'Histereza załączenia [°C]', r: 'boiler_hyst_on', lo: 0, hi: 20, st: 1, dc: 0, sk: 10 },
+      { t: 'Histereza wyłączenia [°C]', r: 'boiler_hyst_off', lo: 0, hi: 20, st: 1, dc: 0, sk: 11 },
+      { t: 'Histereza [°C]', r: 'co_hyst', lo: 0, hi: 5, st: 0.1, dc: 1, sk: 12 },
+      { t: 'Kalibracja czujnika pok. [°C]', r: 'co_calib', lo: -3, hi: 3, st: 0.1, dc: 1, sk: 13 },
+      { t: 'Tryb pracy', r: 'co_mode_s', opts: ['Ręczny', 'Pogodowy'], sk: 14 },
+      { t: 'Temperatura CO zadana ręcznie [°C]', r: 'co_manual', lo: 20, hi: 80, st: 1, dc: 0, sk: 15 },
+      { t: 'Temperatura CO dla -20°C [°C]', r: 'co_cur_m20', lo: 20, hi: 80, st: 1, dc: 0, sk: 16 },
+      { t: 'Temperatura CO dla 0°C [°C]', r: 'co_cur_0', lo: 20, hi: 80, st: 1, dc: 0, sk: 17 },
+      { t: 'Temperatura CO dla 10°C [°C]', r: 'co_cur_10', lo: 20, hi: 80, st: 1, dc: 0, sk: 18 },
+      { t: 'Zagrzej teraz', r: 'cwu_boost', opts: ['Wyłączone', 'Włączone'], sk: 20, tog: true },
+      { t: 'Histereza [°C]', r: 'cwu_hyst', lo: 0, hi: 20, st: 1, dc: 0, sk: 19 },
+      { t: 'Priorytet CWU', r: 'cwu_prio', opts: ['Wyłączony', 'Włączony'], sk: 21, tog: true },
+    ];
+    C.prototype._po = function (k) {
+      const c = PR[k], v = this._v(c.r);
+      if (isNaN(v)) return '-';
+      if (c.tog) return '<span class="tgq' + (v >= 1 ? ' on' : '') + '"><i></i></span>';
+      return c.opts ? (c.opts[Math.round(v)] != null ? c.opts[Math.round(v)] : '-') : v.toFixed(c.dc);
+    };
+
+    // ekran PROGRAM jak na panelu: naglowek z postacia, slupki pomaranczowe, os z cyframi
+    C.prototype._progHdr = function (title, edit) {
+      const lab = edit ? 'PROGRAM' : ['WODA', 'OGRZEWANIE 1', 'KOCIOŁ'][(this._prog || {}).kind != null ? this._prog.kind : 2];
+      return `<div class="h2"><span class="bk" ${edit ? 'data-act="pcancel"' : `data-go="${this._backTo || 'main'}"`}>&lsaquo; ${lab}</span><span class="tt">${title}</span>
+        <span class="hi">${this._unl() ? '<span class="wr"><ha-icon icon="mdi:wrench"></ha-icon><sup>1</sup></span>' : '<ha-icon class="pp" icon="mdi:account"></ha-icon>'}<span data-go="main"><ha-icon class="cy" icon="mdi:home-variant"></ha-icon></span></span></div>`;
+    };
+    C.prototype._dayBar = function (bits) {
+      if (bits == null) return '<svg viewBox="0 0 240 24" preserveAspectRatio="none" class="dbar"><text x="120" y="17" text-anchor="middle" font-size="14" fill="#9fb0d8">--</text></svg>';
+      let r = '', t = '';
+      (this._bands(bits) || []).forEach(([a, b]) => { r += `<rect x="${a * 10}" y="0.5" width="${(b - a) * 10}" height="14.2" fill="#e8601c"/>`; });
+      for (let h = 0; h <= 24; h++) t += `<line x1="${h * 10}" y1="16.4" x2="${h * 10}" y2="${h % 6 === 0 ? 22 : 19.5}" stroke="#dfe8ff" stroke-width="${h % 6 === 0 ? 1.8 : 1}"/>`;
+      return `<svg viewBox="0 0 240 24" preserveAspectRatio="none" class="dbar"><rect x="0" y="14.6" width="240" height="1.5" fill="#ff3a2c"/>${r}${t}</svg>`;
+    };
+    // podglad pojedynczych ekranow PROGRAM w osobnej karcie: screen: prog_0 (woda) / prog_1 (CO) / prog_2 (kociol)
+    const _sc = C.prototype.setConfig;
+    C.prototype.setConfig = function (c) {
+      _sc.call(this, c);
+      const m = /^prog_([012])$/.exec((c && c.screen) || '');
+      if (m) { this._prog = { kind: +m[1] }; this._scr = 'prog'; this._backTo = ['water', 'heat', 'kociol'][+m[1]]; }
+    };
+
+    const VALVE = '<svg viewBox="0 0 24 24" style="width:6.6cqw;height:6.6cqw"><path d="M2.5 9.5L11.5 14.5L2.5 19.5Z M21.5 9.5L12.5 14.5L21.5 19.5Z" fill="#e3e9f7"/><path d="M7 6.5Q12 3 17 6.5" stroke="#8fd6ff" stroke-width="1.7" fill="none" stroke-linecap="round"/><path d="M5.8 4.2L6.9 7.4L9.6 6" fill="#8fd6ff"/></svg>';
+    C.prototype._kociol = function (ctx) {
+      const bm = ctx.bm, rt = this._v('ret_temp');
+      return `${this._hdr('KOCIOŁ', 'menu')}
+        ${this._boilerMain(ctx.burning).replace('class="boil"', 'class="boil" style="top:14.6cqw;left:8cqw"')}
+        <div class="big" data-act="more" data-e="boiler_temp" style="top:16cqw;font-size:20cqw">${this._p(this._v('boiler_temp'))}</div>
+        <div class="rt" style="top:38cqw;font-size:4.7cqw">T. powrotu=${isNaN(rt) ? '-' : rt.toFixed(1)}</div>
+        <div class="tag" data-act="bdlg"><b>${isNaN(this._v('boiler_set')) ? '-' : Math.round(this._v('boiler_set'))}</b>${this._chipHtml(bm)}</div>
+        ${bm < 2 ? `<div class="tbar" data-act="prog" data-kind="2" data-back="kociol" style="top:23.8cqw">${this._sched(this._todayBands(2, []))}</div>` : ''}
+        ${this._brow('<div class="bk" data-go="menu"><ha-icon icon="mdi:arrow-left-circle-outline"></ha-icon></div>', 'boiler', VALVE)}`;
+    };
+    const q = (v, c) => Number(Math.max(c.lo, Math.min(c.hi, Math.round(v / c.st) * c.st)).toFixed(c.dc));
+    C.prototype._prow = function (label, val, k) {
+      return `<div class="row" data-act="pedit" data-k="${k}"><span class="l">${label}</span><span class="v">${val}</span></div>`;
+    };
+    C.prototype._prDlg = function () {
+      const d = this._pr, c = PR[d.k], f = x => x.toFixed(c.dc);
+      if (c.opts) return `<div class="qd"><div class="qx" data-act="prcancel"></div><div class="qbg"></div>
+        <span class="fmt" style="top:7.6cqw;font-size:4.2cqw">${c.t}</span>
+        <div class="po">${c.opts.map((n, i) => `<div class="opt${i === d.val ? ' on' : ''}" data-act="propt" data-i="${i}">${n}</div>`).join('')}</div>
+        <div class="qok" data-act="prok">OK</div></div>`;
+      const p = (d.val - c.lo) / (c.hi - c.lo);
+      return `<div class="qd"><div class="qx" data-act="prcancel"></div><div class="qbg"></div>
+        <span class="fmt" style="top:7.6cqw;font-size:4.2cqw">${c.t}</span>
+        <div class="bval" style="top:12.4cqw;font-size:10.5cqw">${f(d.val)}</div>
+        <span class="blb" style="left:17cqw">${f(c.lo)}</span><span class="blb" style="left:79cqw">${f(c.hi)}</span>
+        ${this._sl('data-act="prslide"', 17, 27, 66, p)}
+        <div class="bpm" data-act="prval" data-d="-1" style="left:17cqw"><i></i></div><div class="bpm pl" data-act="prval" data-d="1" style="left:50.5cqw"><i></i><i></i></div>
+        <div class="qok" data-act="prok">OK</div></div>`;
+    };
+    C.prototype._prAct = function (act, a, e) {
+      if (this._mirror()) return;
+      if (act === 'pedit') {
+        const k = +a.dataset.k, c = PR[k], v = this._v(c.r);
+        if (c.tog) { if (!isNaN(v)) this._svc('set_param', { key: c.sk, value: v >= 1 ? 0 : 1 }); return; }
+        const val = c.opts ? (isNaN(v) ? -1 : Math.round(v)) : (isNaN(v) ? c.lo : q(v, c));
+        this._pr = { k, val, v0: isNaN(v) ? NaN : val };
+      } else if (!this._pr) return;
+      else if (act === 'prcancel') this._pr = null;
+      else if (act === 'propt') this._pr.val = +a.dataset.i;
+      else if (act === 'prval') { const c = PR[this._pr.k]; this._pr.val = q(this._pr.val + (+a.dataset.d) * c.st, c); }
+      else if (act === 'prslide') { const c = PR[this._pr.k]; this._pr.val = q(c.lo + this._slFrac(a, e) * (c.hi - c.lo), c); }
+      else if (act === 'prok') {
+        const d = this._pr, c = PR[d.k];
+        if (d.val !== d.v0) {
+          let v = d.val;
+          if (d.k === 1 && v < this._v('power_min')) v = this._v('power_min');
+          if (d.k === 0 && v > this._v('power_max')) v = this._v('power_max');
+          this._svc('set_param', { key: c.sk != null ? c.sk : d.k, value: Number(v.toFixed(c.dc)) });
+        }
+        this._pr = null;
+      }
+      this._render(true);
+    };
+
+    // ---- modul: paski harmonogramu ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    const o = C.prototype._kociol;
+    C.prototype._kociol = function (ctx) {
+      let h = o.call(this, ctx);
+      if (h.indexOf('data-back="kociol"') < 0) {
+        const t = `<div class="tbar" data-act="prog" data-kind="2" data-back="kociol" style="top:23.8cqw">${this._sched(this._todayBands(2, []))}</div>`;
+        const i = h.indexOf('<div class="brow"');
+        h = i < 0 ? h + t : h.slice(0, i) + t + h.slice(i);
+      }
+      return h;
+    };
+
+    })();
+
+    // ---- modul: poziomy dostepu, menu wg poziomu, nastawy palnika/CWU ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v80) return;
+    C.prototype.__v80 = true;
+
+    const W = window.__tekla80 = window.__tekla80 || { t: Date.now(), init: false, card: null };
+    const LOCK_MS = 300000;
+    // rola -> koncowka entity_id (po nazwach z ESPHome)
+    const NEW = {
+      burn_kw: 'palnik_moc', burn_kgh: 'palnik_spalanie', burn_bright: 'palnik_jasnosc_plomienia', feeder: 'palnik_czas_podawania_paliwa',
+      acc: 'poziom_dostepu', legion: 'cwu_antylegionella',
+      p_prefeed: 'palnik_wstepna_dawka_paliwa', p_feed_max: 'palnik_podawanie_max', p_photo: 'palnik_prog_foto',
+      p_blow_ign: 'palnik_moc_dmuchawy_rozpalanie', p_blow_glow: 'palnik_moc_dmuchawy_rozzarzanie', p_blow_stop: 'palnik_moc_dmuchawy_wygaszanie',
+      p_glow_time: 'palnik_czas_rozzarzania', p_glow_fuel: 'palnik_rozzarzanie_paliwo', p_stop_time: 'palnik_czas_wygaszania', p_lambda: 'palnik_sterowanie_lambda',
+      p_o2_30: 'palnik_tlen_dla_mocy_30', p_o2_100: 'palnik_tlen_dla_mocy_100', p_cleans: 'palnik_liczba_czyszczen_rusztu', p_clean_gap: 'palnik_odstep_czyszczenia',
+      p_pause_time: 'palnik_czas_pauzy', p_pause_power: 'palnik_moc_w_pauzie', p_pause_blow: 'palnik_dmuchawa_w_pauzie',
+      p_inertia: 'palnik_bezwladnosc', p_grate_time: 'palnik_czas_ruchu_rusztu', p_burner_feed: 'palnik_podawanie_palnika_podajnika_zasobnika',
+      p_feeder_period: 'palnik_okres_podajnika_zasobnika', p_min_rpm: 'palnik_minimalne_obroty_dmuchawy',
+    };
+    // parametry menu palnika i CWU: k = klucz set_param, lv = poziom (0/1/2)
+    const PR2 = [
+      { k: 22, t: 'Wstępna dawka paliwa [s]', r: 'p_prefeed', lo: 0, hi: 200, st: 1, dc: 0, lv: 1 },
+      { k: 23, t: 'Podawanie max [s]', r: 'p_feed_max', lo: 1, hi: 15, st: 0.1, dc: 1, lv: 1 },
+      { k: 24, t: 'Próg foto', r: 'p_photo', lo: 5, hi: 100, st: 1, dc: 0, lv: 1 },
+      { k: 25, t: 'Moc dmuchawy rozpalanie [%]', r: 'p_blow_ign', lo: 0, hi: 100, st: 1, dc: 0, lv: 1 },
+      { k: 26, t: 'Moc dmuchawy rozżarzanie [%]', r: 'p_blow_glow', lo: 0, hi: 100, st: 1, dc: 0, lv: 1 },
+      { k: 27, t: 'Moc dmuchawy wygaszanie [%]', r: 'p_blow_stop', lo: 0, hi: 100, st: 1, dc: 0, lv: 1 },
+      { k: 28, t: 'Czas rozżarzania [min]', r: 'p_glow_time', lo: 0, hi: 20, st: 1, dc: 0, lv: 1 },
+      { k: 29, t: 'Rozżarzanie paliwo [%]', r: 'p_glow_fuel', lo: 20, hi: 100, st: 1, dc: 0, lv: 1 },
+      { k: 30, t: 'Czas wygaszania [min]', r: 'p_stop_time', lo: 1, hi: 15, st: 1, dc: 0, lv: 1 },
+      { k: 31, t: 'Sterowanie Lambda', r: 'p_lambda', tog: true, lv: 1 },
+      { k: 32, t: 'Tlen dla mocy 30 % [%]', r: 'p_o2_30', lo: 5, hi: 15, st: 0.1, dc: 1, lv: 1 },
+      { k: 33, t: 'Tlen dla mocy 100 % [%]', r: 'p_o2_100', lo: 5, hi: 15, st: 0.1, dc: 1, lv: 1 },
+      { k: 34, t: 'Liczba czyszczeń', r: 'p_cleans', lo: 0, hi: 10, st: 1, dc: 0, lv: 1 },
+      { k: 35, t: 'Odstęp czyszczenia [h]', r: 'p_clean_gap', lo: 1, hi: 12, st: 1, dc: 0, lv: 1 },
+      { k: 36, t: 'Czas pauzy [min]', r: 'p_pause_time', lo: 0, hi: 60, st: 1, dc: 0, lv: 1 },
+      { k: 37, t: 'Moc w pauzie [%]', r: 'p_pause_power', lo: 5, hi: 30, st: 1, dc: 0, lv: 1 },
+      { k: 38, t: 'Dmuchawa w pauzie [%]', r: 'p_pause_blow', lo: 10, hi: 50, st: 1, dc: 0, lv: 1 },
+      { k: 39, t: 'Bezwładność palnika [min]', r: 'p_inertia', lo: 1, hi: 60, st: 1, dc: 0, lv: 2 },
+      { k: 40, t: 'Czas ruchu rusztu [s]', r: 'p_grate_time', lo: 0, hi: 60, st: 0.1, dc: 1, lv: 2 },
+      { k: 41, t: 'Pod. palnika [%]', r: 'p_burner_feed', lo: 50, hi: 300, st: 1, dc: 0, lv: 2 },
+      { k: 42, t: 'Okres podajnika zasobnika [s]', r: 'p_feeder_period', lo: 5, hi: 180, st: 1, dc: 0, lv: 2 },
+      { k: 43, t: 'Minimalne obroty dmuchawy [x100]', r: 'p_min_rpm', lo: 0, hi: 5, st: 1, dc: 0, lv: 2 },
+      { k: 44, t: 'Antylegionella', r: 'legion', tog: true, lv: 0 },
+    ];
+    const L1 = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'wsp', 13, 14, 15, 16], L2 = [17, 18, 19, 20, 21];
+    const q = (v, c) => Number(Math.max(c.lo, Math.min(c.hi, Math.round(v / c.st) * c.st)).toFixed(c.dc));
+    const KEYDIV = n => `<div class="svsep"><ha-icon icon="mdi:wrench" style="--mdc-icon-size:5cqw"></ha-icon><sup>${n}</sup></div>`;
+
+    C.prototype.setConfig = (function (o) { return function (c) { this._idn = null; return o.call(this, c); }; })(C.prototype.setConfig);
+    /* ---- poziom dostepu ---- */
+    C.prototype._lvl = function () { const v = this._v('acc'); return isNaN(v) ? 0 : Math.max(0, Math.min(2, Math.round(v))); };
+    C.prototype._unl = function () { return this._lvl() >= 1; };
+    C.prototype._lvlSet = function () {};
+    C.prototype._lvlTimer = function () {};
+    C.prototype._touch = function () { W.t = Date.now(); };
+    C.prototype._unlock = function (pin) { this._svc('unlock', { pin: String(pin || '') }); };
+    C.prototype._pinOk = (function (o) {
+      return function () {
+        if (this._scr === 'level') {
+          const c = (this._pd || [0, 0, 0, 0]).join('');
+          this._pd = [0, 0, 0, 0]; W.t = Date.now();
+          this._unlock(c); this._go('menu'); return;
+        }
+        return o.call(this);
+      };
+    })(C.prototype._pinOk);
+
+    /* ---- rozpoznawanie encji nowych rol ---- */
+    C.prototype._res = function (h) {
+      if (!h) return;
+      const ids = Object.keys(h.states);
+      if (ids.length === this._idn) return;
+      this._idn = ids.length;
+      for (const r in NEW) {
+        if (this.E[r]) continue;
+        const sl = NEW[r], re = new RegExp('_' + sl + '(_\\d+)?$');
+        const c = ids.filter(id => id.startsWith('sensor.') && id.includes('tekla') && re.test(id)).sort((a, b) => a.length - b.length);
+        if (c.length) this.E[r] = c[0];
+      }
+    };
+    const hd = Object.getOwnPropertyDescriptor(C.prototype, 'hass');
+    Object.defineProperty(C.prototype, 'hass', {
+      configurable: true, get: hd.get,
+      set(h) {
+        this._res(h);
+        W.card = this;
+        if (!W.init && h) { W.init = true; W.t = Date.now(); setTimeout(() => this._unlock(''), 1500); } // odswiezenie strony = poziom uzytkownika
+        hd.set.call(this, h);
+      },
+    });
+    if (!W.timer) W.timer = setInterval(() => {
+      const c = W.card;
+      if (c && c._hass && c._lvl() > 0 && Date.now() - W.t > LOCK_MS) { c._unlock(''); W.t = Date.now(); }
+    }, 10000);
+
+    const ot = C.prototype._t;
+    C.prototype._t = function (k, d) { const r = ot.call(this, k, d); return k === 'feeder' && r !== d && r !== '' ? r + ' s' : r; };
+
+    /* ---- naglowki: ikona poziomu ---- */
+    const fixHdr = function (h, lvl) { return lvl >= 1 ? h.replace(/<sup>[^<]*<\/sup>/, '<sup>' + lvl + '</sup>') : h; };
+    C.prototype._hdr = (function (o) { return function () { return fixHdr(o.apply(this, arguments), this._lvl()); }; })(C.prototype._hdr);
+    C.prototype._progHdr = (function (o) { return function () { return fixHdr(o.apply(this, arguments), this._lvl()); }; })(C.prototype._progHdr);
+    C.prototype._hdrLive = (function (o) {
+      return function () {
+        const h = o.apply(this, arguments), l = this._lvl();
+        return l >= 1 ? h.replace('<ha-icon icon="mdi:account"></ha-icon>', `<span class="wr"><ha-icon icon="mdi:wrench"></ha-icon><sup>${l}</sup></span>`) : h;
+      };
+    })(C.prototype._hdrLive);
+
+    /* ---- nawigacja ---- */
+    C.prototype._go = (function (o) {
+      return function (s, b) {
+        this._q2 = null; W.t = Date.now();
+        if (s === 'test' && this._lvl() >= 1) this._testOk = true;
+        return o.call(this, s, b);
+      };
+    })(C.prototype._go);
+
+    /* ---- menu wg poziomu ---- */
+    const mrow = (k, n, ic, v) => `<div class="row go mi"${k ? ` data-go="${k}" data-back="menu"` : ''}><span class="l"><ha-icon icon="${ic}"></ha-icon>${n}</span>${v == null ? '<span class="v ch2">&rsaquo;</span>' : `<span class="v">${v}</span>`}</div>`;
+    C.prototype._menu = function () {
+      const l = this._lvl(), r = [
+        mrow('kociol', 'Kocioł', 'mdi:water-boiler'), mrow('burner_s', 'Palnik', 'mdi:fire'), mrow('co_s', 'Ogrzewanie obwód 1', 'mdi:radiator'),
+        mrow('cwu_s', 'Ciepła woda użytkowa', 'mdi:faucet'), mrow('alarm', 'Historia alarmów', 'mdi:clipboard-alert-outline')];
+      if (l >= 1) r.push(mrow(null, 'Język', 'mdi:translate', 'PL'), mrow(null, 'Alarm dźwiękowy', 'mdi:volume-high', '<span class="tgq on"><i></i></span>'),
+        mrow(null, 'Konfiguracja', 'mdi:cog'), mrow('test', 'Test wyjść', 'mdi:toggle-switch-outline'), mrow('stats', 'Statystyki', 'mdi:chart-box-outline'), mrow('net', 'Sieć', 'mdi:lan'));
+      r.push(mrow('info', 'Informacje o programie', 'mdi:information'));
+      r.push(`<div class="row go mi" data-go="level" data-back="menu"><span class="l"><ha-icon icon="mdi:account-lock"></ha-icon>Poziom menu (PIN)</span></div>`);
+      return this._page('MENU', 'main', r.join(''));
+    };
+
+    /* ---- wiersze / okno edycji parametrow ---- */
+    C.prototype._q2row = function (i) {
+      const c = PR2[i], v = this._v(c.r);
+      let val = '-';
+      if (!isNaN(v)) val = c.tog ? `<span class="tgq${Math.round(v) % 2 === 1 ? ' on' : ''}"><i></i></span>` : v.toFixed(c.dc);
+      return `<div class="row" data-act="${c.tog ? 'q2tog' : 'q2edit'}" data-i="${i}"><span class="l">${c.t}</span><span class="v">${val}</span></div>`;
+    };
+    C.prototype._q2Dlg = function () {
+      const d = this._q2, c = PR2[d.i], f = x => x.toFixed(c.dc), p = (d.val - c.lo) / (c.hi - c.lo);
+      return `<div class="qd"><div class="qx" data-act="q2cancel"></div><div class="qbg"></div>
+        <span class="fmt" style="top:7.6cqw;font-size:4.2cqw">${c.t}</span>
+        <div class="bval" style="top:12.4cqw;font-size:10.5cqw">${f(d.val)}</div>
+        <span class="blb" style="left:17cqw">${f(c.lo)}</span><span class="blb" style="left:79cqw">${f(c.hi)}</span>
+        ${this._sl('data-act="q2slide"', 17, 27, 66, p)}
+        <div class="bpm" data-act="q2val" data-d="-1" style="left:17cqw"><i></i></div><div class="bpm pl" data-act="q2val" data-d="1" style="left:50.5cqw"><i></i><i></i></div>
+        <div class="qok" data-act="q2ok">OK</div></div>`;
+    };
+    C.prototype._q2Act = function (act, a, e) {
+      if (this._mirror()) return;
+      const lvl = this._lvl();
+      if (act === 'q2tog' || act === 'q2edit') {
+        const i = +a.dataset.i, c = PR2[i], v = this._v(c.r);
+        if (c.lv > lvl || isNaN(v)) return;
+        if (c.tog) { this._svc('set_param', { key: c.k, value: Math.round(v) % 2 === 1 ? 0 : 1 }); return; }
+        const val = q(v, c); this._q2 = { i, val, v0: val };
+      } else if (!this._q2) return;
+      else if (act === 'q2cancel') this._q2 = null;
+      else if (act === 'q2val') { const c = PR2[this._q2.i]; this._q2.val = q(this._q2.val + (+a.dataset.d) * c.st, c); }
+      else if (act === 'q2slide') { const c = PR2[this._q2.i]; this._q2.val = q(c.lo + this._slFrac(a, e) * (c.hi - c.lo), c); }
+      else if (act === 'q2ok') {
+        const d = this._q2, c = PR2[d.i];
+        if (d.val !== d.v0) this._svc('set_param', { key: c.k, value: Number(d.val.toFixed(c.dc)) });
+        this._q2 = null;
+      }
+      this._render(true);
+    };
+
+    /* ---- ekrany NASTAWY ---- */
+    C.prototype._burnS = function () {
+      const l = this._lvl(), e = (a, b) => this._row(a, b), P = this._prow.bind(this);
+      const r = [P('Korekta powietrza [%]', this._p(this._v('air_corr'), 0), 3), P('Moc min [%]', this._p(this._v('power_min'), 0), 0),
+        P('Moc max [%]', this._p(this._v('power_max'), 0), 1), P('Wartość opałowa [kWh/kg]', this._p(this._v('fuel_heat'), 1), 2),
+        P('Ilość paliwa test [kg/h]', this._p(this._v('fuel_test'), 1), 4)];
+      const item = i => i === 'wsp' ? e('Wentylator wspomagający', '-') : this._q2row(i);
+      if (l >= 1) {
+        r.push(KEYDIV(1), '<div class="row go" data-go="fanmod" data-back="burner_s"><span class="l">Moc dmuchawy modulacja [%]</span><span class="v ch">&rsaquo;</span></div>');
+        L1.forEach(i => r.push(item(i)));
+      }
+      if (l >= 2) { r.push(KEYDIV(2)); L2.forEach(i => r.push(item(i))); }
+      return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '') + (this._q2 ? this._q2Dlg() : '');
+    };
+    C.prototype._cwuS = function () {
+      const l = this._lvl(), e = (a, b) => this._row(a, b);
+      const r = [e('Temperatura komfortowa [°C]', this._p(this._v('cwu_comfort'), 0)), e('Temperatura ekonomiczna [°C]', this._p(this._v('cwu_eco'), 0)),
+        this._prow('Zagrzej teraz', this._po(14), 14), this._prow('Histereza [°C]', this._po(15), 15), this._q2row(22), this._prow('Priorytet CWU', this._po(16), 16)];
+      if (l >= 1) r.push(KEYDIV(1), e('Źródło', '-'), e('Zwiększenie temperatury źródła [°C]', '-'), e('Delta załączenia pompy [°C]', '-'), e('Temperatura maksymalna [°C]', '-'));
+      return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '') + (this._q2 ? this._q2Dlg() : '');
+    };
+    // pozycje klucza 1 (histerezy kotla, CO1) tylko od poziomu 1
+    const hideL1 = function (h, ks, lvl) {
+      const re = new RegExp('<div class="row" data-act="pedit" data-k="(' + ks.join('|') + ')">.*?</div>', 'g');
+      if (lvl >= 1) { let first = true; return h.replace(re, m => { const o = first ? KEYDIV(1) + m : m; first = false; return o; }); }
+      return h.replace(re, '');
+    };
+    C.prototype._body = (function (o) {
+      return function (s) {
+        if (s === 'burner_s') return this._burnS();
+        if (s === 'cwu_s') return this._cwuS();
+        if (s === 'boiler') return hideL1(o.call(this, s), [5, 6], this._lvl());
+        if (s === 'co_s') return hideL1(o.call(this, s), [7, 8, 9, 10, 11, 12, 13], this._lvl());
+        if (s === 'level') return this._pinPg('menu', 'POZIOM MENU', this._lvl() > 0 ? `Poziom ${this._lvl()} aktywny` : 'Wpisz PIN');
+        return o.call(this, s);
+      };
+    })(C.prototype._body);
+
+    /* ---- zdarzenia: okna q2*, klik w nazwe dnia = odczyt ustawien ---- */
+    C.prototype._build = (function (o) {
+      return function () {
+        o.apply(this, arguments);
+        const R = this.shadowRoot, st = document.createElement('style');
+        st.textContent = '.dy{cursor:pointer}.row[data-act^="q2"]{cursor:pointer}';
+        R.appendChild(st);
+        R.addEventListener('click', e => {
+          W.t = Date.now();
+          const a = e.target.closest('[data-act^="q2"]');
+          if (a) { this._q2Act(a.dataset.act, a, e); return; }
+          if (e.target.closest('.dy')) this._svc('param_refresh');
+        });
+      };
+    })(C.prototype._build);
+
+    })();
+
+    // ---- modul: antylegionella ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v81) return;
+    C.prototype.__v81 = true;
+    const o = C.prototype._cwuS;
+    C.prototype._cwuS = function () {
+      return o.call(this).replace(/<div class="row" data-act="q2tog" data-i="22">.*?<\/div>/, this._row('Antylegionella', '-'));
+    };
+
+    })();
+
+    // ---- modul: Ogrzewanie 1 nastawy ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v82) return;
+    C.prototype.__v82 = true;
+    const KEYDIV = n => `<div class="svsep"><ha-icon icon="mdi:wrench" style="--mdc-icon-size:5cqw"></ha-icon><sup>${n}</sup></div>`;
+    const TOG = '-';
+    const o = C.prototype._body;
+    C.prototype._body = function (s) {
+      if (s !== 'co_s') return o.call(this, s);
+      const e = (a, b) => this._row(a, b), P = this._prow.bind(this), l = this._lvl();
+      const r = [e('Temperatura komfortowa [°C]', this._p(this._v('co_comfort'), 1)), e('Temperatura ekonomiczna [°C]', this._p(this._v('co_eco'), 1)),
+        P('Histereza [°C]', this._po(7), 7), P('Kalibracja czujnika pok. [°C]', this._po(8), 8), P('Tryb pracy', this._po(9), 9),
+        P('Temperatura CO zadana ręcznie [°C]', this._po(10), 10), P('Temperatura CO dla -20°C [°C]', this._po(11), 11),
+        P('Temperatura CO dla  0°C [°C]', this._po(12), 12), P('Temperatura CO dla 10°C [°C]', this._po(13), 13)];
+      if (l >= 1) r.push(KEYDIV(1), e('Źródło', '-'), e('Zwiększenie temperatury źródła [°C]', '-'), e('Czujnik pokojowy', '-'), e('Temp. maksymalna [°C]', '-'),
+        e('Czujnik CO', TOG), e('Wsp. korekcji t. CO [°C/°C]', '-'), e('MAX Tzew pomp komf. [°C]', '-'), e('MAX Tzew pomp ekon. [°C]', '-'),
+        e('Obniżenie temperatury CO [°C]', '-'), e('MIN temperatura CO pomp [°C]', '-'), e('Czas mieszacza [s]', '-'), e('Stała pompa', TOG),
+        e('Obniżenie Tco dla ochrony powrotu', TOG));
+      return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '') + (this._q2 ? this._q2Dlg() : '');
+    };
+
+    })();
+
+    // ---- modul: czas podawania ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v83) return;
+    C.prototype.__v83 = true;
+    const o = C.prototype._t;
+    C.prototype._t = function (k, d) {
+      const r = o.call(this, k, d);
+      if (k === 'feeder' && typeof r === 'string' && /^\s*0(\.0+)?\s*s?\s*$/.test(r)) return '';
+      return r;
+    };
+
+    })();
+
+    // ---- modul: historia alarmow ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v84) return;
+    C.prototype.__v84 = true;
+    const MAXAL = 20;
+    const num = s => { const n = parseFloat(s); return isNaN(n) ? NaN : n; };
+    const tm = x => x.lu != null ? x.lu : (x.last_updated ? Date.parse(x.last_updated) / 1000 : (x.lc != null ? x.lc : 0));
+    const st = x => x.s != null ? x.s : x.state;
+
+    C.prototype._alLoad = async function () {
+      const E = this.E, ids = [E.alarm_start, E.alarm_end, E.last_alarm].filter(Boolean);
+      this._ah = null; this._ai = 0; this._alBusy = true; const tok = this._altok = (this._altok || 0) + 1;
+      let list = [];
+      try {
+        const now = Date.now();
+        const res = await this._hass.callWS({ type: 'history/history_during_period', start_time: new Date(now - 60 * 864e5).toISOString(), end_time: new Date(now).toISOString(), entity_ids: ids, include_start_time_state: true, significant_changes_only: false, minimal_response: true, no_attributes: true });
+        const g = id => (res[id] || []).map(x => ({ t: tm(x), s: st(x) })).sort((a, b) => a.t - b.t);
+        const S = g(E.alarm_start), En = g(E.alarm_end), T = g(E.last_alarm).filter(x => /kod\s+\d+/.test(x.s));
+        const seen = new Map();
+        for (const e of S) {
+          const v = num(e.s); if (!(v > 1e9)) continue;
+          let txt = '', end = 0;
+          for (const x of T) { if (x.t <= e.t + 0.01) txt = x.s; else break; }
+          for (const x of En) { if (x.t <= e.t + 3) { const n = num(x.s); if (n > 1e9) end = n; } else break; }
+          if (!seen.has(v) || (!seen.get(v).txt && txt)) seen.set(v, { start: v, end, txt });
+        }
+        list = [...seen.values()].sort((a, b) => b.start - a.start).slice(0, MAXAL);
+      } catch (e) { console.warn('tekla alarm history', e); }
+      if (tok !== this._altok) return;
+      if (!list.length) { const t0 = num(this._t('alarm_start', '0')); const txt = this._t('last_alarm', ''); if (/kod\s+\d+/.test(txt) && t0 > 1e9) list = [{ start: t0, end: 0, txt }]; }
+      this._ah = list; this._ai = 0; this._alBusy = false;
+      if (this._scr === 'alarm') this._render(true);
+    };
+
+    const og = C.prototype._go;
+    C.prototype._go = function (s, b) {
+      if (s === 'alarm') { this._ai = 0; this._ah = null; this._alLoad(); }
+      return og.call(this, s, b);
+    };
+
+    // klikniecia strzalek + styl - podpiecie przy pierwszym rysowaniu (niezaleznie od momentu zbudowania karty)
+    const ensure = self => {
+      const R = self.shadowRoot; if (!R || self.__alL) return; self.__alL = true;
+      const s = document.createElement('style');
+      s.textContent = '.alar{opacity:1;width:11cqw;height:7.4cqw;left:85cqw}.alar svg{pointer-events:none}'
+        + '.alb.al2{left:50%;transform:translateX(-50%);top:38cqw;width:34cqw;height:9cqw;font-size:5.4cqw;font-weight:500;letter-spacing:.02em;color:#fff;background:linear-gradient(#6a93d8,#5079c0);border:.3cqw solid #86a9e4;border-radius:.5cqw;cursor:pointer}'
+        + '.alb.al2:active{filter:brightness(1.15)}.ala.al2{left:50%;transform:translateX(-50%);width:34cqw;top:48cqw;font-size:4.6cqw}';
+      R.appendChild(s);
+      R.addEventListener('click', e => {
+        const a = e.target.closest && e.target.closest('[data-act]'); if (!a) return;
+        const act = a.dataset.act;
+        if (act === 'alup' && self._ah && self._ai < self._ah.length - 1) { self._ai++; self._render(true); }
+        else if (act === 'aldn' && self._ah && self._ai > 0) { self._ai--; self._render(true); }
+      });
+    };
+
+    const CHEV = up => `<svg viewBox="0 0 24 24" style="width:70%;height:70%"><polyline points="${up ? '5,15 12,8 19,15' : '5,9 12,16 19,9'}" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const oa = C.prototype._alarmPg;
+    C.prototype._alarmPg = function (back) {
+      ensure(this);
+      if (this._ah === undefined && !this._alBusy && this._hass) this._alLoad();
+      const list = this._ah, i = this._ai || 0;
+      let h;
+      if (!list || !list.length) h = oa.call(this, back);
+      else {
+        const r = list[Math.min(i, list.length - 1)];
+        this._t = (k, d) => k === 'last_alarm' ? r.txt : k === 'alarm_start' ? String(r.start) : C.prototype._t.call(this, k, d);
+        try { h = oa.call(this, back); } finally { delete this._t; }
+        h = h.replace('NR: 1', `NR: ${i + 1}`);
+        if (i > 0) h = h.replace(/<div class="alb"[^>]*>[^<]*<\/div><span class="ala">[^<]*<\/span>/, '');
+        const up = i < list.length - 1, dn = i > 0;
+        const btn = (top, act, ok, svg) => `<div class="alar" data-act="${ok ? act : 'alnone'}" style="top:${top}cqw;${ok ? 'cursor:pointer;opacity:1' : 'opacity:.35'}">${svg}</div>`;
+        h = h.replace(/<div class="alar" style="top:22cqw">[\s\S]*?<\/div><div class="alar" style="top:35\.5cqw">[\s\S]*?<\/div>/,
+          list.length > 1 ? btn(22, 'alup', up, CHEV(true)) + btn(35.5, 'aldn', dn, CHEV(false)) : '');
+      }
+      // przycisk POTWIERDZ na srodku pustego pola (tylko aktywny, najnowszy alarm)
+      return h.replace('class="alb" data-act="confirm"', 'class="alb al2" data-act="confirm"').replace('<span class="ala">', '<span class="ala al2">');
+    };
+
+    })();
+
+    // ---- modul: grafiki z plikow ----
+    (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v85) return;
+    C.prototype.__v85 = true;
+
+    const BASE = '/local/community/igneo-ha/img/';
+    const EXT = ['png', 'webp', 'jpg', 'jpeg', 'svg'];
+    const stamp = Date.now(); // plik jest pobierany swiezo przy kazdym odswiezeniu strony
+    const IM = window.__igneoImg = window.__igneoImg || {};
+    const probe = url => new Promise(res => { const im = new Image(); im.onload = () => res(true); im.onerror = () => res(false); im.src = url; });
+    const pick = async name => {
+      const urls = EXT.map(x => BASE + name + '.' + x + '?v=' + stamp);
+      const ok = await Promise.all(urls.map(probe));
+      const i = ok.indexOf(true);
+      return i < 0 ? '' : urls[i];
+    };
+
+    const ot = C.prototype._tank;
+    C.prototype._tank = function () {
+      return IM.tank ? `<img class="tank" alt="Bojler" src="${IM.tank}" draggable="false">` : ot.call(this);
+    };
+
+    const [b, p, t] = await Promise.all([pick('kociol'), pick('palnik'), pick('bojler')]);
+    IM.boiler = b; IM.burner = p; IM.tank = t;
+    for (let i = 0; i < 40 && !(b && p) && !(window.TEKLA_IMG && window.TEKLA_IMG.boiler); i++) await new Promise(r => setTimeout(r, 100));
+    const T = window.TEKLA_IMG = window.TEKLA_IMG || {};
+    if (b) T.boiler = b;
+    if (p) T.burner = p;
+    window.dispatchEvent(new Event('tekla-img')); // odswiezenie wszystkich kart
+
+    })();
+
+    // ---- modul: autor na INFO ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v86) return;
+    C.prototype.__v86 = true;
+    const ob = C.prototype._body;
+    C.prototype._body = function (s) {
+      const r = ob.call(this, s);
+      if (s !== 'info' || typeof r !== 'string') return r;
+      return r.replace('Controller by Estyma (www.estyma.pl)</div>', 'Controller by Estyma (www.estyma.pl)</div><div class="dim">Kod EspHome i karta: Gorz Roman</div>');
+    };
+
+    })();
+  } catch (e) { console.error('igneo-card', e); }
+})();
