@@ -9,7 +9,7 @@ Kod ESPHome i karta: Gorz Roman.
 | Ścieżka | Co to |
 |---|---|
 | `esphome/tekla-estyma.yaml` | firmware ESPHome (aktualna wersja w nagłówku `CHANGELOG`) |
-| `esphome/secrets.example.yaml` | wzór pliku `secrets.yaml` (hasła, klucz API, PIN-y) |
+| `esphome/secrets.example.yaml` | wzór pliku `secrets.yaml` (hasła, klucz API) |
 | `www/community/igneo-ha/igneo-card.js` | karta (jedyny plik do dodania jako zasób dashboardu) |
 | `www/community/igneo-ha/tekla-panel-card.js` | rdzeń karty, pobierany przez `igneo-card.js` |
 | `www/community/igneo-ha/igneo-card-lite.js` | wersja lite, tylko podgląd (na razie nierozwijana) |
@@ -34,4 +34,4 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 
 - Rejestry „Antylegionella" nie zostały jeszcze zidentyfikowane (w karcie „-").
 - Zapis do kotła jest aktywny (`mirror: "false"`); tryb lustra blokuje wszystkie zapisy poza włącz/wyłącz i potwierdzeniem alarmu.
-- Poziomy menu: użytkownik, klucz 1, klucz 2 – PIN-y w `secrets.yaml`.
+- Poziomy menu: użytkownik, klucz 1, klucz 2 – PIN-y to domyślne PIN-y kotła, zapisane w YAML (repo ma być prywatne).
