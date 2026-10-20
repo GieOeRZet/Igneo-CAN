@@ -10,6 +10,7 @@ Pełna historia zmian firmware jest w nagłówku `esphome/tekla-estyma.yaml` (se
 - v8.0–v8.3 – poziomy dostępu z ESP (PIN), menu wg poziomu, nastawy palnika/CO/CWU.
 
 ## Firmware
+- **v2.23** – migawka katalogowa rozszerzona z 538 do 593 rejestrów (węzeł 4), +55 rejestrów z katalogu.
 - **v2.22** – ukryty diagnostyczny sensor „Sygnatura konfiguracji" (autor).
 - v2.21 – usunięta „CWU antylegionella" (rejestr 0x216F okazał się inny).
 - v2.20 – menu palnika: 22 parametry (odczyt i zapis), moc kW i spalanie liczone w ESP, poziomy dostępu.
