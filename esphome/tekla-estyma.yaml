@@ -1,4 +1,5 @@
 # CHANGELOG
+# v2.24: ODCZYT USTAWIEN: po starcie wszystkie ustawienia (najpierw poziom 0, potem klucz 1 i 2); poziom 0 (0x2270/0x2271/0x2273/0x2212/0x2210/0x300D) czytany tez cyklicznie; klucz 1 i 2 na zadanie - po wpisaniu PIN-u (automatycznie, akcja unlock) i po param_refresh.
 # v2.23: MIGAWKA KATALOGOWA rozszerzona z 538 do 593 rejestrow (dodane 55 rejestrow wezla 4 znalezionych od v2.20: m.in. 0x2116, 0x2151, 0x2216, 0x2260, 0x226E-0x2271, 0x2296, 0x2999, 0x300F, 0x3524-0x3526, 0x3701, 0x7D1-0x7E1, 0xBB9-0xBBB); lista CAT = suma rejestrow z katalogu docs/rejestry (wezel 4).
 # v2.22: sygnatura konfiguracji - ukryty diagnostyczny text_sensor "Sygnatura konfiguracji" (autor: Roman Gorz); tekst zlozony z 3 kawalkow zaszyfrowanych XOR, skladany dopiero w kodzie; encja domyslnie wylaczona (disabled_by_default) i w kategorii diagnostic.
 # v2.21: usunieta "CWU antylegionella" (rejestr 0x216F okazal sie NIE antylegionella: odczyt 256 przy wlaczonej na panelu, zapis 257 bez efektu) - sensor, odczyt (boot, param_refresh), set_param key 44 (klucze 0..43). Prawdziwy rejestr antylegionelli nieznany (moze byc tylko w panelu); w karcie "-".
@@ -29,7 +30,7 @@
 # Zapis: akcja "sdo_write" dziala dopiero po ustawieniu write_enabled: "true".
 # =====================================================================
 substitutions:
-  fw_version: "2.23"
+  fw_version: "2.24"
   pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN z softu panelu, nie zmieniamy
   pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN z softu panelu, nie zmieniamy
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
@@ -1004,7 +1005,8 @@ interval:
             0x2006, 0x2301,   // wejscia: zakaz rozpalenia (IN16) i zgoda regulatora (IN3): 257 = tak, 256 = nie
             0x2250, 0x226D, 0x2257, 0x3700,   // palnik na zywo (jasnosc, czas podawania) + skladniki mocy kW (podawanie max, okres)
             0x2250, 0x226D,
-            // v2.20: ustawienia/menu NIE sa czytane cyklicznie - akcja param_refresh (karta przy otwarciu menu), po zapisie (odczyt zwrotny) i raz po starcie
+            // v2.24: ustawienia POZIOMU 0 czytane cyklicznie (moc min/max, wartosc opalowa 0x2270/0x2271/0x2273, CWU 0x2212/0x2210/0x300D); klucz 1 i 2 tylko po starcie, po PIN-ie, param_refresh i po zapisie
+            0x2270, 0x2271, 0x2273, 0x2212, 0x2210, 0x300D,
             0x404C  // alarmy: pozycja -> potem odczyt ostatniego wpisu
             // dopisz tu kolejne rejestry, ktore maja byc czytane stale
           };
@@ -1058,15 +1060,20 @@ interval:
           std::vector<uint8_t> d = {0x40, (uint8_t) (ix & 0xFF), (uint8_t) (ix >> 8), 0x01, 0, 0, 0, 0};
           id(igneo_can)->send_data(0x604, false, d);
 
-  # Kolejka odczytu ustawien (param_refresh + raz po starcie): jeden rejestr na 200 ms.
+  # Kolejka odczytu ustawien (po starcie: wszystkie poziomy; potem param_refresh / PIN / zapis): jeden rejestr na 200 ms.
   - interval: 200ms
     then:
       - lambda: |-
           if (id(igneo_can)->is_failed() || id(scan_on)) return;
           if (!id(par_boot) && millis() > 40000) {
             id(par_boot) = true;
-            static const uint16_t all[] = {0x2270,0x2271,0x2273,0x2212,0x2210,0x300D};
-            for (auto r : all) id(par_q).push_back(r);
+            // v2.24: po starcie czytamy WSZYSTKIE ustawienia (odczyt nie wymaga PIN-u): najpierw poziom 0, potem klucz 1, na koncu klucz 2
+            static const uint16_t l0[] = {0x2270,0x2271,0x2273,0x2212,0x2210,0x300D};
+            static const uint16_t l1[] = {0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
+            static const uint16_t l2[] = {0x2153,0x3003,0x370B,0x300E};
+            for (auto r : l0) id(par_q).push_back(r);
+            for (auto r : l1) id(par_q).push_back(r);
+            for (auto r : l2) id(par_q).push_back(r);
           }
           auto &q = id(par_q);
           if (q.empty()) return;
