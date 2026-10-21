@@ -4,7 +4,7 @@ Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Est
 
 Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej instalacji) z pomocą Claude – asystenta AI firmy Anthropic, który pomagał przy pisaniu kodu i dokumentacji.
 
-<a href="https://buycoffee.to/ergie" target="_blank" rel="noopener"><img src="https://buycoffee.to/static/img/share/share-button-primary--pl.png" style="width:224px;height:58px" alt="Postaw kawę dla eRGie na buycoffee.to"></a>
+<a href="https://buycoffee.to/ergie" target="_blank" rel="noopener"><img src="https://buycoffee.to/static/img/share/share-button-primary--pl.png" style="width:107px;height:28px" alt="Postaw kawę dla eRGie na buycoffee.to"></a>
 
 > ⚠️ Projekt nieoficjalny – nie zastępuje produktów Estyma. Zobacz [Ważne zastrzeżenia](#ważne-zastrzeżenia).
 
