@@ -30,7 +30,7 @@ Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej insta
 
 ## Co jest w środku
 - **Firmware ESPHome** – plik użytkownika `esphome/tekla-estyma.yaml` (ustawienia) + rdzeń `esphome/tekla-estyma-core.yaml` (logika, pobierany z GitHuba przy kompilacji) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
-- **Karta** (`www/community/igneo-ha/igneo-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
+- **Karta** (`dist/igneo-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
 - **Katalog rejestrów CANopen** (`docs/rejestry/`) – opis i CSV znanych rejestrów węzła 4 i 86.
 
 Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez encji pokazują „-”.
@@ -47,11 +47,12 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 2. **Sieć:** w `secrets.yaml` wpisz `wifi_ssid_iot` i `wifi_pass`. W `substitutions` ustaw `static_ip` (`"true"` = stały adres z `device_ip/device_gateway/device_subnet`, `"false"` = DHCP) – patrz sekcja „Adres IP” niżej.
 3. **Wgraj firmware**: skopiuj do ESPHome **tylko** plik `esphome/tekla-estyma.yaml` (to Twój mały plik z ustawieniami; logikę ESPHome pobierze sam z GitHuba przez `packages`). Pierwszy raz wgraj po kablu USB. Kolejne aktualizacje: w ESPHome kliknij *Install* – pobierze najnowszy rdzeń z `main`.
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
-5. **Skopiuj kartę** – zawartość `www/community/igneo-ha/` do `/config/www/community/igneo-ha/` (powstanie `igneo-card.js`, `tekla-panel-card.js` i folder `img/`). Pliki muszą leżeć dokładnie w tym folderze.
-6. **Dodaj zasób** (Ustawienia → Dashboardy → ⋮ → Zasoby): typ *moduł JavaScript*, adres `/local/community/igneo-ha/igneo-card.js?v=1`. Po każdej aktualizacji pliku zmień `?v=` i odśwież stronę (Ctrl+F5).
+5. **Zainstaluj kartę** – wybierz jedną z dwóch dróg:
+   - **HACS (zalecane):** HACS → ⋮ → *Niestandardowe repozytoria* → adres `https://github.com/GieOeRZet/Igneo-CAN`, kategoria **Dashboard** (Lovelace) → *Dodaj* → znajdź „Igneo CAN” → *Pobierz*. Zasób dashboardu doda się sam (`/hacsfiles/igneo-can/igneo-card.js`). Aktualizacje pojawią się w HACS.
+   - **Ręcznie:** skopiuj zawartość folderu `dist/` do `/config/www/community/igneo-ha/` (powstanie `igneo-card.js`, `tekla-panel-card.js` i folder `img/`; pliki muszą leżeć razem). W Ustawienia → Dashboardy → ⋮ → Zasoby dodaj *moduł JavaScript* o adresie `/local/community/igneo-ha/igneo-card.js?v=1`; po każdej aktualizacji zmień `?v=` i odśwież stronę (Ctrl+F5).
+6. **Nie dodawaj obu naraz** – jeśli przechodzisz z instalacji ręcznej na HACS, usuń najpierw stary zasób `/local/community/igneo-ha/...`.
 7. **Dodaj kartę** na dashboard – [opis poniżej](#dodanie-karty-i-konfiguracja).
 
-> Instalacja przez HACS jest możliwa po drobnej przebudowie repo (pliki w `dist/`, `hacs.json`, release, ścieżka względna) i wymaga repozytorium publicznego – na razie niewdrożona.
 
 ## Dwie wersje firmware: `main` i `test`
 - **`main`** (domyślna) – podział na plik użytkownika (`tekla-estyma.yaml`) i rdzeń (`tekla-estyma-core.yaml`) pobierany z GitHuba przy każdej kompilacji. Wymaga dostępu ESPHome do internetu przy buildzie.
@@ -170,7 +171,7 @@ Odczyt ustawień: po starcie ESP czyta wszystkie ustawienia (najpierw poziom 0),
 Historia alarmów jest czytana z bufora kotła (20 ostatnich wpisów, encje „Alarm wpis 1..20” – wymaga firmware ≥ 2.25).
 
 ## Grafiki
-Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpeg, svg – w tej kolejności). Wgraj własny plik do `/config/www/community/igneo-ha/img/`, aby podmienić domyślny, i odśwież stronę (Ctrl+F5).
+Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpeg, svg – w tej kolejności). Wgraj własny plik do folderu `img/` obok karty (HACS: `/config/www/community/igneo-can/img/`, ręcznie: `/config/www/community/igneo-ha/img/`), aby podmienić domyślny, i odśwież stronę (Ctrl+F5).
 
 ## Rozwiązywanie problemów
 - **Wszędzie „-”** – karta nie widzi encji. Sprawdź, czy nazwy encji zawierają `tekla` (albo ustaw `entity_prefix`) i czy urządzenie jest dodane w HA.
@@ -184,9 +185,9 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 |---|---|
 | `esphome/tekla-estyma.yaml` | firmware ESPHome (historia zmian w nagłówku) |
 | `esphome/secrets.example.yaml` | wzór `secrets.yaml` |
-| `www/community/igneo-ha/igneo-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
-| `www/community/igneo-ha/tekla-panel-card.js` | rdzeń karty, pobierany przez `igneo-card.js` |
-| `www/community/igneo-ha/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
+| `dist/igneo-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
+| `dist/tekla-panel-card.js` | rdzeń karty, pobierany przez `igneo-card.js` |
+| `dist/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
 | `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
 | `docs/img/` | zrzuty ekranu do tego README |
 | `CHANGELOG.md`, `CHANGELOG-firmware.md` | historia zmian karty i firmware |
@@ -197,7 +198,7 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 - Pełna historia: [CHANGELOG.md](CHANGELOG.md) (karta), [CHANGELOG-firmware.md](CHANGELOG-firmware.md) (firmware).
 
 ### Jak działa informacja o aktualizacji
-Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmware (encja „Wersja firmware”) oraz z własną wersją. Przy nowszej wersji pokazuje zieloną diodę; „Odrzuć aktualizację” ukrywa daną wersję (pamięć przeglądarki). Aktualizacja firmware: pobierz repo i kliknij „Install” w ESPHome; karty: podmień pliki w `www/community/igneo-ha/` i zrób Ctrl+F5. Przy wydaniu nowej wersji podbij numer i changelog w `version.json`.
+Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmware (encja „Wersja firmware”) oraz z własną wersją. Przy nowszej wersji pokazuje zieloną diodę; „Odrzuć aktualizację” ukrywa daną wersję (pamięć przeglądarki). Aktualizacja firmware: pobierz repo i kliknij „Install” w ESPHome; karty: podmień pliki w `dist/` i zrób Ctrl+F5. Przy wydaniu nowej wersji podbij numer i changelog w `version.json`.
 
 ## Ważne zastrzeżenia
 

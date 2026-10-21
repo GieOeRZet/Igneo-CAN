@@ -8,9 +8,9 @@
     ]
   },
   "card": {
-    "version": "9.4",
+    "version": "9.5",
     "changelog": [
-      "Dyskretny przycisk wsparcia w ekranie INFO"
+      "Instalacja przez HACS (niestandardowe repozytorium): karta sama znajduje swój katalog, bez sztywnej ścieżki /local/community/igneo-ha"
     ]
   }
 }
