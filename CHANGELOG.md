@@ -2,6 +2,11 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.2 – Test wyjść 1:1 z panelem
+- Ekran Test wyjść przerysowany według zdjęć panelu (perspektywa wyprostowana, wymiary w % szerokości ekranu): wiersz 10,55, pola wyboru 6,2 × 6,2, kolumny A/OFF/ON co 8,3, niebieskie tło listy, cyjanowe separatory, żółto-zielony ptaszek, biała gałka suwaka.
+- Wszystkie 21 pozycji w kolejności panelu, w tym suwak „Dm.” (pokazany, bez rejestru – nieaktywny) i suwak „WentWyc” (rejestr 0x2298). Bez dodatkowych lampek i wierszy; pozycje bez znanego rejestru są przyciemnione.
+- Nagłówek pokazuje bieżący poziom dostępu (jak ikona klucza na panelu).
+
 ## v1.1 – Test wyjść
 - **Ekran Test wyjść jak na panelu Igneo Touch**: 21 pozycji w kolejności z panelu, A/OFF/ON i A/CLOSE/OPEN (ruszt, mieszacze), suwak WentWyc, zaznaczenie stanu odczytanego z kotła. Sterowanie tylko na poziomie 2 (PIN klucza 2); na poziomie 1 podgląd.
 - Wyjścia wracają na Automat po wyjściu z ekranu (i po 2 min w firmware). Pompa CWU, Wymiennik i Podajnik palnika są tylko do podglądu (rejestr nieznany).

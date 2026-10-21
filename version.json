@@ -6,9 +6,9 @@
     ]
   },
   "card": {
-    "version": "1.1",
+    "version": "1.2",
     "changelog": [
-      "Ekran Test wyjść jak na panelu Igneo Touch: A/OFF/ON i A/CLOSE/OPEN dla 18 wyjść, suwak WentWyc, powrót na Automat po wyjściu z ekranu."
+      "Ekran Test wyjść przerysowany 1:1 według panelu (wymiary zmierzone na zdjęciach): 21 pozycji w kolejności panelu, niebieskie wiersze, pola A/OFF/ON i A/CLOSE/OPEN, suwaki Dm. i WentWyc, nagłówek z poziomem dostępu."
     ]
   }
 }
