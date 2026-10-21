@@ -4,7 +4,7 @@ Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Est
 
 Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej instalacji) z pomocą Claude – asystenta AI firmy Anthropic, który pomagał przy pisaniu kodu i dokumentacji.
 
-[![Postaw kawę](https://img.shields.io/badge/%E2%98%95-Postaw%20kaw%C4%99-orange)](https://buycoffee.to/ergie)
+<a href="https://buycoffee.to/ergie" target="_blank" rel="noopener"><img src="https://buycoffee.to/static/img/share/share-button-primary--pl.png" style="width:224px;height:58px" alt="Postaw kawę dla eRGie na buycoffee.to"></a>
 
 > ⚠️ Projekt nieoficjalny – nie zastępuje produktów Estyma. Zobacz [Ważne zastrzeżenia](#ważne-zastrzeżenia).
 
@@ -214,3 +214,7 @@ Kod jest otwarty: możesz go czytać, pobierać, modyfikować i udostępniać da
 
 ## Wsparcie
 Projekt jest darmowy. Jeśli chcesz, możesz go wesprzeć przez [buycoffee.to/ergie](https://buycoffee.to/ergie) – to sposób, by docenić mój poświęcony czas, włożoną pracę i własne środki (sprzęt, testy). Wsparcie jest dobrowolne i niczego nie daje w zamian, nie jest płatnością za produkt ani usługę.
+
+<a href="https://buycoffee.to/ergie" target="_blank" rel="noopener"><img src="https://buycoffee.to/static/img/share/share-button-primary--pl.png" style="width:224px;height:58px" alt="Postaw kawę dla eRGie na buycoffee.to"></a>
+
+<img src="docs/img/buycoffee-qr.png" width="140" alt="Kod QR do buycoffee.to/ergie">
