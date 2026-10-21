@@ -3,6 +3,8 @@
 Najnowsze na górze. Format wpisów: `vX.Y: opis`. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
 
+- **v2.29:** adres IP domyślnie z DHCP – `device_ip/device_gateway/device_subnet` i blok `manual_ip` w wifi zakomentowane (stały adres opcjonalny; instrukcja w README, bez secrets).
+
 - **v2.28:** hasło awaryjnej sieci `Tekla-Estyma Fallback` (`ap_pass`) przeniesione z secrets do `substitutions` (jawne, domyślnie 11223344); wpis `ap_pass` w secrets.yaml nie jest już potrzebny.
 
 - **v2.27:** DIAGNOSTYKA zakladki Siec panelu: ESP loguje (ESP_LOGW "IDENT ..." i encja "SDO ostatni odczyt") kazda nowa ramke SDO o indeksach 0x1000/0x1008/0x1018 (zapytania i odpowiedzi dowolnego wezla) oraz nowe ramki NMT/heartbeat/emergency (0x000, 0x080-0x0FF, 0x700-0x77F), zeby ustalic jak panel pobiera nazwy urzadzen (cel: nazwa "CAN (ESPHome)" zamiast unknown). Skan wezla != 4 (sdo_scan z parametrem node) publikuje teraz odpowiedzi (takze abort i segmentowane) do "SDO ostatni odczyt". Bez wysylania czegokolwiek na CAN poza skanem.

@@ -1,10 +1,10 @@
 {
   "firmware": {
-    "version": "2.28",
+    "version": "2.29",
     "changelog": [
+      "Adres IP domyślnie z DHCP; stały adres opcjonalny (zakomentowany w YAML, opis w README)",
       "Hasło awaryjnej sieci „Tekla-Estyma Fallback” jest teraz w substitutions (ap_pass), nie w secrets.yaml",
-      "Diagnostyka zakładki Sieć panelu: podsłuch ramek SDO 0x1000/0x1008/0x1018 i NMT/heartbeat",
-      "Skan węzła innego niż 4 publikuje odpowiedzi do encji „SDO ostatni odczyt”"
+      "Diagnostyka zakładki Sieć panelu: podsłuch ramek SDO 0x1000/0x1008/0x1018 i NMT/heartbeat"
     ]
   },
   "card": {
