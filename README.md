@@ -4,6 +4,8 @@ Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Est
 
 Kod ESPHome i karta: Gorz Roman.
 
+> ⚠️ Projekt nieoficjalny – nie zastępuje produktów Estyma. Zobacz [Ważne zastrzeżenia](#ważne-zastrzeżenia).
+
 > Zrzuty ekranu poniżej pochodzą z danych testowych (nie z działającego kotła).
 
 | Ekran główny | Palnik | Menu |
@@ -194,6 +196,15 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 
 ### Jak działa informacja o aktualizacji
 Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmware (encja „Wersja firmware”) oraz z własną wersją. Przy nowszej wersji pokazuje zieloną diodę; „Odrzuć aktualizację” ukrywa daną wersję (pamięć przeglądarki). Aktualizacja firmware: pobierz repo i kliknij „Install” w ESPHome; karty: podmień pliki w `www/community/igneo-ha/` i zrób Ctrl+F5. Przy wydaniu nowej wersji podbij numer i changelog w `version.json`.
+
+## Ważne zastrzeżenia
+
+- **Projekt niezależny i nieoficjalny.** Igneo CAN nie jest produktem, nie jest współtworzony, zatwierdzony ani wspierany przez firmę Estyma, Tekla ani producenta kotła. Nie zastępuje oryginalnego produktu Estyma.
+- **Zachęcamy do zakupu i instalacji wyłącznie oryginalnych modułów** dopuszczonych przez producenta kotła i firmę Estyma.
+- **Gwarancja.** Odczyt i zapis parametrów za pomocą jakiegokolwiek urządzenia innego niż produkt dopuszczony przez producenta kotła i firmę Estyma może naruszać warunki gwarancji oraz prowadzić do uszkodzenia lub nieprawidłowej pracy kotła i sterownika. Autor za to nie odpowiada.
+- **Odpowiedzialność użytkownika.** Wszelkie zmiany sprzętowe (podłączenie do magistrali CAN, montaż modułów) oraz zapisy parametrów użytkownik wykonuje wyłącznie na własne ryzyko i własną odpowiedzialność. Oprogramowanie jest dostarczane „tak jak jest”, bez gwarancji.
+- **Własna, niezależna implementacja.** Projekt zawiera wyłącznie autorski kod oraz informacje o zgodności uzyskane z obserwacji komunikacji własnej instalacji. Nie zawiera kodu, firmware’u, grafik ani dokumentacji należących do Estyma, Tekla ani producenta kotła i nie narusza zabezpieczeń technicznych. Nazwy Estyma, Tekla, Igneo i Igneo Touch oraz ich znaki towarowe należą do ich właścicieli i są użyte wyłącznie informacyjnie, dla opisania zgodności.
+- Jeśli jesteś właścicielem praw i uważasz, że jakaś treść narusza Twoje prawa, napisz do autora (roman.gorz@gmail.com) – sprawa zostanie rozpatrzona, a treść w razie potrzeby usunięta.
 
 ## Licencja
 Wszelkie prawa zastrzeżone © 2026 Roman Gorz. Kod jest publiczny do wglądu i osobistego, niekomercyjnego użytku; kopiowanie, rozpowszechnianie i użycie komercyjne wymaga zgody autora – szczegóły w pliku [LICENSE](LICENSE).
