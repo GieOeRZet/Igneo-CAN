@@ -1,4 +1,4 @@
-# Tekla-Igneo-HA
+# Igneo CAN
 
 Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
 

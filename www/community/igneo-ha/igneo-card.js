@@ -916,7 +916,7 @@
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
     const CARD_VER = '9.3';
-    const MAN = 'https://raw.githubusercontent.com/GieOeRZet/Tekla-Igneo-HA/main/version.json';
+    const MAN = 'https://raw.githubusercontent.com/GieOeRZet/Igneo-CAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };
     const cmp = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
