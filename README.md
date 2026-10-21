@@ -80,7 +80,7 @@ Ustawiasz w `substitutions` pliku `esphome/PelletCAN.yaml`:
   device_gateway: 192.168.10.1   # brama (router)
   device_subnet: 255.255.254.0   # maska sieci
 ```
-Przy `static_ip: true` plik dołącza pakiet z blokiem `wifi: manual_ip` (te trzy adresy). Przy `false` adresy są ignorowane i ESP bierze adres z DHCP – HA znajdzie urządzenie po nazwie `tekla-estyma`. Niczego nie komentujesz ręcznie. Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`.
+Przy `static_ip: true` dołącza się plik `PelletCAN_ip_static.yaml` z blokiem `wifi: manual_ip` (te trzy adresy). Przy `false` dołącza się `PelletCAN_ip_dhcp.yaml`, adresy są ignorowane i ESP bierze adres z DHCP – HA znajdzie urządzenie po nazwie `tekla-estyma`. Niczego nie komentujesz ręcznie. Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`.
 
 ## Diagnostyka magistrali
 Szukanie brakujących rejestrów i ramek bez logów ESPHome (encje „CAN diag”, „CAN ID ramek”, skan węzła 86): [docs/DIAGNOSTYKA.md](docs/DIAGNOSTYKA.md).

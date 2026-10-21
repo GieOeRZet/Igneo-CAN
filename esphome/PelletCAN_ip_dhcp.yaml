@@ -1,0 +1,3 @@
+# DHCP (wybierany przez static_ip: false w PelletCAN.yaml) - adres z routera. NIE edytuj.
+substitutions:
+  ip_mode: dhcp

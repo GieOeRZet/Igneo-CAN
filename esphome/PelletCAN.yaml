@@ -18,13 +18,6 @@ substitutions:
   device_ip: 192.168.10.250
   device_gateway: 192.168.10.1
   device_subnet: 255.255.254.0
-  # Pakiet ze stalym adresem (nie zmieniaj); dolaczany ponizej w "packages" tylko gdy static_ip: true.
-  static_ip_pkg:
-    wifi:
-      manual_ip:
-        static_ip: ${device_ip}
-        gateway: ${device_gateway}
-        subnet: ${device_subnet}
 
   # ===================================================================
   # 2. KLUCZ API I HASLO OTA
@@ -129,7 +122,6 @@ packages:
   tekla:
     url: https://github.com/GieOeRZet/PelletCAN
     ref: main
-    files: [esphome/PelletCAN_packages.yaml]
+    # Drugi plik wybiera sie po static_ip: PelletCAN_ip_static.yaml (adresy z substitutions) albo PelletCAN_ip_dhcp.yaml (DHCP).
+    files: [esphome/PelletCAN_packages.yaml, "esphome/PelletCAN_ip_${'static' if static_ip else 'dhcp'}.yaml"]
     refresh: 1h
-  # Staly adres IP tylko gdy static_ip: true (w przeciwnym razie DHCP).
-  network_ip: ${ static_ip_pkg if static_ip else {} }
