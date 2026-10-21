@@ -12,7 +12,7 @@
       console.warn('tekla-panel-card v7.8: element juz zarejestrowany (stara wersja w pamieci strony) - zrob twarde odswiezenie (Ctrl+F5)');
       return;
     }
-    const DIR = new URL('.', import.meta.url).pathname; // katalog tego pliku (HACS: /hacsfiles/pelletcan/, recznie: /local/community/igneo-ha/)
+    const DIR = new URL('.', import.meta.url).pathname; // katalog tego pliku (HACS: /hacsfiles/PelletCAN/, recznie: /local/community/igneo-ha/)
     let code = await (await fetch(DIR + 'tekla-panel-card.js?v=62&_=' + Date.now())).text();
     const EDITS = [
 {
