@@ -8,11 +8,9 @@
     ]
   },
   "card": {
-    "version": "9.3",
+    "version": "9.4",
     "changelog": [
-      "Zielona dioda przy ikonie menu, gdy jest nowa wersja firmware lub karty",
-      "Ekran INFO: autor, wersje, changelog aktualizacji i przycisk „Odrzuć aktualizację”",
-      "v9.2: autowykrywanie encji, tryb lite: true, nowy edytor wizualny"
+      "Dyskretny przycisk wsparcia w ekranie INFO"
     ]
   }
 }
