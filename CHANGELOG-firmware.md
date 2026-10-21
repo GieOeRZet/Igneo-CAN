@@ -3,6 +3,8 @@
 Najnowsze na górze. Format wpisów: `vX.Y: opis`. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
 
+- **v2.28:** hasło awaryjnej sieci `Tekla-Estyma Fallback` (`ap_pass`) przeniesione z secrets do `substitutions` (jawne, domyślnie 123446); wpis `ap_pass` w secrets.yaml nie jest już potrzebny.
+
 - **v2.27:** DIAGNOSTYKA zakladki Siec panelu: ESP loguje (ESP_LOGW "IDENT ..." i encja "SDO ostatni odczyt") kazda nowa ramke SDO o indeksach 0x1000/0x1008/0x1018 (zapytania i odpowiedzi dowolnego wezla) oraz nowe ramki NMT/heartbeat/emergency (0x000, 0x080-0x0FF, 0x700-0x77F), zeby ustalic jak panel pobiera nazwy urzadzen (cel: nazwa "CAN (ESPHome)" zamiast unknown). Skan wezla != 4 (sdo_scan z parametrem node) publikuje teraz odpowiedzi (takze abort i segmentowane) do "SDO ostatni odczyt". Bez wysylania czegokolwiek na CAN poza skanem.
 
 - **v2.26:** AWARYJNY AP + captive_portal (brak sieci Wi-Fi -> siec "Tekla-Estyma Fallback", haslo w secrets: ap_pass, strona 192.168.4.1 do wpisania danych sieci); karta v9.2: autowykrywanie encji, tryb lite w jednej karcie.
