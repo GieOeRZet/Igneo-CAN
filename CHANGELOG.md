@@ -12,6 +12,7 @@ Pełna historia zmian firmware jest w nagłówku `esphome/tekla-estyma.yaml` (se
 - v8.0–v8.3 – poziomy dostępu z ESP (PIN), menu wg poziomu, nastawy palnika/CO/CWU.
 
 ## Firmware
+- **v2.27** – diagnostyka zakładki „Sieć” panelu: logowanie ramek SDO 0x1000/0x1008/0x1018 (bez wysyłania na CAN).
 - **v2.26** – awaryjny punkt dostępu Wi-Fi `Tekla-Estyma Fallback` z portalem (nowy wpis `ap_pass` w secrets).
 - **v2.25** – pełna historia alarmów z kotła (20 wpisów) w encjach „Alarm wpis 1..20”, akcja `alarm_refresh`.
 - **v2.24** – po starcie odczyt wszystkich ustawień (poziom 0 pierwszy, potem klucz 1 i 2); poziom 0 czytany cyklicznie; klucz 1/2 po wpisaniu PIN-u i na żądanie.

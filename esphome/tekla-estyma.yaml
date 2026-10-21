@@ -1,4 +1,5 @@
 # CHANGELOG
+# v2.27: DIAGNOSTYKA zakladki Siec panelu: ESP loguje (ESP_LOGW "IDENT ..." i encja "SDO ostatni odczyt") kazda nowa ramke SDO o indeksach 0x1000/0x1008/0x1018 (zapytania i odpowiedzi dowolnego wezla), zeby ustalic jak panel pobiera nazwy urzadzen (cel: nazwa "CAN (ESPHome)" zamiast unknown). Bez wysylania czegokolwiek na CAN.
 # v2.26: AWARYJNY AP + captive_portal (brak sieci Wi-Fi -> siec "Tekla-Estyma Fallback", haslo w secrets: ap_pass, strona 192.168.4.1 do wpisania danych sieci); karta v9.2: autowykrywanie encji, tryb lite w jednej karcie.
 # v2.25: HISTORIA ALARMOW Z KOTLA: ESP czyta caly bufor 20 alarmow kotla (kod 0x4010+i, poczatek 0x4024+i, koniec 0x4038+i; po starcie, przy nowym alarmie i akcja alarm_refresh) i publikuje 20 diagnostycznych text_sensorow "Alarm wpis 1..20" w formacie "kod N (opis)|poczatek unix|koniec unix" (pusty = "-"); karta nie korzysta juz z rekordera HA.
 # v2.24: ODCZYT USTAWIEN: po starcie wszystkie ustawienia (najpierw poziom 0, potem klucz 1 i 2); poziom 0 (0x2270/0x2271/0x2273/0x2212/0x2210/0x300D) czytany tez cyklicznie; klucz 1 i 2 na zadanie - po wpisaniu PIN-u (automatycznie, akcja unlock) i po param_refresh.
@@ -32,7 +33,7 @@
 # Zapis: akcja "sdo_write" dziala dopiero po ustawieniu write_enabled: "true".
 # =====================================================================
 substitutions:
-  fw_version: "2.26"
+  fw_version: "2.27"
   pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN z softu panelu, nie zmieniamy
   pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN z softu panelu, nie zmieniamy
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
@@ -544,7 +545,19 @@ canbus:
               const uint16_t sidx = x[1] | (x[2] << 8);
               const uint8_t ssub = x[3];
               const uint8_t scs = x[0];
-              if (req && sidx == 0x1018) return;  // skan wezlow (identyfikator urzadzenia) - szum
+              // v2.27: identyfikacja urzadzen (panel -> zakladka Siec): loguj NOWE ramki SDO 0x1000/0x1008/0x1018 (zapytania i odpowiedzi, kazdy wezel)
+              if (sidx == 0x1000 || sidx == 0x1008 || sidx == 0x1018) {
+                static std::set<std::string> ident_seen;
+                const std::string k = std::string(req ? "REQ " : "RSP ") + b;
+                const std::string kk = std::to_string((unsigned) can_id) + k;
+                if (ident_seen.size() < 80 && ident_seen.insert(kk).second) {
+                  char ib[96];
+                  snprintf(ib, sizeof(ib), "IDENT %s id=0x%03X idx=0x%04X sub=%u dane=%s", req ? "zapytanie" : "odpowiedz", (unsigned) can_id, (unsigned) sidx, (unsigned) ssub, b);
+                  ESP_LOGW("igneo", "%s", ib);
+                  id(sdo_last).publish_state(ib);
+                }
+              }
+              if (req && sidx == 0x1018) return;  // skan wezlow (identyfikator urzadzenia) - po zalogowaniu
               if (can_id == 0x584) {
                 // odpowiedzi na NASZE odczyty pomijamy (lista + bufor alarmow)
                 static const uint16_t mine[] = {0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
