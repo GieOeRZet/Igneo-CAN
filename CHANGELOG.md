@@ -2,6 +2,16 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.3 – Podajnik palnika
+- Wersja karty 1.3 wymaga firmware ≥ 1.2 (nowe encje: Podajnik palnika pracuje, stany mieszaczy, CWU Źródło/Zwiększenie/Delta). Bez nich pozycje pokazują „-”.
+- **Ekran Palnik: ikona „2”** (podajnik palnika) na dolnym pasku obok ikon wentylatora i podajnika „1” (kolejność jak na panelu). Encja „Podajnik palnika pracuje” z firmware ≥ 1.2.
+- **NASTAWY przebudowane według zdjęć panelu** (poziomy tylko 0 i 1; poziom 2 w tych menu nie występuje): Kocioł (poziom 0: Temperatura zadana, Histereza załączenia/wyłączenia; klucz 1: Minimalna temp. pomp, Wybieg pompy, Minimalna temp. powrotu, Czas mieszacza, Rezerwa paliwa stop), Ogrzewanie 1 (histereza, kalibracja, tryb, krzywa pogodowa na poziomie 0; reszta pod kluczem 1), Woda (klucz 1: Źródło, Zwiększenie temp. źródła, Delta załączenia pompy – z zapisem; Temp. maksymalna bez rejestru). Pozycje bez znanego rejestru są przyciemnione i pokazują „-”.
+- Histerezy kotła i ustawienia CO1 są teraz dostępne bez PIN-u (poziom 0), zgodnie z panelem.
+- **Ekran Kocioł: ikona zaworu (mieszacza)** pojawia się tylko gdy mieszacz pracuje, ze strzałką w lewo (zamyka) lub w prawo (otwiera), jak na panelu; dane z firmware ≥ 1.2 („Mieszacz CO1 stan”, „Mieszacz powrotu stan”).
+- **Test wyjść: Podajnik palnika sterowalny** (wyjście 19, rejestr 0x2295) – już nie tylko podgląd.
+- **Edytor karty**: YAML odzwierciedla edytor (wykryte encje wpisują się automatycznie do `entities:`; zmiana urządzenia/prefiksu wykrywa je od nowa).
+- Czas podawania na ekranie Palnik zaokrąglony do 1 miejsca (wcześniej surowa liczba zmiennoprzecinkowa nachodziła na obraz).
+
 ## v1.2 – Test wyjść 1:1 z panelem
 - Ekran Test wyjść przerysowany według zdjęć panelu (perspektywa wyprostowana, wymiary w % szerokości ekranu): wiersz 10,55, pola wyboru 6,2 × 6,2, kolumny A/OFF/ON co 8,3, niebieskie tło listy, cyjanowe separatory, żółto-zielony ptaszek, biała gałka suwaka.
 - Wszystkie 21 pozycji w kolejności panelu, w tym suwak „Dm.” (pokazany, bez rejestru – nieaktywny) i suwak „WentWyc” (rejestr 0x2298). Bez dodatkowych lampek i wierszy; pozycje bez znanego rejestru są przyciemnione.

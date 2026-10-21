@@ -1,6 +1,7 @@
 # =====================================================================
 # Tekla / Estyma Igneo Touch -> Home Assistant: PLIK UZYTKOWNIKA (ustawienia).
-# Logika firmware pobiera sie sama z GitHuba przy kazdej kompilacji (packages nizej).
+# Wlasciwy kod (logika, encje, CAN, uslugi) pobiera sie sam z GitHuba przy kazdej kompilacji (packages na dole).
+# Ten plik zmieniasz tylko dla swoich ustawien - rdzenia nie edytujesz nigdy.
 # Aktualizacja: w ESPHome kliknij "Install" - pobierze najnowsza wersje rdzenia.
 # Hasla i klucz biora sie z secrets.yaml (wzor: secrets.example.yaml).
 # Historia zmian: CHANGELOG-firmware.md w repo.
@@ -92,6 +93,26 @@ substitutions:
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
+
+esp32:
+  board: seeed_xiao_esp32c6
+  framework:
+    type: esp-idf
+
+logger:
+  level: DEBUG
+  logs:
+    canbus: INFO  # wycisza "received can message" (sam ID, bez danych, zalewa log)
+
+web_server:
+
+captive_portal:
+
+api:
+  reboot_timeout: 0s
+  encryption:
+    key: ${api_key}
+  # Uslugi (akcje) dla Home Assistant sa w rdzeniu i dolaczaja sie automatycznie.
 
 packages:
   # Rdzen firmware z GitHuba (odswiezany co godzine przy kompilacji).

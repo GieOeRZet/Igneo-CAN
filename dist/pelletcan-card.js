@@ -1,4 +1,4 @@
-/* PelletCAN-card v1.2 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* PelletCAN-card v1.3 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
    Dziala tak: pobiera rdzen tekla-panel-card.js (z tego samego katalogu) (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -15,6 +15,31 @@
     const DIR = new URL('.', import.meta.url).pathname; // katalog tego pliku (HACS: /hacsfiles/PelletCAN/, recznie: /local/community/igneo-ha/)
     let code = await (await fetch(DIR + 'tekla-panel-card.js?v=62&_=' + Date.now())).text();
     const EDITS = [
+{
+"t": "x",
+"old": "['feeder_run', 'Podajnik pracuje', B], ",
+"new": "['feeder_run', 'Podajnik pracuje', B], ['feeder2_run', 'Podajnik palnika pracuje', B], "
+},
+{
+"t": "x",
+"old": "feeder_run: 'podajnik_pracuje',",
+"new": "feeder_run: 'podajnik_pracuje', feeder2_run: 'podajnik_palnika_pracuje',"
+},
+{
+"t": "x",
+"old": "_brow(first, gear, second) {",
+"new": "_brow(first, gear, second, third) {"
+},
+{
+"t": "x",
+"old": "<div class=\"c\">${second || ''}</div><div class=\"c\"></div><div class=\"c\"></div>",
+"new": "<div class=\"c\">${second || ''}</div><div class=\"c\">${third || ''}</div><div class=\"c\"></div>"
+},
+{
+"t": "x",
+"old": "'burner_s', this._auger(1, this._on('feeder_run')))}",
+"new": "'burner_s', this._auger(1, this._on('feeder_run')), this._auger(2, this._on('feeder2_run')))}"
+},
 {
 "t": "x",
 "old": "Y = v => isNaN(v) ? 32.1 : 32.1 - (v - 56) * 0.05;",
@@ -152,12 +177,12 @@
 {
 "t": "x",
 "old": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror',",
-"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
+"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', mix_co1: 'mieszacz_co1_stan', mix_ret: 'mieszacz_powrotu_stan', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_src: 'cwu_zrodlo', cwu_src_inc: 'cwu_zwiekszenie_temp_zrodla', cwu_delta: 'cwu_delta_zalaczenia_pompy', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
 },
 {
 "t": "x",
 "old": "['outside', 'Temperatura zewnętrzna', S]]],",
-"new": "['outside', 'Temperatura zewnętrzna', S], ['ret_temp', 'Temperatura powrotu', S], ['boiler_hyst_on', 'Histereza załączenia kotła', S], ['boiler_hyst_off', 'Histereza wyłączenia kotła', S]]],\n  ['Ogrzewanie 1 – nastawy', [['co_hyst', 'CO1 histereza', S], ['co_calib', 'CO1 kalibracja czujnika', S], ['co_mode_s', 'CO1 tryb pracy (0 ręczny / 1 pogodowy)', S], ['co_cur_m20', 'CO1 krzywa pogodowa -20 °C', S], ['co_cur_0', 'CO1 krzywa pogodowa 0 °C', S], ['co_cur_10', 'CO1 krzywa pogodowa +10 °C', S]]],\n  ['Woda – nastawy', [['cwu_hyst', 'CWU histereza', S], ['cwu_boost', 'CWU zagrzej teraz (0/1)', S], ['cwu_prio', 'CWU priorytet (0/1)', S]]],"
+"new": "['outside', 'Temperatura zewnętrzna', S], ['ret_temp', 'Temperatura powrotu', S], ['mix_co1', 'Mieszacz CO1 stan (0 stoi, 1 zamyka, 2 otwiera)', S], ['mix_ret', 'Mieszacz powrotu stan (0 stoi, 1 zamyka, 2 otwiera)', S], ['boiler_hyst_on', 'Histereza załączenia kotła', S], ['boiler_hyst_off', 'Histereza wyłączenia kotła', S]]],\n  ['Ogrzewanie 1 – nastawy', [['co_hyst', 'CO1 histereza', S], ['co_calib', 'CO1 kalibracja czujnika', S], ['co_mode_s', 'CO1 tryb pracy (0 ręczny / 1 pogodowy)', S], ['co_cur_m20', 'CO1 krzywa pogodowa -20 °C', S], ['co_cur_0', 'CO1 krzywa pogodowa 0 °C', S], ['co_cur_10', 'CO1 krzywa pogodowa +10 °C', S]]],\n  ['Woda – nastawy', [['cwu_hyst', 'CWU histereza', S], ['cwu_src', 'CWU źródło (0 kocioł, 1 bufor)', S], ['cwu_src_inc', 'CWU zwiększenie temp. źródła', S], ['cwu_delta', 'CWU delta załączenia pompy', S], ['cwu_boost', 'CWU zagrzej teraz (0/1)', S], ['cwu_prio', 'CWU priorytet (0/1)', S]]],"
 },
 {
 "t": "x",
@@ -240,6 +265,9 @@
       { t: 'Zagrzej teraz', r: 'cwu_boost', opts: ['Wyłączone', 'Włączone'], sk: 20, tog: true },
       { t: 'Histereza [°C]', r: 'cwu_hyst', lo: 0, hi: 20, st: 1, dc: 0, sk: 19 },
       { t: 'Priorytet CWU', r: 'cwu_prio', opts: ['Wyłączony', 'Włączony'], sk: 21, tog: true },
+      { t: 'Źródło', r: 'cwu_src', opts: ['Kocioł', 'Bufor'], sk: 44 },
+      { t: 'Zwiększenie temperatury źródła [°C]', r: 'cwu_src_inc', lo: 5, hi: 20, st: 1, dc: 0, sk: 45 },
+      { t: 'Delta załączenia pompy [°C]', r: 'cwu_delta', lo: 2, hi: 20, st: 1, dc: 0, sk: 46 },
     ];
     C.prototype._po = function (k) {
       const c = PR[k], v = this._v(c.r);
@@ -272,13 +300,15 @@
     const VALVE = '<svg viewBox="0 0 24 24" style="width:6.6cqw;height:6.6cqw"><path d="M2.5 9.5L11.5 14.5L2.5 19.5Z M21.5 9.5L12.5 14.5L21.5 19.5Z" fill="#e3e9f7"/><path d="M7 6.5Q12 3 17 6.5" stroke="#8fd6ff" stroke-width="1.7" fill="none" stroke-linecap="round"/><path d="M5.8 4.2L6.9 7.4L9.6 6" fill="#8fd6ff"/></svg>';
     C.prototype._kociol = function (ctx) {
       const bm = ctx.bm, rt = this._v('ret_temp');
+      // ikona zaworu (jak na panelu): pojawia sie, gdy mieszacz pracuje; 1 = zamyka (strzalka w lewo), 2 = otwiera (w prawo)
+      const mx = this._v('mix_co1') || 0, mr = this._v('mix_ret') || 0, mv = mx > 0 ? mx : mr;
       return `${this._hdr('KOCIOŁ', 'menu')}
         ${this._boilerMain(ctx.burning).replace('class="boil"', 'class="boil" style="top:14.6cqw;left:8cqw"')}
         <div class="big" data-act="more" data-e="boiler_temp" style="top:16cqw;font-size:20cqw">${this._p(this._v('boiler_temp'))}</div>
         <div class="rt" style="top:38cqw;font-size:4.7cqw">T. powrotu=${isNaN(rt) ? '-' : rt.toFixed(1)}</div>
         <div class="tag" data-act="bdlg"><b>${isNaN(this._v('boiler_set')) ? '-' : Math.round(this._v('boiler_set'))}</b>${this._chipHtml(bm)}</div>
         ${bm < 2 ? `<div class="tbar" data-act="prog" data-kind="2" data-back="kociol" style="top:23.8cqw">${this._sched(this._todayBands(2, []))}</div>` : ''}
-        ${this._brow('<div class="bk" data-go="menu"><ha-icon icon="mdi:arrow-left-circle-outline"></ha-icon></div>', 'boiler', VALVE)}`;
+        ${this._brow('<div class="bk" data-go="menu"><ha-icon icon="mdi:arrow-left-circle-outline"></ha-icon></div>', 'boiler', '', mv === 1 ? VALVE : mv === 2 ? '<span style="display:inline-block;transform:scaleX(-1)">' + VALVE + '</span>' : '')}`;
     };
     const q = (v, c) => Number(Math.max(c.lo, Math.min(c.hi, Math.round(v / c.st) * c.st)).toFixed(c.dc));
     C.prototype._prow = function (label, val, k) {
@@ -440,7 +470,7 @@
     }, 10000);
 
     const ot = C.prototype._t;
-    C.prototype._t = function (k, d) { const r = ot.call(this, k, d); return k === 'feeder' && r !== d && r !== '' ? r + ' s' : r; };
+    C.prototype._t = function (k, d) { const r = ot.call(this, k, d); if (k === 'feeder' && r !== d && r !== '') { const x = parseFloat(String(r).replace(',', '.')); return (isNaN(x) ? r : String(Math.round(x * 10) / 10).replace('.', ',')) + ' s'; } return r; };
 
     /* ---- naglowki: ikona poziomu ---- */
     const fixHdr = function (h, lvl) { return lvl >= 1 ? h.replace(/<sup>[^<]*<\/sup>/, '<sup>' + lvl + '</sup>') : h; };
@@ -530,8 +560,17 @@
       const l = this._lvl(), e = (a, b) => this._row(a, b);
       const r = [e('Temperatura komfortowa [°C]', this._p(this._v('cwu_comfort'), 0)), e('Temperatura ekonomiczna [°C]', this._p(this._v('cwu_eco'), 0)),
         this._prow('Zagrzej teraz', this._po(14), 14), this._prow('Histereza [°C]', this._po(15), 15), this._q2row(22), this._prow('Priorytet CWU', this._po(16), 16)];
-      if (l >= 1) r.push(KEYDIV(1), e('Źródło', '-'), e('Zwiększenie temperatury źródła [°C]', '-'), e('Delta załączenia pompy [°C]', '-'), e('Temperatura maksymalna [°C]', '-'));
+      if (l >= 1) r.push(KEYDIV(1), this._prow('Źródło', this._po(17), 17), this._prow('Zwiększenie temperatury źródła [°C]', this._po(18), 18), this._prow('Delta załączenia pompy [°C]', this._po(19), 19), `<div class="row na"><span class="l">Temp. maksymalna [°C]</span><span class="v">-</span></div>`);
       return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '') + (this._q2 ? this._q2Dlg() : '');
+    };
+    const NA = t => `<div class="row na"><span class="l">${t}</span><span class="v">-</span></div>`;
+    // Kociol NASTAWY jak na panelu: poziom 0 = Temperatura zadana + histerezy; klucz 1 = pozycje serwisowe (rejestry nieznane -> "-")
+    C.prototype._boilS = function () {
+      const l = this._lvl(), e = (a, b) => this._row(a, b), P = this._prow.bind(this);
+      const sp = this._v('boiler_manual'), sv = isNaN(sp) ? this._v('boiler_set') : sp;
+      const r = [e('Temperatura zadana [°C]', this._p(sv, 0)), P('Histereza załączenia [°C]', this._po(5), 5), P('Histereza wyłączenia [°C]', this._po(6), 6)];
+      if (l >= 1) r.push(KEYDIV(1), NA('Minimalna temp. pomp [°C]'), NA('Wybieg pompy [min]'), NA('Minimalna temp. powrotu [°C]'), NA('Czas mieszacza [s]'), NA('Rezerwa paliwa stop [kg]'));
+      return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '');
     };
     // pozycje klucza 1 (histerezy kotla, CO1) tylko od poziomu 1
     const hideL1 = function (h, ks, lvl) {
@@ -543,7 +582,7 @@
       return function (s) {
         if (s === 'burner_s') return this._burnS();
         if (s === 'cwu_s') return this._cwuS();
-        if (s === 'boiler') return hideL1(o.call(this, s), [5, 6], this._lvl());
+        if (s === 'boiler') return this._boilS();
         if (s === 'co_s') return hideL1(o.call(this, s), [7, 8, 9, 10, 11, 12, 13], this._lvl());
         if (s === 'level') return this._pinPg('menu', 'POZIOM MENU', this._lvl() > 0 ? `Poziom ${this._lvl()} aktywny` : 'Wpisz PIN');
         return o.call(this, s);
@@ -551,11 +590,10 @@
     })(C.prototype._body);
 
     /* ---- zdarzenia: okna q2*, klik w nazwe dnia = odczyt ustawien ---- */
-    C.prototype._build = (function (o) {
-      return function () {
-        o.apply(this, arguments);
+    const initQ = function () {
+        if (this.__qInit || !this.shadowRoot) return; this.__qInit = true;
         const R = this.shadowRoot, st = document.createElement('style');
-        st.textContent = '.dy{cursor:pointer}.row[data-act^="q2"]{cursor:pointer}';
+        st.textContent = '.dy{cursor:pointer}.row[data-act^="q2"]{cursor:pointer}.row.na{opacity:.5}';
         R.appendChild(st);
         R.addEventListener('click', e => {
           W.t = Date.now();
@@ -563,8 +601,9 @@
           if (a) { this._q2Act(a.dataset.act, a, e); return; }
           if (e.target.closest('.dy')) this._svc('param_refresh');
         });
-      };
-    })(C.prototype._build);
+    };
+    C.prototype._build = (function (o) { return function () { o.apply(this, arguments); initQ.call(this); }; })(C.prototype._build);
+    C.prototype._render = (function (o) { return function () { initQ.call(this); return o.apply(this, arguments); }; })(C.prototype._render);
 
     })();
 
@@ -595,10 +634,11 @@
         P('Histereza [°C]', this._po(7), 7), P('Kalibracja czujnika pok. [°C]', this._po(8), 8), P('Tryb pracy', this._po(9), 9),
         P('Temperatura CO zadana ręcznie [°C]', this._po(10), 10), P('Temperatura CO dla -20°C [°C]', this._po(11), 11),
         P('Temperatura CO dla  0°C [°C]', this._po(12), 12), P('Temperatura CO dla 10°C [°C]', this._po(13), 13)];
-      if (l >= 1) r.push(KEYDIV(1), e('Źródło', '-'), e('Zwiększenie temperatury źródła [°C]', '-'), e('Czujnik pokojowy', '-'), e('Temp. maksymalna [°C]', '-'),
-        e('Czujnik CO', TOG), e('Wsp. korekcji t. CO [°C/°C]', '-'), e('MAX Tzew pomp komf. [°C]', '-'), e('MAX Tzew pomp ekon. [°C]', '-'),
-        e('Obniżenie temperatury CO [°C]', '-'), e('MIN temperatura CO pomp [°C]', '-'), e('Czas mieszacza [s]', '-'), e('Stała pompa', TOG),
-        e('Obniżenie Tco dla ochrony powrotu', TOG));
+      const na = t => `<div class="row na"><span class="l">${t}</span><span class="v">-</span></div>`;
+      if (l >= 1) r.push(KEYDIV(1), na('Źródło'), na('Zwiększenie temperatury źródła [°C]'), na('Czujnik pokojowy'), na('Temp. maksymalna [°C]'),
+        na('Czujnik CO'), na('Wsp. korekcji t. CO [°C/°C]'), na('MAX Tzew pomp komf. [°C]'), na('MAX Tzew pomp ekon. [°C]'),
+        na('Obniżenie temperatury CO [°C]'), na('MIN temperatura CO pomp [°C]'), na('Czas mieszacza [s]'), na('Stała pompa'),
+        na('Obniżenie Tco dla ochrony powrotu'));
       return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '') + (this._q2 ? this._q2Dlg() : '');
     };
 
@@ -781,22 +821,44 @@
     const SENS = ['sensor', 'input_number', 'number'];
 
     // znajduje encje roli po koncowce entity_id (nazwy z ESPHome tekla_estyma); prefix = fragment nazwy urzadzenia (domyslnie "tekla")
-    const findRole = (ids, role, key, pf) => {
+    // S = stany z hass: encja z aktualnym stanem ma pierwszenstwo przed 'unknown/unavailable' (np. stare duplikaty), potem najkrotsza nazwa
+    const findRole = (ids, role, key, pf, S) => {
       const doms = ROLE_DOM[role] || SENS, re = new RegExp('(^|_)' + key + '(_\\d+)?$');
-      const c = ids.filter(id => { const i = id.indexOf('.'), o = id.slice(i + 1); return doms.includes(id.slice(0, i)) && (!pf || o.includes(pf)) && re.test(o); }).sort((a, b) => a.length - b.length);
+      const live = id => !S || !S[id] || (S[id].state !== 'unknown' && S[id].state !== 'unavailable') ? 1 : 0;
+      const c = ids.filter(id => { const i = id.indexOf('.'), o = id.slice(i + 1); return doms.includes(id.slice(0, i)) && (!pf || o.includes(pf)) && re.test(o); }).sort((a, b) => (live(b) - live(a)) || a.length - b.length);
       return c[0] || '';
     };
     window.__igneoFind = { findRole, keysAll, ROLE_DOM };
-    const pfOf = cfg => String(cfg && cfg.entity_prefix != null ? cfg.entity_prefix : 'tekla').trim().toLowerCase();
+    // wykrywanie urzadzenia: encje-kotwice z ESP (np. ..._poziom_dostepu) -> prefiks = reszta nazwy; najlepsze = najwiecej kotwic
+    const ANCH = ['poziom_dostepu', 'test_wyjsc_stany', 'wersja_firmware', 'tryb_mirror', 'can_ok', 'alarm_aktywny'];
+    const devices = ids => {
+      const m = {};
+      ids.forEach(id => { const o = id.slice(id.indexOf('.') + 1); ANCH.forEach(a => { if (o.length > a.length + 1 && o.endsWith('_' + a)) { const p = o.slice(0, -(a.length + 1)); (m[p] = m[p] || new Set()).add(a); } }); });
+      return Object.keys(m).map(p => ({ p, n: m[p].size })).sort((a, b) => b.n - a.n || b.p.length - a.p.length);
+    };
+    const pfOf = (cfg, ids) => {
+      const x = cfg && cfg.entity_prefix != null ? String(cfg.entity_prefix).trim().toLowerCase() : '';
+      if (x) return x;
+      const d = ids ? devices(ids) : []; return d.length ? d[0].p.split('_').pop() : 'tekla';   // prefiks bazowy (czesc nazwy po nazwie pomieszczenia), bo czesc encji ma tylko tekla_, a czesc kotlownia_tekla_
+    };
+    window.__igneoFind.devices = devices; window.__igneoFind.pfOf = pfOf;
+    // usluga ESP: wezel wykrywany z uslug esphome (<wezel>_set_param), chyba ze podano esphome_node
+    const on0 = C.prototype._node;
+    C.prototype._node = function () {
+      if (this._cfg && this._cfg.esphome_node) return this._cfg.esphome_node;
+      const sv = this._hass && this._hass.services && this._hass.services.esphome;
+      if (sv) { const n = Object.keys(sv).filter(k => k.endsWith('_set_param')).map(k => k.slice(0, -10)); if (n.length) return n.find(x => /estyma|tekla/.test(x)) || n[0]; }
+      return on0.call(this);
+    };
 
     // brak encji = "-" (jak na panelu); jawne wpisy z konfiguracji maja pierwszenstwo, reszta wykrywana sama
     C.prototype._res = function (h) {
       if (!h || !h.states) return;
-      const ids = Object.keys(h.states), pf = pfOf(this._cfg), sig = ids.length + '|' + pf;
+      const ids = Object.keys(h.states), pf = pfOf(this._cfg, ids), keys0 = keysAll(), sig = ids.length + '|' + pf + '|' + Object.keys(keys0).length;
       if (sig === this._idn) return;
       this._idn = sig;
       const keys = keysAll();
-      for (const r in keys) { if (this.E[r]) continue; const e = findRole(ids, r, keys[r], pf); if (e) this.E[r] = e; }
+      for (const r in keys) { if (this.E[r]) continue; const e = findRole(ids, r, keys[r], pf, h.states); if (e) this.E[r] = e; }
     };
 
     // ---- tryb lite (tylko w YAML: lite: true) = poziom 0 dla zwyklego uzytkownika, bez "Poziom menu" ----
@@ -824,15 +886,16 @@
     const LBL = {}; D.ENT_GROUPS.forEach(g => g[1].forEach(f => { LBL[f[0]] = f[1]; }));
     const lab = r => LBL[r] || PR2L[r] || (r === 'fw_ver' ? 'Wersja firmware (ekran INFO)' : r);
     const GR = [
-      ['Ekran główny i ekran Kocioł', ['boiler_temp', 'boiler_set', 'boiler_manual', 'mode', 'sch_boil', 'on', 'power_switch', 'outside', 'ret_temp'], 0],
-      ['Ekran główny – Palnik i zbiornik paliwa', ['burner', 'burner_code', 'power', 'burn_kw', 'burn_kgh', 'burn_bright', 'burn_temp', 'ban', 'fan_pct', 'blower_run', 'feeder_run', 'feeder', 'burn_time', 'fuel', 'fuel_cap', 'fuel_pct', 'feed_time'], 0],
+      ['Ekran główny i ekran Kocioł', ['boiler_temp', 'boiler_set', 'boiler_manual', 'mode', 'sch_boil', 'on', 'power_switch', 'outside', 'ret_temp', 'mix_co1', 'mix_ret'], 0],
+      ['Ekran główny – Palnik i zbiornik paliwa', ['burner', 'burner_code', 'power', 'burn_kw', 'burn_kgh', 'burn_bright', 'burn_temp', 'ban', 'fan_pct', 'blower_run', 'feeder_run', 'feeder2_run', 'feeder', 'burn_time', 'fuel', 'fuel_cap', 'fuel_pct', 'feed_time'], 0],
       ['Ekran Ogrzewanie (CO)', ['co_temp', 'co_set', 'co_manual', 'co_pump', 'co_aux', 'co_comfort', 'co_eco', 'sch_co', 'co_mode', 'co_mode_sel'], 0],
       ['Ekran Woda użytkowa (CWU)', ['cwu_temp', 'cwu_set', 'cwu_comfort', 'cwu_eco', 'sch_cwu', 'cwu_mode', 'cwu_mode_sel', 'cwu_pump'], 0],
       ['Menu → Palnik → NASTAWY (użytkownik)', ['air_corr', 'power_min', 'power_max', 'fuel_heat', 'fuel_test'], 0],
       ['Menu → Ciepła woda → NASTAWY', ['cwu_hyst', 'cwu_boost', 'cwu_prio', 'legion'], 0],
+      ['Menu → Ciepła woda → NASTAWY (klucz 1)', ['cwu_src', 'cwu_src_inc', 'cwu_delta'], 1],
       ['Menu → Historia alarmów', ['alarm', 'last_alarm', 'alarm_start', 'alarm_end', 'confirm'], 0],
-      ['Menu → Kocioł → NASTAWY (klucz 1)', ['boiler_hyst_on', 'boiler_hyst_off'], 1],
-      ['Menu → Ogrzewanie obwód 1 → NASTAWY (klucz 1)', ['co_hyst', 'co_calib', 'co_mode_s', 'co_cur_m20', 'co_cur_0', 'co_cur_10'], 1],
+      ['Menu → Kocioł → NASTAWY (użytkownik)', ['boiler_hyst_on', 'boiler_hyst_off'], 0],
+      ['Menu → Ogrzewanie obwód 1 → NASTAWY (użytkownik)', ['co_hyst', 'co_calib', 'co_mode_s', 'co_cur_m20', 'co_cur_0', 'co_cur_10'], 0],
       ['Menu → Palnik → NASTAWY (klucz 1)', ['fan_mod_1', 'fan_mod_2', 'fan_mod_3', 'fan_mod_4', 'fan_mod_5', 'p_prefeed', 'p_feed_max', 'p_photo', 'p_blow_ign', 'p_blow_glow', 'p_blow_stop', 'p_glow_time', 'p_glow_fuel', 'p_stop_time', 'p_lambda', 'p_o2_30', 'p_o2_100', 'p_cleans', 'p_clean_gap', 'p_pause_time', 'p_pause_power', 'p_pause_blow'], 1],
       ['Menu → Palnik → NASTAWY (klucz 2)', ['p_inertia', 'p_grate_time', 'p_burner_feed', 'p_feeder_period', 'p_min_rpm'], 1],
       ['Menu → Statystyki i Test wyjść (klucz 1)', ['stats', 'blower_mode', 'blower_auto', 'blower_off', 'blower_on', 'feeder_mode', 'feeder_auto', 'feeder_off', 'feeder_on'], 1],
@@ -840,7 +903,8 @@
     ];
     class IgneoEditor extends HTMLElement {
       setConfig(c) { this._cfg = c || {}; this._draw(); }
-      set hass(h) { this._hass = h; if (this._form) this._form.hass = h; this._status(); }
+      set hass(h) { const first = !this._hass; this._hass = h; if (this._form) this._form.hass = h; if (first) this._draw(); else this._status(); }
+      _ids() { return this._hass ? Object.keys(this._hass.states) : []; }
       _groups() {
         const known = new Set(GR.flatMap(g => g[1])), all = Object.keys(keysAll());
         const rest = all.filter(r => !known.has(r));
@@ -849,64 +913,86 @@
         return gs;
       }
       _flat() {
-        const c = this._cfg, d = {
-          screen: c.screen || 'main', entity_prefix: c.entity_prefix != null ? c.entity_prefix : 'tekla',
-          esphome_node: c.esphome_node || 'tekla_estyma', mirror_mode: typeof c.mirror === 'boolean' ? (c.mirror ? 'on' : 'off') : 'auto',
+        const c = this._cfg, ids = this._ids(), pf = pfOf(c, ids), keys = keysAll(), ex = c.entities || {};
+        const d = {
+          screen: c.screen || 'main', device: c.entity_prefix ? String(c.entity_prefix) : 'auto',
+          esphome_node: c.esphome_node || '', mirror_mode: typeof c.mirror === 'boolean' ? (c.mirror ? 'on' : 'off') : 'auto',
         };
-        const e = c.entities || {};
-        Object.keys(keysAll()).forEach(r => { d['e_' + r] = e[r] || ''; });
+        Object.keys(keys).forEach(r => { d['e_' + r] = ex[r] || (ids.length ? findRole(ids, r, keys[r], pf, this._hass.states) : ''); });   // pola od razu pokazuja wykryte encje
         return d;
       }
       _draw() {
+        if (!this._cfg) return;   // hass bywa ustawiony przed setConfig
         if (!this._form) {
           const info = document.createElement('div');
           info.style.cssText = 'font-size:13px;line-height:1.45;margin:0 0 10px;opacity:.9';
-          info.innerHTML = '<b>Zwykle nie musisz nic wybierać.</b> Karta sama znajduje encje urządzenia po prefiksie nazwy (domyślnie „tekla”). Pola encji poniżej służą tylko do wskazania własnej encji zamiast wykrytej. Pozycje bez encji pokażą „-”.';
+          info.innerHTML = '<b>Nic nie musisz ustawiać.</b> Karta sama wykrywa urządzenie PelletCAN i jego encje. Wybierz tylko ekran startowy. Pola encji poniżej pokazują wykryte encje i można je podmienić na inne z tego samego urządzenia.';
           this.appendChild(info);
           this._st = document.createElement('div');
-          this._st.style.cssText = 'font-size:12px;opacity:.8;margin:0 0 10px';
+          this._st.style.cssText = 'font-size:12px;opacity:.85;margin:0 0 10px';
           this.appendChild(this._st);
           this._form = document.createElement('ha-form');
           this._form.computeLabel = s => s.label || s.name;
           this._form.addEventListener('value-changed', ev => this._changed(ev.detail.value));
           this.appendChild(this._form);
         }
-        const dom = r => (ROLE_DOM[r] || SENS);
+        const ids = this._ids(), pf = pfOf(this._cfg, ids), devs = devices(ids), keys = keysAll();
+        const mine = ids.filter(id => id.slice(id.indexOf('.') + 1).includes(pf));   // encje wybranego urzadzenia
+        const sel = r => { const dm = ROLE_DOM[r] || SENS, inc = mine.filter(id => dm.includes(id.slice(0, id.indexOf('.')))); return { entity: Object.assign({ domain: dm }, ids.length ? { include_entities: inc.length ? inc : ['none.none'] } : {}) }; };
         const schema = [{
-          type: 'expandable', title: 'Ogólne (ekran startowy, prefiks encji, węzeł ESPHome)', expanded: true, flatten: true, schema: [
+          type: 'expandable', title: 'Ogólne', expanded: true, flatten: true, schema: [
             { name: 'screen', label: 'Ekran startowy karty', selector: { select: { mode: 'dropdown', options: D.SCREEN_OPTS.map(o => ({ value: o[0], label: o[1] })) } } },
-            { name: 'entity_prefix', label: 'Prefiks encji (fragment nazwy urządzenia, np. tekla)', selector: { text: {} } },
-            { name: 'esphome_node', label: 'Nazwa węzła ESPHome (usługi esphome.<węzeł>_...)', selector: { text: {} } },
+            { name: 'device', label: 'Urządzenie (prefiks encji)', selector: { select: { mode: 'dropdown', custom_value: true, options: [{ value: 'auto', label: 'Automatycznie' + (devs.length ? ' (' + pf + ')' : '') }].concat(devs.map(d => ({ value: d.p, label: d.p }))) } } },
+          ],
+        }, {
+          type: 'expandable', title: 'Zaawansowane (zwykle zbędne)', flatten: true, schema: [
+            { name: 'esphome_node', label: 'Węzeł ESPHome – puste = wykryty automatycznie', selector: { text: {} } },
             { name: 'mirror_mode', label: 'Tryb mirror (blokada zapisów w tej karcie)', selector: { select: { mode: 'dropdown', options: [{ value: 'auto', label: 'wg ESP (domyślnie)' }, { value: 'on', label: 'włączony – tylko podgląd' }, { value: 'off', label: 'wyłączony' }] } } },
           ],
         }];
         this._groups().forEach(g => schema.push({
           type: 'expandable', title: g[0], flatten: true,
-          schema: g[1].filter(r => keysAll()[r]).map(r => ({ name: 'e_' + r, label: lab(r), selector: { entity: { domain: dom(r) } } })),
+          schema: g[1].filter(r => keys[r]).map(r => ({ name: 'e_' + r, label: lab(r), selector: sel(r) })),
         }));
         this._form.schema = schema;
         this._form.data = this._flat();
         if (this._hass) this._form.hass = this._hass;
         this._status();
+        this._sync();
       }
       _status() {
         if (!this._st || !this._hass) return;
-        const ids = Object.keys(this._hass.states), pf = pfOf(this._cfg), keys = keysAll(), ex = this._cfg.entities || {};
+        const ids = this._ids(), pf = pfOf(this._cfg, ids), keys = keysAll(), ex = this._cfg.entities || {};
         let ok = 0, miss = [];
-        Object.keys(keys).forEach(r => { if (ex[r] || findRole(ids, r, keys[r], pf)) ok++; else miss.push(lab(r)); });
-        this._st.textContent = `Znaleziono encje dla ${ok} z ${Object.keys(keys).length} pozycji.` + (miss.length ? ` Bez encji („-”): ${miss.slice(0, 12).join(', ')}${miss.length > 12 ? ' i ' + (miss.length - 12) + ' innych' : ''}.` : '');
+        Object.keys(keys).forEach(r => { if (ex[r] || findRole(ids, r, keys[r], pf, this._hass.states)) ok++; else miss.push(lab(r)); });
+        this._st.textContent = `Urządzenie: ${pf} · encje znalezione dla ${ok} z ${Object.keys(keys).length} pozycji.` + (miss.length ? ` Bez encji („-”): ${miss.slice(0, 8).join(', ')}${miss.length > 8 ? ' i ' + (miss.length - 8) + ' innych' : ''}.` : '');
       }
+      // YAML ma odzwierciedlac edytor: zapisujemy WSZYSTKIE wykryte/wybrane encje w entities (zmiana urzadzenia = nowe wykrycie)
+      _all(cfg) { const ids = this._ids(), pf = pfOf(cfg, ids), keys = keysAll(), o = {}; Object.keys(keys).forEach(r => { const e = findRole(ids, r, keys[r], pf, this._hass && this._hass.states); if (e) o[r] = e; }); return o; }
+      _emit(cfg) { this._cfg = cfg; this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: cfg }, bubbles: true, composed: true })); }
       _changed(v) {
-        const entities = {};
-        Object.keys(keysAll()).forEach(r => { if (v['e_' + r]) entities[r] = v['e_' + r]; });
-        const cfg = Object.assign({}, this._cfg, { screen: v.screen || 'main', entities });
-        const pf = (v.entity_prefix || '').trim(); if (pf && pf !== 'tekla') cfg.entity_prefix = pf; else delete cfg.entity_prefix;
-        const nd = (v.esphome_node || '').trim(); if (nd && nd !== 'tekla_estyma') cfg.esphome_node = nd; else delete cfg.esphome_node;
+        const old = this._cfg.entity_prefix || '';
+        const dev = (v.device && v.device !== 'auto') ? String(v.device).trim() : '';
+        const cfg = Object.assign({}, this._cfg, { screen: v.screen || 'main' });
+        if (dev) cfg.entity_prefix = dev; else delete cfg.entity_prefix;
+        const keys = keysAll();
+        let entities = {};
+        if (dev !== old) entities = this._all(cfg);
+        else Object.keys(keys).forEach(r => { const x = v['e_' + r]; if (x) entities[r] = x; });
+        if (Object.keys(entities).length) cfg.entities = entities; else delete cfg.entities;
+        const nd = (v.esphome_node || '').trim(); if (nd) cfg.esphome_node = nd; else delete cfg.esphome_node;
         if (v.mirror_mode === 'on') cfg.mirror = true; else if (v.mirror_mode === 'off') cfg.mirror = false; else delete cfg.mirror;
-        if (!Object.keys(entities).length) delete cfg.entities;
         this._cfg = cfg;
-        this._status();
-        this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: cfg }, bubbles: true, composed: true }));
+        if (dev !== old) this._draw(); else this._status();
+        this._emit(cfg);
+      }
+      // po pierwszym narysowaniu z dostepem do hass: dopisz wykryte encje do YAML-a (raz)
+      _sync() {
+        if (this._synced || !this._hass || !this._cfg || !this._ids().length) return;
+        this._synced = true;
+        const ex = this._cfg.entities || {}, all = this._all(this._cfg), add = {};
+        Object.keys(all).forEach(r => { if (!ex[r]) add[r] = all[r]; });
+        if (Object.keys(add).length) this._emit(Object.assign({}, this._cfg, { entities: Object.assign({}, add, ex) }));
       }
     }
     if (!customElements.get('pelletcan-card-editor')) customElements.define('pelletcan-card-editor', IgneoEditor);
@@ -927,7 +1013,7 @@
     // kolejnosc i nazwy jak na panelu (6 zdjec): [numer wyjscia w firmware (-1 = rejestr nieznany), nazwa, 'cl' = A/CLOSE/OPEN, suwak: 'dm' (bez rejestru) | 'wy' (0x2298)]
     const TR = [
       [-1, 'Pompa CWU'], [3, 'Pompa kotłowa'], [4, 'Pompa solarna'], [0, 'Podajnik'], [16, 'Ruszt', 'cl'], [-1, 'Wymiennik'], [2, 'Zapalarka'],
-      [-1, 'Podajnik palnika'], [14, 'Magazyn paliwa transporter'], [15, 'Magazyn paliwa podajnik'], [1, 'Dm.', '', 'dm'], [17, 'WentWyc', '', 'wy'],
+      [19, 'Podajnik palnika'], [14, 'Magazyn paliwa transporter'], [15, 'Magazyn paliwa podajnik'], [1, 'Dm.', '', 'dm'], [17, 'WentWyc', '', 'wy'],
       [5, 'Pompa CO1'], [6, 'Pompa CO2'], [7, 'Pompa CO3'], [8, 'Pompa CO4'],
       [9, 'Mieszacz CO1', 'cl'], [10, 'Mieszacz CO2', 'cl'], [11, 'Mieszacz CO3', 'cl'], [12, 'Mieszacz CO4', 'cl'], [13, 'Mieszacz powrotu', 'cl'],
     ];
@@ -950,6 +1036,7 @@
       return isNaN(v) ? 0 : Math.max(0, Math.min(100, v));
     };
     C.prototype._testBody = function (back) {
+      initT.call(this);
       const ok = this._lvl() >= 2 && !this._mirror();
       const CK = '<svg viewBox="0 0 24 24"><path d="M3.4 12.6l5.7 5.6L20.6 5.8"/></svg>';
       const row = ([i, name, kind, sl]) => {
@@ -975,23 +1062,21 @@
         return o.call(this, s, b);
       };
     })(C.prototype._go);
-    C.prototype._build = (function (o) {
-      return function () {
-        o.apply(this, arguments);
+    const initT = function () {
+        if (this.__tInit || !this.shadowRoot) return; this.__tInit = true;
         const R = this.shadowRoot, st = document.createElement('style');
-        st.textContent = '.list.tl{top:9.8cqw;padding:0;background:linear-gradient(#2c509a,#3562ae)}'
-          + '.tr{position:relative;height:10.55cqw;flex:none}.tr:after{content:"";position:absolute;left:6.4cqw;right:7cqw;bottom:0;height:.22cqw;background:#2a98e2;box-shadow:0 0 .5cqw #1a7fd0}'
-          + '.tr .nm{position:absolute;left:6.2cqw;top:.5cqw;height:10.55cqw;display:flex;align-items:center;font-size:5.3cqw;line-height:1;color:#fff;white-space:nowrap;max-width:60.2cqw;overflow:hidden}'
-          + '.tr .tc{position:absolute;top:.3cqw;width:10cqw;margin-left:-5cqw;text-align:center;font-size:2.8cqw;line-height:3cqw;font-weight:700;letter-spacing:-.02em;white-space:nowrap;color:#e3ecf9;pointer-events:none}'
-          + '.tr .tb{position:absolute;top:3.6cqw;width:6.2cqw;height:6.2cqw;box-sizing:border-box;border-radius:1.2cqw;background:#5898d8;border:.25cqw solid #70aae4;box-shadow:inset 0 0 .6cqw #3f78bb}'
-          + '.tr .tb:before{content:"";position:absolute;inset:1cqw;border-radius:.9cqw;background:#4276ba;box-shadow:inset 0 .25cqw .45cqw #28538f}'
-          + '.tr .tb.ck:before{display:none}.tr .tb svg{position:absolute;inset:.45cqw;width:5.1cqw;height:5.1cqw}.tr .tb svg path{fill:none;stroke:#d3f23a;stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round}'
-          + '.tr .tb.cl{cursor:pointer}.tr .tb.cl:active{filter:brightness(1.2)}.tr .tb.dis{opacity:.5}.tr.ro .nm{opacity:.62}'
+        st.textContent = '.list.tl{top:9.8cqw;bottom:0;padding:0;background:none;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;display:block}.list.tl::-webkit-scrollbar{display:none}'
+          + '.tr{position:relative;height:10.55cqw;flex:none;background:linear-gradient(#2b4b9e,#28459a)}.tr:after{content:"";position:absolute;left:0;right:0;bottom:0;height:.4cqw;background:#1b9fe9}'
+          + '.tr .nm{position:absolute;left:6.2cqw;top:.5cqw;height:10.55cqw;display:flex;align-items:center;font-size:4.4cqw;color:#fff;white-space:nowrap;max-width:60.2cqw;overflow:hidden}'
+          + '.tr .tc{position:absolute;top:.4cqw;width:10cqw;margin-left:-5cqw;text-align:center;font-size:3cqw;line-height:3cqw;font-weight:700;letter-spacing:-.02em;white-space:nowrap;color:#dfe9ff;pointer-events:none}'
+          + '.tr .tb{position:absolute;top:3.6cqw;width:6.2cqw;height:6.2cqw;box-sizing:border-box;border-radius:1.3cqw;background:linear-gradient(#5d89dc,#4873c5);box-shadow:inset 0 0 .5cqw #2c4f9f,0 .2cqw .5cqw #0004}'
+          + '.tr .tb svg{position:absolute;inset:.5cqw;width:5.1cqw;height:5.1cqw}.tr .tb svg path{fill:none;stroke:#c4ee1a;stroke-width:3.9;stroke-linecap:round;stroke-linejoin:round}'
+          + '.tr .tb.cl{cursor:pointer}.tr .tb.cl:active{filter:brightness(1.3)}.tr .tb.dis{opacity:1}.tr.ro .nm{opacity:.55}'
           + '.tr .tsl{position:absolute;left:27.8cqw;top:4.2cqw;width:37.6cqw;height:4cqw;margin:0;background:none;-webkit-appearance:none;appearance:none;cursor:pointer}.tr .tsl:disabled{opacity:.6;cursor:default}'
-          + '.tr .tsl::-webkit-slider-runnable-track{height:2.1cqw;border-radius:1.1cqw;background:#5683bd;border:.2cqw solid #3d69a8;box-shadow:inset 0 .2cqw .4cqw #2f5694}'
-          + '.tr .tsl::-webkit-slider-thumb{-webkit-appearance:none;width:3.8cqw;height:3.8cqw;border-radius:50%;background:#fff;margin-top:-.85cqw;box-shadow:0 0 .9cqw #0007}'
-          + '.tr .tsl::-moz-range-track{height:2.1cqw;border-radius:1.1cqw;background:#5683bd;border:.2cqw solid #3d69a8}.tr .tsl::-moz-range-thumb{width:3.8cqw;height:3.8cqw;border:0;border-radius:50%;background:#fff;box-shadow:0 0 .9cqw #0007}'
-          + '.tnote{position:absolute;left:0;right:0;bottom:0;padding:.9cqw 2cqw;text-align:center;font-size:2.8cqw;color:#d6e4ff;background:#0a1a40d9}';
+          + '.tr .tsl::-webkit-slider-runnable-track{height:2.2cqw;border-radius:1.1cqw;background:#68789b;box-shadow:inset 0 0 .6cqw #0006}'
+          + '.tr .tsl::-webkit-slider-thumb{-webkit-appearance:none;width:3.9cqw;height:3.9cqw;border-radius:50%;background:radial-gradient(#fff,#aebddb);margin-top:-.85cqw;box-shadow:0 0 .8cqw #0008}'
+          + '.tr .tsl::-moz-range-track{height:2.2cqw;border-radius:1.1cqw;background:#68789b}.tr .tsl::-moz-range-thumb{width:3.9cqw;height:3.9cqw;border:0;border-radius:50%;background:radial-gradient(#fff,#aebddb);box-shadow:0 0 .8cqw #0008}'
+          + '.tnote{position:absolute;left:0;right:0;bottom:0;padding:.9cqw 2cqw;text-align:center;font-size:2.8cqw;color:#e0e7f8;background:#1b2240ee}';
         R.appendChild(st);
         R.addEventListener('click', e => {
           const a = e.target.closest('[data-act="tout"]');
@@ -1014,8 +1099,8 @@
           const a = e.target.closest && e.target.closest('[data-act="tpct"]');
           if (a) { this._tpp = { v: parseInt(a.value, 10) || 0, t: Date.now() + 60000 }; }
         });
-      };
-    })(C.prototype._build);
+    };
+    C.prototype._build = (function (o) { return function () { o.apply(this, arguments); initT.call(this); }; })(C.prototype._build);
     // odswiezanie stanow co 6 s, gdy ekran Test wyjsc jest otwarty
     if (!W.testTimer) W.testTimer = setInterval(() => {
       const c = W.card;
@@ -1028,7 +1113,7 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '1.2';
+    const CARD_VER = '1.3';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };

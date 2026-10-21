@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.1"
+  fw_version: "1.2"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -92,8 +92,7 @@ substitutions:
   can_auto_restart: "false"
 
 esphome:
-  name: ${name}
-  friendly_name: ${friendly_name}
+  # name / friendly_name, esp32, logger, web_server, captive_portal oraz klucz API sa w pliku uzytkownika (tekla-estyma.yaml).
   on_boot:
     priority: 600
     then:
@@ -105,25 +104,8 @@ esphome:
             - delay: 100ms
             - output.turn_on: rf_ant_select
 
-esp32:
-  board: seeed_xiao_esp32c6
-  framework:
-    type: esp-idf
-
-logger:
-  level: DEBUG
-  logs:
-    canbus: INFO  # wycisza "received can message" (sam ID, bez danych, zalewa log)
-
-web_server:
-
-captive_portal:
-
 api:
-  reboot_timeout: 0s
-  # password: !secret api_pass
-  encryption:
-    key: ${api_key}
+  # reboot_timeout i klucz szyfrowania (encryption) sa w pliku uzytkownika; tu tylko akcje (uslugi) dla HA.
   actions:
     # Odczyt dowolnego rejestru (wynik w logach i w "SDO ostatni odczyt").
     - action: sdo_read
@@ -207,11 +189,11 @@ api:
       then:
         - lambda: |-
             if (std::string("${mirror}") == "true") { ESP_LOGW("igneo", "Zapis ustawien wylaczony (mirror: true)"); return; }
-            static const uint16_t ix[] = {0x2270, 0x2271, 0x2292, 0x2273, 0x2272, 0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2208, 0x2291, 0x22BD, 0x22C1, 0x2142, 0x2146, 0x22C5, 0x22C9, 0x22CD, 0x2212, 0x2210, 0x300D, 0x2256, 0x2257, 0x226A, 0x2289, 0x3704, 0x300C, 0x2290, 0x299A, 0x226B, 0x3605, 0x214E, 0x2152, 0x2258, 0x2999, 0x3715, 0x3716, 0x3717, 0x2153, 0x3003, 0x370B, 0x3700, 0x300E};
-            static const float lo[] = {30, 30, 2.0f, -10, 5, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 20, 20, 20, 20, 0, 0, 0, 0, 1, 5, 0, 0, 0, 0, 20, 1, 0, 5, 5, 0, 1, 0, 5, 10, 1, 0, 50, 5, 0};
-            static const float hi[] = {100, 100, 10.0f, 40, 100, 100, 100, 100, 100, 100, 20, 20, 5, 3, 1, 80, 80, 80, 80, 20, 1, 1, 200, 15, 100, 100, 100, 100, 20, 100, 15, 1, 15, 15, 10, 12, 60, 30, 50, 60, 60, 300, 180, 5};
-            static const uint8_t lv[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2};
-            if (key < 0 || key > 43 || value < lo[key] || value > hi[key]) { ESP_LOGW("igneo", "Ustawienie: zly klucz lub poza zakresem"); return; }
+            static const uint16_t ix[] = {0x2270, 0x2271, 0x2292, 0x2273, 0x2272, 0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2208, 0x2291, 0x22BD, 0x22C1, 0x2142, 0x2146, 0x22C5, 0x22C9, 0x22CD, 0x2212, 0x2210, 0x300D, 0x2256, 0x2257, 0x226A, 0x2289, 0x3704, 0x300C, 0x2290, 0x299A, 0x226B, 0x3605, 0x214E, 0x2152, 0x2258, 0x2999, 0x3715, 0x3716, 0x3717, 0x2153, 0x3003, 0x370B, 0x3700, 0x300E, 0x2214, 0x2216, 0x2218};
+            static const float lo[] = {30, 30, 2.0f, -10, 5, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 20, 20, 20, 20, 0, 0, 0, 0, 1, 5, 0, 0, 0, 0, 20, 1, 0, 5, 5, 0, 1, 0, 5, 10, 1, 0, 50, 5, 0, 0, 5, 2};
+            static const float hi[] = {100, 100, 10.0f, 40, 100, 100, 100, 100, 100, 100, 20, 20, 5, 3, 1, 80, 80, 80, 80, 20, 1, 1, 200, 15, 100, 100, 100, 100, 20, 100, 15, 1, 15, 15, 10, 12, 60, 30, 50, 60, 60, 300, 180, 5, 1, 20, 20};
+            static const uint8_t lv[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1};
+            if (key < 0 || key > 46 || value < lo[key] || value > hi[key]) { ESP_LOGW("igneo", "Ustawienie: zly klucz lub poza zakresem"); return; }
             id(access_t) = millis();
             if (lv[key] > id(access_level)) { ESP_LOGW("igneo", "Ustawienie wymaga wyzszego poziomu dostepu (PIN)"); return; }
             int raw;
@@ -223,6 +205,7 @@ api:
             else if (key == 13) raw = (int) lroundf(value * 10.0f) & 0xFFFF;
             else if (key == 14 || key == 20 || key == 21) raw = 0x0100 | (int) lroundf(value);
             else if (key >= 15 && key <= 18) raw = 0x0100 | (int) lroundf(value);
+            else if (key >= 44 && key <= 46) raw = 0x0100 | (int) lroundf(value);  // CWU klucz 1: 44 Zrodlo (0 Kociol / 1 Bufor) 0x2214, 45 Zwiekszenie temp. zrodla 0x2216, 46 Delta zalaczenia pompy 0x2218
             else if (key == 22 || key == 35 || key == 41 || key == 42 || key == 43) raw = (int) lroundf(value);
             else if (key == 23 || key == 40) raw = (int) lroundf(value * 10.0f);
             else if (key == 32 || key == 33) raw = 0x0100 | (int) lroundf(value * 10.0f);
@@ -231,9 +214,9 @@ api:
             if (key == 0 && value > id(power_max).state) { ESP_LOGW("igneo", "Moc min > Moc max - zapis odrzucony"); return; }
             if (key == 1 && value < id(power_min).state) { ESP_LOGW("igneo", "Moc max < Moc min - zapis odrzucony"); return; }
             id(reg_write).execute((int) ix[key], raw, 2);
-    # v1.1 TEST WYJSC: out 0..17, mode 0 = A (Automat), 1 = OFF/CLOSE, 2 = ON/OPEN. Wymaga poziomu dostepu 2 (PIN klucza 2).
+    # v1.2 TEST WYJSC: out 0..17 i 19 (Podajnik palnika, 0x2295; 18 = suwak), mode 0 = A (Automat), 1 = OFF/CLOSE, 2 = ON/OPEN. Wymaga poziomu dostepu 2 (PIN klucza 2).
     # out: 0 Podajnik, 1 Dmuchawa, 2 Zapalarka, 3 Pompa kotlowa, 4 Pompa solarna, 5..8 Pompa CO1..CO4, 9..12 Mieszacz CO1..CO4,
-    #      13 Mieszacz powrotu, 14 Magazyn transporter, 15 Magazyn podajnik, 16 Ruszt, 17 WentWyc tryb (18 = WentWyc suwak: set_output_pct).
+    #      13 Mieszacz powrotu, 14 Magazyn transporter, 15 Magazyn podajnik, 16 Ruszt, 17 WentWyc tryb (18 = WentWyc suwak: set_output_pct), 19 Podajnik palnika.
     - action: set_output
       variables:
         out: int
@@ -241,10 +224,10 @@ api:
       then:
         - lambda: |-
             if (std::string("${mirror}") == "true" || std::string("${output_test_write}") != "true") { ESP_LOGW("igneo", "Test wyjsc wylaczony (mirror: true lub output_test_write: false)"); return; }
-            if (out < 0 || out > 17 || mode < 0 || mode > 2) { ESP_LOGW("igneo", "Test wyjsc: zle wyjscie lub tryb"); return; }
+            if (out < 0 || out > 19 || out == 18 || mode < 0 || mode > 2) { ESP_LOGW("igneo", "Test wyjsc: zle wyjscie lub tryb"); return; }
             id(access_t) = millis();
             if (id(access_level) < 2) { ESP_LOGW("igneo", "Test wyjsc wymaga poziomu dostepu 2 (PIN)"); return; }
-            static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+            static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298, 0x2295};
             id(reg_write).execute((int) tix[out], 0x0100 | mode, 2);
             if (mode) id(test_mask) |= (1u << out); else id(test_mask) &= ~(1u << out);
             id(test_t) = millis();
@@ -602,7 +585,7 @@ canbus:
               if (req && sidx == 0x1018) return;  // skan wezlow (identyfikator urzadzenia) - po zalogowaniu
               if (can_id == 0x584) {
                 // odpowiedzi na NASZE odczyty pomijamy (lista + bufor alarmow)
-                static const uint16_t mine[] = {0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
+                static const uint16_t mine[] = {0x2214,0x2216,0x2218,0x22B9,0x216D,0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
                                                 0x2110,0x2010,0x2012,0x201A,0x2278,0x215F,0x4005,0x2007,0x2002,0x2005,0x2259,0x2283,0x2254,0x404C,0x404D,0x3600,0x3601,0x2267,0x370D,0x2064,0x2065,0x2014,0x2273,0x2272,0x226C,0x2006,0x2301,0x2270,0x2271,0x2292,0x2261,0x2262,0x2263,0x2264,0x2265,0x4000,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD,0x2212,0x2210,0x300D,0x2256,0x2257,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2153,0x3003,0x370B,0x3700,0x300E,0x2250,0x226D,0x216F};
                 for (auto m : mine) if (m == sidx) return;
                 if (sidx >= 0x4010 && sidx < 0x4060) return;
@@ -632,6 +615,8 @@ canbus:
           - lambda: |-
               if (x.size() < 1) return;
               id(feeder_running).publish_state((x[0] & 0x01) != 0);
+              // v1.2: podajnik palnika (ikona 2 na ekranie Palnik) - HIPOTEZA: bajt 0, bit 1; surowe bajty PDO trafiaja do "SDO ostatni odczyt" (diagnostyka)
+              id(feeder2_running).publish_state((x[0] & 0x02) != 0);
               {
                 static uint8_t last[8] = {0}; static bool seen = false;
                 bool ch = !seen;
@@ -641,6 +626,7 @@ canbus:
                   char b[40]; size_t p = 0;
                   for (size_t i = 0; i < x.size() && i < 8; i++) p += snprintf(b + p, sizeof(b) - p, "%02X ", x[i]);
                   ESP_LOGW("igneo", "PDO 0x456 zmiana: %s", b);
+                  { std::string pd = std::string("PDO 0x456: ") + b; id(sdo_last).publish_state(pd); }
                 }
               }
       # Dmuchawa pracuje: PDO modulu CAN IO BIG (wezel 86) = 0x300 + 0x56 = 0x356, bajt 0, bit 0.
@@ -760,14 +746,14 @@ canbus:
               }
               // v1.1: stany wyjsc testowych (19 rejestrow: tryb 0 = A, 1 = OFF/CLOSE, 2 = ON/OPEN; ostatni = suwak WentWyc w %) -> "Test wyjsc stany"
               {
-                static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+                static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298, 0x2295};
                 int ti = -1;
-                for (int k = 0; k < 19; k++) if (tix[k] == idx) { ti = k; break; }
+                for (int k = 0; k < 20; k++) if (tix[k] == idx) { ti = k; break; }
                 if (ti >= 0) {
-                  if (id(test_vals).size() != 19) id(test_vals).assign(19, -1);
+                  if (id(test_vals).size() != 20) id(test_vals).assign(20, -1);
                   id(test_vals)[ti] = (int32_t) (raw & 0xFF);
                   std::string so; char tt[8];
-                  for (size_t k = 0; k < 19; k++) { if (id(test_vals)[k] < 0) snprintf(tt, sizeof(tt), "-"); else snprintf(tt, sizeof(tt), "%d", (int) id(test_vals)[k]); if (k) so += ' '; so += tt; }
+                  for (size_t k = 0; k < 20; k++) { if (id(test_vals)[k] < 0) snprintf(tt, sizeof(tt), "-"); else snprintf(tt, sizeof(tt), "%d", (int) id(test_vals)[k]); if (k) so += ' '; so += tt; }
                   id(test_state_txt).publish_state(so);
                 }
               }
@@ -949,6 +935,8 @@ canbus:
                 case 0x2146: id(ch1_set_manual).publish_state((float) low); break;
                 case 0x22AD: id(ch1_set_result).publish_state(t); break;
                 case 0x2299: id(ch1_pump).publish_state(low != 0); break;
+                case 0x22B9: id(mixer_co1_state).publish_state((float) low); break;
+                case 0x216D: id(mixer_ret_state).publish_state((float) low); break;
                 case 0x4002: id(ch2_temp).publish_state(t); break;
                 case 0x2147: id(ch2_set_manual).publish_state(t); break;
                 case 0x22AE: id(ch2_set_result).publish_state(t); break;
@@ -982,6 +970,9 @@ canbus:
                 case 0x22CD: id(co1_curve_10).publish_state((float) low); break;
                 case 0x2212: id(cwu_hyst).publish_state((float) (raw & 0xFFFF)); break;
                 case 0x2210: id(cwu_boost).publish_state((float) low); break;
+                case 0x2214: id(cwu_src).publish_state((float) low); break;
+                case 0x2216: id(cwu_src_inc).publish_state((float) low); break;
+                case 0x2218: id(cwu_delta).publish_state((float) low); break;
                 case 0x300D: id(cwu_prio).publish_state((float) low); break;
                 case 0x2292: id(fuel_heat).publish_state((float) (raw & 0xFF) / 10.0f); id(burner_calc).execute(); break;
                 case 0x4005: id(burner_power).publish_state((float) raw); id(burner_calc).execute(); break;
@@ -1113,6 +1104,7 @@ interval:
           static const uint16_t idxs[] = {
             0x2001, 0x2003, 0x2004,
             0x4001, 0x2146, 0x22AD, 0x2299,
+            0x22B9, 0x216D,   // v1.2: stan mieszaczy (256 stoi, 257 zamyka, 258 otwiera) - ikona zaworu na ekranie Kociol
             0x4002, 0x2147, 0x22AE, 0x229A,
             0x2110, 0x2010, 0x2012, 0x2032, 0x2048, 0x201A, 0x2278,
             0x215F, 0x4005, 0x2007, 0x2002, 0x2005, 0x2259, 0x2283, 0x2254,
@@ -1189,7 +1181,7 @@ interval:
             id(par_boot) = true;
             // v2.24: po starcie czytamy WSZYSTKIE ustawienia (odczyt nie wymaga PIN-u): najpierw poziom 0, potem klucz 1, na koncu klucz 2
             static const uint16_t l0[] = {0x2270,0x2271,0x2273,0x2212,0x2210,0x300D};
-            static const uint16_t l1[] = {0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
+            static const uint16_t l1[] = {0x2214,0x2216,0x2218,0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
             static const uint16_t l2[] = {0x2153,0x3003,0x370B,0x300E};
             for (auto r : l0) id(par_q).push_back(r);
             for (auto r : l1) id(par_q).push_back(r);
@@ -1247,6 +1239,7 @@ interval:
           id(can_ok).publish_state(ok);
           // PDO podajnika (0x456) moze przychodzic tylko przy zmianie - po 30 s bez ramki zakladamy "nie pracuje".
           if (millis() > 30000 && !id(feeder_running).has_state()) id(feeder_running).publish_state(false);
+          if (millis() > 30000 && !id(feeder2_running).has_state()) id(feeder2_running).publish_state(false);
           if (millis() > 30000 && !id(blower_running).has_state()) id(blower_running).publish_state(false);
           ESP_LOGI("igneo", "STATUS CAN: %s", ok ? "OK" : "BLAD (FAILED)");
 
@@ -1271,7 +1264,7 @@ interval:
             id(scan_node) = 4;
             ESP_LOGI("igneo", "Skan zakonczony");
             if (id(snap_on)) {
-              static const uint16_t known[] = {0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
+              static const uint16_t known[] = {0x2214,0x2216,0x2218,0x22B9,0x216D,0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
                                                0x2110,0x2010,0x2012,0x201A,0x2278,0x215F,0x4005,0x2007,0x2002,0x2005,0x2259,0x2283,0x2254,0x404C,0x404D,0x3600,0x3601,0x2267,0x370D,0x2064,0x2065,0x2014,0x2273,0x2272,0x226C,0x2006,0x2301,0x2270,0x2271,0x2292,0x2261,0x2262,0x2263,0x2264,0x2265,0x4000,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD,0x2212,0x2210,0x300D,0x2256,0x2257,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2153,0x3003,0x370B,0x3700,0x300E,0x2250,0x226D,0x216F};
               auto &o = id(snap_old);
               auto &n = id(snap_new);
@@ -1597,6 +1590,18 @@ sensor:
     icon: "mdi:fire"
     update_interval: never
   - platform: template
+    id: mixer_co1_state
+    name: "Mieszacz CO1 stan"
+    accuracy_decimals: 0
+    icon: "mdi:valve"
+    update_interval: never
+  - platform: template
+    id: mixer_ret_state
+    name: "Mieszacz powrotu stan"
+    accuracy_decimals: 0
+    icon: "mdi:valve"
+    update_interval: never
+  - platform: template
     id: burner_feed_time
     name: "Palnik czas podawania paliwa"
     unit_of_measurement: "s"
@@ -1726,6 +1731,26 @@ sensor:
     unit_of_measurement: "°C"
     accuracy_decimals: 0
     icon: "mdi:thermometer-lines"
+    update_interval: never
+  - platform: template
+    id: cwu_src
+    name: "CWU zrodlo"
+    accuracy_decimals: 0
+    icon: "mdi:water-boiler"
+    update_interval: never
+  - platform: template
+    id: cwu_src_inc
+    name: "CWU zwiekszenie temp. zrodla"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    icon: "mdi:thermometer-plus"
+    update_interval: never
+  - platform: template
+    id: cwu_delta
+    name: "CWU delta zalaczenia pompy"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    icon: "mdi:delta"
     update_interval: never
   - platform: template
     id: cwu_boost
@@ -1882,6 +1907,11 @@ binary_sensor:
   - platform: template
     id: feeder_running
     name: "Podajnik pracuje"
+    device_class: running
+    icon: "mdi:screw-lag"
+  - platform: template
+    id: feeder2_running
+    name: "Podajnik palnika pracuje"
     device_class: running
     icon: "mdi:screw-lag"
   # Wejscia kotla (odczyt rejestrow 0x2006 i 0x2301, potwierdzone testami zworka/regulator).
@@ -2176,7 +2206,7 @@ script:
     mode: single
     then:
       - lambda: |-
-          static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+          static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298, 0x2295};
           auto &q = id(par_q);
           if (q.size() > 100) return;
           for (auto r : tix) q.push_back(r);
@@ -2185,17 +2215,17 @@ script:
     mode: single
     then:
       - lambda: |-
-          static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+          static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298, 0x2295};
           const uint32_t m = id(test_mask);
           id(test_mask) = 0;
-          for (int k = 0; k < 19; k++) if (m & (1u << k)) { id(reg_write).execute((int) tix[k], 0x0100, 2); ESP_LOGW("igneo", "TEST WYJSC: powrot na Automat 0x%04X", (unsigned) tix[k]); }
+          for (int k = 0; k < 20; k++) if (m & (1u << k)) { id(reg_write).execute((int) tix[k], 0x0100, 2); ESP_LOGW("igneo", "TEST WYJSC: powrot na Automat 0x%04X", (unsigned) tix[k]); }
   # Kolejkuje odczyt ustawien do biezacego poziomu dostepu (0 = uzytkownik, 1 = klucz 1, 2 = klucz 2).
   - id: par_refresh
     mode: restart
     then:
       - lambda: |-
           static const uint16_t l0[] = {0x2270,0x2271,0x2273,0x2212,0x2210,0x300D};
-          static const uint16_t l1[] = {0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
+          static const uint16_t l1[] = {0x2214,0x2216,0x2218,0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
           static const uint16_t l2[] = {0x2153,0x3003,0x370B,0x300E};
           auto &q = id(par_q);
           q.clear();

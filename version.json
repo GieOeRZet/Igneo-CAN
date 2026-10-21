@@ -1,14 +1,15 @@
 {
   "firmware": {
-    "version": "1.1",
+    "version": "1.2",
     "changelog": [
-      "Test wyjść: 18 wyjść kotła (pompy, mieszacze, podajniki, ruszt, zapalarka, dmuchawa, WentWyc) sterowane z karty po PIN-ie klucza 2, z automatycznym powrotem na Automat."
+      "Podajnik palnika (test wyjść + encja), stany mieszaczy, CWU Źródło/Zwiększenie/Delta z zapisem, histerezy na poziomie 0.",
+      "Nowy podział plików: wymień swój plik tekla-estyma.yaml na nowy (ustawienia + esphome/esp32/logger/web_server/captive_portal/api + packages); rdzeń pobiera się z GitHuba."
     ]
   },
   "card": {
-    "version": "1.2",
+    "version": "1.3",
     "changelog": [
-      "Ekran Test wyjść przerysowany 1:1 według panelu (wymiary zmierzone na zdjęciach): 21 pozycji w kolejności panelu, niebieskie wiersze, pola A/OFF/ON i A/CLOSE/OPEN, suwaki Dm. i WentWyc, nagłówek z poziomem dostępu."
+      "Ikona 2 (podajnik palnika) na Palniku, ikona zaworu na Kotle, NASTAWY Kocioł/Ogrzewanie 1/Woda według panelu, edytor odzwierciedla encje w YAML, zaokrąglony czas podawania. Wymaga firmware ≥ 1.2."
     ]
   }
 }

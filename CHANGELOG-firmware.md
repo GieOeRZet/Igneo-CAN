@@ -2,6 +2,15 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.2 – Podajnik palnika
+- **Nowy podział plików (UWAGA: wymień swój plik `tekla-estyma.yaml`)**: plik użytkownika zawiera teraz wszystkie ustawienia (`substitutions`) oraz bloki `esphome` (nazwa), `esp32`, `logger`, `web_server`, `captive_portal`, `api` (klucz szyfrowania, `reboot_timeout`) i `packages`. Rdzeń `tekla-estyma-core.yaml` (CAN, encje, usługi `api: actions`, `ota`, `wifi`, skrypty) jest niezmienny i pobiera się z GitHuba przy każdej kompilacji; bloki są scalane przez ESPHome. Od teraz zmiany (nowe rejestry, poprawki) trafiają tylko do rdzenia – plik użytkownika zmieniasz wyłącznie dla swoich ustawień.
+- **Test wyjść: 19. wyjście „Podajnik palnika”** (rejestr 0x2295, zapis U16: 256 = A, 257 = OFF, 258 = ON; potwierdzone testem na panelu 21.10). `set_output` przyjmuje teraz `out` 0–17 i 19 (18 = suwak WentWyc, `set_output_pct`); „Test wyjsc stany” ma 20 liczb (indeks 18 = suwak, 19 = Podajnik palnika). Brak rejestru poleceń nadal tylko dla Pompy CWU i Wymiennika.
+- **Nowa encja „Podajnik palnika pracuje”** (ikona „2” na ekranie Palnik) z PDO modułu CAN IO BIG 0x456. **Bit jest hipotezą (bajt 0, bit 1)** – surowe bajty PDO 0x456 trafiają przy każdej zmianie do „SDO ostatni odczyt” (`PDO 0x456: …`), do potwierdzenia po wgraniu.
+- **Stan mieszaczy** (cykliczny odczyt 0x22B9 i 0x216D): nowe sensory „Mieszacz CO1 stan” i „Mieszacz powrotu stan” (0 = stoi, 1 = zamyka, 2 = otwiera). Sterownik ustawia 257/258 sam, gdy zawór pracuje (potwierdzone na panelu 21.10: ikona zaworu ze strzałką). Dotyczy ikony zaworu na ekranie Kocioł.
+- **CWU klucz 1 z zapisem**: `set_param` 44 Źródło (0x2214, 0 = Kocioł / 1 = Bufor), 45 Zwiększenie temp. źródła (0x2216, 5–20), 46 Delta załączenia pompy (0x2218, 2–20); zapis U16 = 256 + wartość. Nowe sensory „CWU zrodlo”, „CWU zwiekszenie temp. zrodla”, „CWU delta zalaczenia pompy”. Temp. maksymalna: rejestr nieznany.
+- **Poziomy**: `set_param` 10–18 (histerezy kotła, histereza/kalibracja/tryb/temp. ręczna/krzywa CO1) wymagają teraz poziomu 0 (zgodnie z panelem; wcześniej 1).
+- Niesprawdzone kompilacją ESPHome (składnia YAML sprawdzona).
+
 ## v1.1 – Test wyjść
 - **Test wyjść z karty**: nowe akcje `set_output` (wyjście 0–17, tryb 0 = A, 1 = OFF/CLOSE, 2 = ON/OPEN) i `set_output_pct` (suwak WentWyc 0–100 %). Wymagany **poziom dostępu 2** (PIN klucza 2); blokuje je `mirror: true` albo `output_test_write: "false"`.
 - **18 wyjść z rejestrami** (zapis U16: 256 = A, 257 = OFF/CLOSE, 258 = ON/OPEN): Podajnik 0x2259, Dmuchawa 0x2283, Zapalarka 0x2284, Pompa kotłowa 0x2286, Pompa solarna 0x311F, Pompy CO1–CO4 0x229D–0x22A0, Mieszacze CO1–CO4 0x22B9–0x22BC, Mieszacz powrotu 0x216D, Magazyn paliwa transporter 0x351E i podajnik 0x351F, Ruszt 0x2279, WentWyc tryb 0x2293 i suwak 0x2298 (256 + %). Rejestry wyznaczone testem na panelu 21.10. Brak rejestru (prawdopodobnie węzeł 86): Pompa CWU (polecenie), Wymiennik, Podajnik palnika.

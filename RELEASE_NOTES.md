@@ -1,6 +1,7 @@
-Test wyjść
+Podajnik palnika, NASTAWY i nowy podział plików
 ## Co nowego
-- **Karta v1.2:** ekran Test wyjść 1:1 z panelem Igneo Touch (21 pozycji, A/OFF/ON i A/CLOSE/OPEN, suwaki Dm. i WentWyc). Sterowanie na poziomie 2 (PIN klucza 2).
-- **Firmware v1.1:** akcje `set_output`, `set_output_pct`, `test_refresh`, `test_reset`, automatyczny powrót wyjść na Automat po 120 s.
+- **Karta v1.3:** ikona „2” (podajnik palnika) na ekranie Palnik, ikona zaworu na ekranie Kocioł, NASTAWY Kocioł / Ogrzewanie 1 / Woda przebudowane według panelu (pozycje bez rejestru przyciemnione, „-”), edytor odzwierciedla wykryte encje w YAML.
+- **Firmware v1.2:** Podajnik palnika w Teście wyjść i jako encja, stany mieszaczy, CWU Źródło / Zwiększenie / Delta z zapisem, histerezy na poziomie 0.
+- **Nowy podział plików:** plik użytkownika `tekla-estyma.yaml` (ustawienia + esphome/esp32/logger/web_server/captive_portal/api + packages) i niezmienny rdzeń z GitHuba. **Wymień swój plik `tekla-estyma.yaml` na nowy.**
 
 Szczegóły: [CHANGELOG.md](CHANGELOG.md) i [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
