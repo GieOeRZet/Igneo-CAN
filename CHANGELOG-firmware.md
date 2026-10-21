@@ -1,7 +1,18 @@
-# Changelog firmware (ESPHome tekla-estyma)
+# Changelog firmware (ESPHome PelletCAN)
 
-Najnowsze na górze. Format wpisów: `vX.Y: opis`. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
+Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.0 – pierwsze oficjalne wydanie
+Wszystko, co powstało w wersjach roboczych, jest stanem v1.0:
+- **Komunikacja z kotłem** po CAN (CANopen SDO, węzeł 4, 125 kbit/s) na XIAO ESP32-C6 + MCP2515: odczyt cykliczny parametrów pracy, zapis nastaw z karty (`set_param` 0–44), odczyt ustawień na żądanie (`param_refresh`).
+- **Encje**: temperatury (kocioł, powrót, CO, CWU, zewnętrzna), stany palnika i pomp, moc [kW] i spalanie [kg/h] liczone w ESP, jasność płomienia, czas podawania, zasobnik, harmonogramy tygodniowe, historia alarmów (20 wpisów), zakaz rozpalenia, wersja firmware, poziom dostępu.
+- **Poziomy dostępu PIN** (użytkownik, klucz 1, klucz 2) po stronie ESP; `set_param` odrzuca zapis parametru wyższego poziomu.
+- **Tryb mirror** (`mirror`) – podgląd bez zapisów; opcja `dwa_obiegi_co`.
+- **Sieć**: stały adres IP albo DHCP (`static_ip`), awaryjny punkt dostępu Wi‑Fi, hasła w `secrets.yaml`, uporządkowane substitutions (Wi‑Fi, API, OTA, `dwa_obiegi_co`, reszta).
+- **Podział**: branch `main` – mały plik użytkownika `tekla-estyma.yaml` + rdzeń `tekla-estyma-core.yaml` pobierany z GitHuba przez `packages`; branch `test` – jeden pełny plik.
+- **Diagnostyka**: skan i odczyt rejestrów SDO (`sdo_read`, `sdo_scan`, encja „SDO ostatni odczyt”), podsłuch IDENT/NMT.
+
+<details><summary>Historia robocza przed v1.0 (numeracja wewnętrzna 2.x i wcześniejsza)</summary>
 
 - **v2.32:** podział firmware: plik użytkownika `tekla-estyma.yaml` (substitutions, hasła z secrets, packages) i rdzeń `tekla-estyma-core.yaml` pobierany z GitHuba przy kompilacji (`packages: url/ref: main`). Branch `test` zawiera jeden pełny plik (v2.31). Niesprawdzone kompilacją ESPHome.
 
@@ -49,3 +60,5 @@ Najnowsze na górze. Format wpisów: `vX.Y: opis`. Karta ma osobny plik: [CHANGE
 - **v2.11:** harmonogramy (odczyt co ~2 min, surowe rejestry CWU 0x2154-0x2159,0x2160 i CO 0x2126-0x2141 jako tekst heksadecymalny)
 
 - **v2.10:** wejscia 0x2006 (zakaz rozpalenia) i 0x2301 (zgoda regulatora) tylko jako czujniki (odczyt; zapis przez SDO nie dziala - usuniety)
+
+</details>

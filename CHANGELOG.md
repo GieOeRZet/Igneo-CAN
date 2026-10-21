@@ -1,8 +1,20 @@
-# Changelog
+# Changelog – PelletCAN-card
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
-## Karta
+## v1.0 – pierwsze oficjalne wydanie
+Wszystko, co powstało w wersjach roboczych, jest stanem v1.0:
+- **Wierna replika panelu Igneo Touch** (typ `custom:pelletcan-card`; stary `custom:tekla-panel-card` działa dalej): ekran główny, Ogrzewanie, Woda, Kocioł, Palnik, Menu, Historia alarmów, Informacje o programie, harmonogramy tygodniowe (paski, edycja), Test wyjść i Statystyki (poziom 1).
+- **Ustawienia (NASTAWY)** kotła, palnika (22 parametry), CO obwód 1 i CWU z oknami edycji (suwak, +/–, przełączniki); zapis przez usługi ESPHome.
+- **Poziomy dostępu z PIN** (użytkownik / klucz 1 / klucz 2), blokada po bezczynności; tryb `lite: true` (zawsze poziom 0, bez PIN-u).
+- **Automatyczne wykrywanie encji** po prefiksie nazwy (brak encji = „-”), wizualny edytor karty.
+- **Historia alarmów** czytana z bufora kotła (20 wpisów), przewijanie strzałkami, potwierdzanie alarmu.
+- **Ekran INFO**: autor, wersje firmware i karty, zielona dioda i changelog przy dostępnej aktualizacji (z `version.json` w repo), „Odrzuć aktualizację”, dyskretny przycisk wsparcia.
+- **Grafiki** kotła, palnika i bojlera z folderu `img/` (można podmienić).
+- **Instalacja przez HACS** (repozytorium niestandardowe, kategoria Dashboard), jeden zasób; ścieżki względne.
+
+<details><summary>Historia robocza przed v1.0 (numeracja wewnętrzna 9.x i wcześniejsza)</summary>
+
 - **v9.6** – projekt nazywa się teraz **PelletCAN** (nowe repozytorium `GieOeRZet/PelletCAN`): plik karty `pelletcan-card.js`, katalog HACS `pelletcan`, dodatkowy alias typu `custom:pelletcan-card` (typ `custom:tekla-panel-card` działa dalej); nazwa karty: **PelletCAN-card**.
 - **igneo-card v9.5** – instalacja przez HACS (katalog `dist/`, `hacs.json`); karta sama wykrywa swój katalog (rdzeń i grafiki ładowane z tego samego miejsca).
 - **igneo-card v9.4** – dyskretny przycisk wsparcia na dole ekranu INFO.
@@ -14,3 +26,5 @@ Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 - v8.5 – grafiki kotła, palnika i bojlera z plików w `img/`.
 - v8.4 – historia alarmów z historii HA, przycisk POTWIERDŹ.
 - v8.0–v8.3 – poziomy dostępu z ESP (PIN), menu wg poziomu, nastawy palnika/CO/CWU.
+
+</details>
