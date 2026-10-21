@@ -170,4 +170,4 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 | `www/community/igneo-ha/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
 | `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
 | `docs/img/` | zrzuty ekranu do tego README |
-| `CHANGELOG.md` | historia zmian karty i firmware |
+| `CHANGELOG.md`, `CHANGELOG-firmware.md` | historia zmian karty i firmware |
