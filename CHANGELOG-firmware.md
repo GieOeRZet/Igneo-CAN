@@ -3,6 +3,8 @@
 Najnowsze na górze. Format wpisów: `vX.Y: opis`. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
 
+- **v2.32:** podział firmware: plik użytkownika `tekla-estyma.yaml` (substitutions, hasła z secrets, packages) i rdzeń `tekla-estyma-core.yaml` pobierany z GitHuba przy kompilacji (`packages: url/ref: main`). Branch `test` zawiera jeden pełny plik (v2.31). Niesprawdzone kompilacją ESPHome.
+
 - **v2.31:** porządek w substitutions: najpierw Wi‑Fi i adres IP, potem klucz API i hasło OTA, potem `dwa_obiegi_co`, na końcu reszta; `static_ip` domyślnie `"true"`.
 
 - **v2.30:** substitution `static_ip: "true"/"false"` przełącza stały adres IP (z `device_ip/device_gateway/device_subnet`) albo DHCP; realizowane pakietem `packages: network_ip` (Jinja) dodającym `wifi.manual_ip`. Wymaga ESPHome z obsługą Jinja w packages; niesprawdzone kompilacją.

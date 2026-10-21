@@ -1,10 +1,10 @@
 {
   "firmware": {
-    "version": "2.31",
+    "version": "2.32",
     "changelog": [
+      "Podział firmware: mały plik użytkownika + rdzeń pobierany z GitHuba przy kompilacji (branch test = jeden pełny plik)",
       "Uporządkowane substitutions (Wi‑Fi, API, OTA, dwa obiegi CO, reszta); stały adres IP domyślnie włączony",
-      "Stały adres IP jedną opcją static_ip: \"true\"/\"false\" w substitutions (domyślnie DHCP)",
-      "Adres IP domyślnie z DHCP; stały adres opcjonalny (zakomentowany w YAML, opis w README)"
+      "Stały adres IP jedną opcją static_ip: \"true\"/\"false\" w substitutions (domyślnie DHCP)"
     ]
   },
   "card": {

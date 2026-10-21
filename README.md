@@ -25,7 +25,7 @@ Kod ESPHome i karta: Gorz Roman.
 12. [Struktura repozytorium](#struktura-repozytorium)
 
 ## Co jest w środku
-- **Firmware ESPHome** (`esphome/tekla-estyma.yaml`) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
+- **Firmware ESPHome** – plik użytkownika `esphome/tekla-estyma.yaml` (ustawienia) + rdzeń `esphome/tekla-estyma-core.yaml` (logika, pobierany z GitHuba przy kompilacji) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
 - **Karta** (`www/community/igneo-ha/igneo-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
 - **Katalog rejestrów CANopen** (`docs/rejestry/`) – opis i CSV znanych rejestrów węzła 4 i 86.
 
@@ -41,13 +41,17 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 ## Instalacja – krok po kroku
 1. **Przygotuj `secrets.yaml`** w katalogu ESPHome – [wymagane wpisy](#plik-secretsyaml--wymagane-wpisy).
 2. **Sieć:** w `secrets.yaml` wpisz `wifi_ssid_iot` i `wifi_pass`. W `substitutions` ustaw `static_ip` (`"true"` = stały adres z `device_ip/device_gateway/device_subnet`, `"false"` = DHCP) – patrz sekcja „Adres IP” niżej.
-3. **Wgraj firmware**: skopiuj `esphome/tekla-estyma.yaml` do ESPHome, wgraj (pierwszy raz po kablu USB).
+3. **Wgraj firmware**: skopiuj do ESPHome **tylko** plik `esphome/tekla-estyma.yaml` (to Twój mały plik z ustawieniami; logikę ESPHome pobierze sam z GitHuba przez `packages`). Pierwszy raz wgraj po kablu USB. Kolejne aktualizacje: w ESPHome kliknij *Install* – pobierze najnowszy rdzeń z `main`.
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
 5. **Skopiuj kartę** – zawartość `www/community/igneo-ha/` do `/config/www/community/igneo-ha/` (powstanie `igneo-card.js`, `tekla-panel-card.js` i folder `img/`). Pliki muszą leżeć dokładnie w tym folderze.
 6. **Dodaj zasób** (Ustawienia → Dashboardy → ⋮ → Zasoby): typ *moduł JavaScript*, adres `/local/community/igneo-ha/igneo-card.js?v=1`. Po każdej aktualizacji pliku zmień `?v=` i odśwież stronę (Ctrl+F5).
 7. **Dodaj kartę** na dashboard – [opis poniżej](#dodanie-karty-i-konfiguracja).
 
 > Instalacja przez HACS jest możliwa po drobnej przebudowie repo (pliki w `dist/`, `hacs.json`, release, ścieżka względna) i wymaga repozytorium publicznego – na razie niewdrożona.
+
+## Dwie wersje firmware: `main` i `test`
+- **`main`** (domyślna) – podział na plik użytkownika (`tekla-estyma.yaml`) i rdzeń (`tekla-estyma-core.yaml`) pobierany z GitHuba przy każdej kompilacji. Wymaga dostępu ESPHome do internetu przy buildzie.
+- **`test`** – jeden kompletny plik `esphome/tekla-estyma.yaml` ze wszystkim w środku (bez pobierania z GitHuba). Użyj, gdy chcesz mieć wszystko lokalnie albo gdy podział nie działa: `git clone -b test https://github.com/GieOeRZet/Tekla-Igneo-HA.git`.
 
 ## Plik secrets.yaml – wymagane wpisy
 Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozytorium (`.gitignore`).
