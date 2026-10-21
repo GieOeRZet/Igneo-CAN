@@ -1,10 +1,10 @@
 {
   "firmware": {
-    "version": "2.30",
+    "version": "2.31",
     "changelog": [
+      "Uporządkowane substitutions (Wi‑Fi, API, OTA, dwa obiegi CO, reszta); stały adres IP domyślnie włączony",
       "Stały adres IP jedną opcją static_ip: \"true\"/\"false\" w substitutions (domyślnie DHCP)",
-      "Adres IP domyślnie z DHCP; stały adres opcjonalny (zakomentowany w YAML, opis w README)",
-      "Hasło awaryjnej sieci „Tekla-Estyma Fallback” jest teraz w substitutions (ap_pass), nie w secrets.yaml"
+      "Adres IP domyślnie z DHCP; stały adres opcjonalny (zakomentowany w YAML, opis w README)"
     ]
   },
   "card": {
