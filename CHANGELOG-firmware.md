@@ -8,6 +8,7 @@ Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 - **Bezpieczeństwo**: wyjście ustawione na OFF/ON samo wraca na Automat po `test_revert_s` sekundach (domyślnie 120, 0 = wyłączone); akcja `test_reset` (bez PIN-u) wraca wszystkie od razu.
 - **Stany**: akcja `test_refresh` czyta 19 rejestrów, wynik w nowym diagnostycznym sensorze „Test wyjsc stany” (19 liczb po spacji).
 - **Plik użytkownika `tekla-estyma.yaml`** zawiera teraz wszystkie substitutions (Wi‑Fi, IP, PIN-y, flagi zapisu, CAN, diagnostyka) z domyślnymi wartościami i opisami – wszystko do zmiany w jednym miejscu.
+- **Stały adres IP bez Jinja**: usunięty pakiet `network_ip` i substitution `static_ip` (ESPHome 2025.7 nie składał konfiguracji: „Platform missing”). Stały adres to teraz zwykły blok `wifi: manual_ip` w pliku użytkownika (DHCP = zakomentuj blok).
 - Niesprawdzone kompilacją ESPHome (składnia YAML sprawdzona).
 
 ## v1.0 – pierwsze oficjalne wydanie

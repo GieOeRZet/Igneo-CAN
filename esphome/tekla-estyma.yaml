@@ -12,8 +12,8 @@ substitutions:
   wifi_ssid: !secret wifi_ssid_iot
   wifi_password: !secret wifi_pass
   ap_pass: "11223344"        # haslo awaryjnej sieci "Tekla-Estyma Fallback" - jawne tutaj; WPA2 wymaga min. 8 znakow
-  # Staly adres IP: "true" = adres z trzech wartosci ponizej (wpisz swoje!), "false" = adres z DHCP.
-  static_ip: "true"
+  # Staly adres IP: wpisz swoje wartosci ponizej; blok "wifi: manual_ip" na dole pliku je uzywa.
+  # DHCP: zakomentuj albo usun ten blok "wifi:" (trzy linie manual_ip).
   device_ip: 192.168.10.250
   device_gateway: 192.168.10.1
   device_subnet: 255.255.254.0
@@ -100,5 +100,11 @@ packages:
     ref: main
     files: [esphome/tekla-estyma-core.yaml]
     refresh: 1h
-  # Staly adres IP przelaczany substitution static_ip (dodaje wifi.manual_ip).
-  network_ip: "${ {'wifi': {'manual_ip': {'static_ip': device_ip, 'gateway': device_gateway, 'subnet': device_subnet}}} if static_ip == 'true' else {} }"
+
+wifi:
+  # Staly adres IP z substitutions device_ip / device_gateway / device_subnet.
+  # Chcesz DHCP? Zakomentuj albo usun caly ten blok "wifi:".
+  manual_ip:
+    static_ip: ${device_ip}
+    gateway: ${device_gateway}
+    subnet: ${device_subnet}

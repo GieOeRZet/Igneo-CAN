@@ -22,7 +22,6 @@ substitutions:
   # (zdalny pakiet nie moze zawierac !secret).
   # ===================================================================
   ap_pass: "11223344"        # haslo awaryjnej sieci "Tekla-Estyma Fallback"
-  static_ip: "false"         # "true" = staly adres z device_ip/device_gateway/device_subnet (obsluguje plik uzytkownika), "false" = DHCP
   device_ip: 192.168.10.250
   device_gateway: 192.168.10.1
   device_subnet: 255.255.254.0
@@ -373,7 +372,7 @@ wifi:
   ap:
     ssid: "Tekla-Estyma Fallback"
     password: ${ap_pass}
-  # Staly adres IP wlacza substitution static_ip: "true" (pakiet ponizej dodaje wifi.manual_ip); przy "false" ESP bierze adres z DHCP.
+  # Staly adres IP (opcjonalny): blok "wifi: manual_ip" w pliku uzytkownika tekla-estyma.yaml; bez niego ESP bierze adres z DHCP.
 
 globals:
   - id: scan_on
