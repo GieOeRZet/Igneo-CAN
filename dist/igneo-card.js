@@ -1,6 +1,6 @@
-/* igneo-card v9.4 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* igneo-card v9.5 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
-   Dziala tak: pobiera rdzen /local/community/igneo-ha/tekla-panel-card.js (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
+   Dziala tak: pobiera rdzen tekla-panel-card.js (z tego samego katalogu) (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
      | czas podawania | historia alarmow z kotla | grafiki z folderu img/ | autor na ekranie INFO | v9.2: automatyczne wykrywanie encji, tryb lite (lite: true w YAML), nowy edytor.
    Zasob w HA: tylko ten plik. Po zmianie podbij ?v= w adresie zasobu i zrob Ctrl+F5. */
@@ -12,7 +12,8 @@
       console.warn('tekla-panel-card v7.8: element juz zarejestrowany (stara wersja w pamieci strony) - zrob twarde odswiezenie (Ctrl+F5)');
       return;
     }
-    let code = await (await fetch('/local/community/igneo-ha/tekla-panel-card.js?v=62&_=' + Date.now())).text();
+    const DIR = new URL('.', import.meta.url).pathname; // katalog tego pliku (HACS: /hacsfiles/igneo-can/, recznie: /local/community/igneo-ha/)
+    let code = await (await fetch(DIR + 'tekla-panel-card.js?v=62&_=' + Date.now())).text();
     const EDITS = [
 {
 "t": "x",
@@ -727,7 +728,7 @@
     if (C.prototype.__v85) return;
     C.prototype.__v85 = true;
 
-    const BASE = '/local/community/igneo-ha/img/';
+    const BASE = new URL('.', import.meta.url).pathname + 'img/';
     const EXT = ['png', 'webp', 'jpg', 'jpeg', 'svg'];
     const stamp = Date.now(); // plik jest pobierany swiezo przy kazdym odswiezeniu strony
     const IM = window.__igneoImg = window.__igneoImg || {};
@@ -915,7 +916,7 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '9.4';
+    const CARD_VER = '9.5';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/Igneo-CAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };

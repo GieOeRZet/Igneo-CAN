@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Igneo CAN – panel kotła Tekla w Home Assistant</title>
+<meta name="description" content="Wierna replika panelu Estyma / Tekla Igneo Touch w Home Assistant: karta, firmware ESPHome (CAN) i opis rejestrów. Projekt hobbystyczny Romana Gorza.">
+<meta property="og:title" content="Igneo CAN – panel kotła Tekla w Home Assistant">
+<meta property="og:description" content="Karta Home Assistant i firmware ESPHome do kotłów Tekla z panelem Igneo Touch (CAN).">
+<meta property="og:image" content="img/01-ekran-glowny.png">
+<style>
+:root{--bg:#0f1426;--card:#182041;--line:#2b3668;--tx:#e9eefc;--dim:#9fb0d8;--ac:#5f8de3;--ac2:#f08a24;--ok:#4cf08a}
+@media (prefers-color-scheme:light){:root{--bg:#f2f5fc;--card:#fff;--line:#d5ddf2;--tx:#14204a;--dim:#51608f}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--ac)}
+.w{max-width:1040px;margin:0 auto;padding:0 16px}
+header.h{padding:56px 0 36px;text-align:center}
+.tag{display:inline-block;font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ac2);border:1px solid var(--ac2);border-radius:99px;padding:3px 12px;margin-bottom:14px}
+h1{font-size:clamp(30px,6vw,52px);line-height:1.1;margin:.1em 0 .3em}
+.lead{max-width:680px;margin:0 auto 24px;color:var(--dim);font-size:18px}
+.btns{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+.b{display:inline-block;padding:12px 22px;border-radius:10px;text-decoration:none;font-weight:600;border:1px solid var(--line);color:var(--tx);background:var(--card)}
+.b.p{background:var(--ac);border-color:var(--ac);color:#fff}
+.b.c{background:#ffdd00;border-color:#ffdd00;color:#1b1b1b}
+.hero{margin:36px auto 0;max-width:640px}
+.hero img{width:100%;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 50px rgba(0,0,0,.35)}
+section{padding:40px 0}
+h2{font-size:28px;margin:0 0 6px}
+.sub{color:var(--dim);margin:0 0 22px}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.c{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.c h3{margin:0 0 6px;font-size:17px}.c p{margin:0;color:var(--dim);font-size:15px}
+.shots{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(250px,1fr))}
+.shots figure{margin:0;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.shots img{display:block;width:100%;height:auto}
+.shots figcaption{padding:8px 12px;font-size:13px;color:var(--dim)}
+ol.st{padding-left:20px}ol.st li{margin:6px 0}
+code{background:rgba(127,140,190,.18);padding:1px 6px;border-radius:5px;font-size:.92em}
+.note{font-size:13px;color:var(--dim)}
+.support{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:30px 18px}
+footer{padding:30px 0 50px;text-align:center;color:var(--dim);font-size:14px}
+</style>
+</head>
+<body>
+<header class="h"><div class="w">
+  <span class="tag">Home Assistant · ESPHome · CAN</span>
+  <h1>Igneo CAN</h1>
+  <p class="lead">Panel kotła <b>Tekla / Estyma Igneo Touch</b> w Home Assistant: karta wierna oryginałowi, firmware ESPHome czytający kocioł po CAN i opis rejestrów. Zbudowane przez użytkownika dla użytkowników.</p>
+  <div class="btns">
+    <a class="b p" href="https://github.com/GieOeRZet/Igneo-CAN#readme">Instrukcja instalacji</a>
+    <a class="b" href="https://github.com/GieOeRZet/Igneo-CAN">Repozytorium GitHub</a>
+  </div>
+  <div class="hero"><img src="img/01-ekran-glowny.png" alt="Karta Igneo CAN – ekran główny" loading="eager"></div>
+  <p class="note">Zrzuty ekranu pochodzą z danych testowych.</p>
+</div></header>
+
+<section><div class="w">
+  <h2>Co dostajesz</h2>
+  <p class="sub">Wszystko, żeby kocioł był w domowej automatyce bez dokupowania modułów.</p>
+  <div class="grid">
+    <div class="c"><h3>Karta jak panel</h3><p>Ekran główny, Ogrzewanie, Woda, Palnik i Menu z podmenu – tak jak na wyświetlaczu kotła, razem z edycją nastaw i harmonogramów.</p></div>
+    <div class="c"><h3>Firmware ESPHome</h3><p>Układ XIAO ESP32-C6 z MCP2515 czyta i zapisuje rejestry kotła po CAN. Moc palnika w kW i spalanie liczy samo ESP.</p></div>
+    <div class="c"><h3>Poziomy dostępu</h3><p>Zwykły użytkownik widzi tylko poziom 0. Klucze instalatora 1 i 2 odblokowują dalsze nastawy, tak jak w panelu.</p></div>
+    <div class="c"><h3>Historia alarmów</h3><p>Pełny bufor 20 alarmów czytany prosto z kotła, z potwierdzaniem alarmu.</p></div>
+    <div class="c"><h3>Bez szablonów w HA</h3><p>Karta sama znajduje encje po nazwie. Brak encji = „-”, bez błędów karty. Tryb <code>lite</code> dla domowników.</p></div>
+    <div class="c"><h3>Powiadomienie o aktualizacji</h3><p>Zielona dioda przy menu i changelog na ekranie „Informacje o programie”, gdy wyjdzie nowa wersja.</p></div>
+  </div>
+</div></section>
+
+<section><div class="w">
+  <h2>Ekrany</h2>
+  <p class="sub">Wybrane widoki karty.</p>
+  <div class="shots">
+    <figure><img src="img/05-menu.png" alt="Menu" loading="lazy"><figcaption>Menu z podmenu</figcaption></figure>
+    <figure><img src="img/04-palnik.png" alt="Palnik" loading="lazy"><figcaption>Palnik</figcaption></figure>
+    <figure><img src="img/06-kociol.png" alt="Kocioł" loading="lazy"><figcaption>Kocioł i harmonogram</figcaption></figure>
+    <figure><img src="img/07-palnik-nastawy.png" alt="Nastawy palnika" loading="lazy"><figcaption>Nastawy palnika</figcaption></figure>
+    <figure><img src="img/10-historia-alarmow.png" alt="Historia alarmów" loading="lazy"><figcaption>Historia alarmów</figcaption></figure>
+    <figure><img src="img/12-program-harmonogram.png" alt="Harmonogram" loading="lazy"><figcaption>Edycja harmonogramu</figcaption></figure>
+  </div>
+</div></section>
+
+<section><div class="w">
+  <h2>Jak zacząć</h2>
+  <ol class="st">
+    <li>Zbuduj układ: <b>Seeed XIAO ESP32-C6</b> + <b>CAN Bus Breakout (MCP2515)</b>, podłącz CAN-H, CAN-L i masę do kotła.</li>
+    <li>Uzupełnij <code>secrets.yaml</code> (Wi‑Fi, klucz API, hasło OTA) i skopiuj plik użytkownika firmware do ESPHome.</li>
+    <li>Dodaj urządzenie w Home Assistant i zainstaluj kartę przez HACS (repozytorium niestandardowe) albo skopiuj ją ręcznie.</li>
+    <li>Dodaj zasób i kartę na dashboard – pełny opis krok po kroku jest w <a href="https://github.com/GieOeRZet/Igneo-CAN#readme">instrukcji</a>.</li>
+  </ol>
+  <p class="note">Projekt nie jest związany z firmami Estyma ani Tekla. Używasz na własną odpowiedzialność; przy pracach na instalacji grzewczej zachowaj ostrożność.</p>
+</div></section>
+
+
+<section><div class="w">
+<div class="note" style="line-height:1.6;margin-bottom:14px">
+<b>Autor.</b> Projekt stworzył Roman Gorz z pomocą Claude, asystenta AI firmy Anthropic.<br><b>Wsparcie.</b> Projekt jest darmowy. Kawę może postawić każdy, kto chce docenić mój poświęcony czas, włożoną pracę i własne środki (sprzęt, testy) – niczego nie kupujesz i niczego w zamian nie dostajesz.
+<div style="display:flex;flex-wrap:wrap;align-items:center;gap:18px;margin-top:14px"><a href="https://buycoffee.to/ergie" target="_blank" rel="noopener"><img src="https://buycoffee.to/static/img/share/share-button-primary--pl.png" style="width:224px;height:58px" alt="Postaw kawę dla eRGie na buycoffee.to"></a><img src="img/buycoffee-qr.png" width="110" height="110" alt="Kod QR do buycoffee.to/ergie" style="border-radius:8px;background:#fff"></div>
+</div>
+<div class="note" style="border:1px solid var(--dim);border-radius:12px;padding:18px 20px;line-height:1.6">
+<b>Ważne.</b> Igneo CAN to niezależny, nieoficjalny projekt – nie jest produktem firm Tekla (producent kotłów) ani Estyma (producent sterowników) i nie zastępuje oryginalnego produktu. Zachęcamy do zakupu i instalacji wyłącznie oryginalnych modułów. Odczyt i zapis za pomocą urządzenia innego niż dopuszczone przez producenta kotła (Tekla) i producenta sterowników (Estyma) może naruszać warunki gwarancji i prowadzić do uszkodzenia lub nieprawidłowej pracy kotła/sterownika – autor za to nie odpowiada. Wszelkie zmiany sprzętowe użytkownik wykonuje wyłącznie na własną odpowiedzialność. Projekt powstał na podstawie obserwacji komunikacji CAN własnej instalacji, w celu współpracy z Home Assistant; nie zawiera kodu, firmware'u ani dokumentacji producentów. Nazwy Tekla, Estyma, Igneo i Igneo Touch należą do ich właścicieli i są użyte wyłącznie informacyjnie.
+</div></div></section>
+<footer><div class="w">© 2026 Roman Gorz · kod otwarty, tylko do użytku niekomercyjnego · <a href="https://github.com/GieOeRZet/Igneo-CAN/blob/main/LICENSE">licencja</a></div></footer>
+</body>
+</html>
