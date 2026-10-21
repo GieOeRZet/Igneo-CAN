@@ -1,4 +1,4 @@
-# Igneo CAN
+# PelletCAN
 
 Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
 
@@ -30,7 +30,7 @@ Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej insta
 
 ## Co jest w środku
 - **Firmware ESPHome** – plik użytkownika `esphome/tekla-estyma.yaml` (ustawienia) + rdzeń `esphome/tekla-estyma-core.yaml` (logika, pobierany z GitHuba przy kompilacji) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
-- **Karta** (`dist/igneo-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
+- **Karta** (`dist/pelletcan-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
 - **Katalog rejestrów CANopen** (`docs/rejestry/`) – opis i CSV znanych rejestrów węzła 4 i 86.
 
 Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez encji pokazują „-”.
@@ -48,15 +48,15 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 3. **Wgraj firmware**: skopiuj do ESPHome **tylko** plik `esphome/tekla-estyma.yaml` (to Twój mały plik z ustawieniami; logikę ESPHome pobierze sam z GitHuba przez `packages`). Pierwszy raz wgraj po kablu USB. Kolejne aktualizacje: w ESPHome kliknij *Install* – pobierze najnowszy rdzeń z `main`.
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
 5. **Zainstaluj kartę** – wybierz jedną z dwóch dróg:
-   - **HACS (zalecane):** HACS → ⋮ → *Niestandardowe repozytoria* → adres `https://github.com/GieOeRZet/Igneo-CAN`, kategoria **Dashboard** (Lovelace) → *Dodaj* → znajdź „Igneo CAN” → *Pobierz*. Zasób dashboardu doda się sam (`/hacsfiles/igneo-can/igneo-card.js`). Aktualizacje pojawią się w HACS.
-   - **Ręcznie:** skopiuj zawartość folderu `dist/` do `/config/www/community/igneo-ha/` (powstanie `igneo-card.js`, `tekla-panel-card.js` i folder `img/`; pliki muszą leżeć razem). W Ustawienia → Dashboardy → ⋮ → Zasoby dodaj *moduł JavaScript* o adresie `/local/community/igneo-ha/igneo-card.js?v=1`; po każdej aktualizacji zmień `?v=` i odśwież stronę (Ctrl+F5).
-6. **Nie dodawaj obu naraz** – jeśli przechodzisz z instalacji ręcznej na HACS, usuń najpierw stary zasób `/local/community/igneo-ha/...`.
+   - **HACS (zalecane):** HACS → ⋮ → *Niestandardowe repozytoria* → adres `https://github.com/GieOeRZet/PelletCAN`, kategoria **Dashboard** (Lovelace) → *Dodaj* → znajdź „PelletCAN” → *Pobierz*. Zasób dashboardu doda się sam (`/hacsfiles/pelletcan/pelletcan-card.js`). Aktualizacje pojawią się w HACS.
+   - **Ręcznie:** skopiuj zawartość folderu `dist/` do `/config/www/community/pelletcan/` (powstanie `pelletcan-card.js`, `tekla-panel-card.js` i folder `img/`; pliki muszą leżeć razem). W Ustawienia → Dashboardy → ⋮ → Zasoby dodaj *moduł JavaScript* o adresie `/local/community/pelletcan/pelletcan-card.js?v=1`; po każdej aktualizacji zmień `?v=` i odśwież stronę (Ctrl+F5).
+6. **Nie dodawaj obu naraz** – jeśli przechodzisz z instalacji ręcznej na HACS, usuń najpierw stary zasób `/local/community/pelletcan/...`.
 7. **Dodaj kartę** na dashboard – [opis poniżej](#dodanie-karty-i-konfiguracja).
 
 
 ## Dwie wersje firmware: `main` i `test`
 - **`main`** (domyślna) – podział na plik użytkownika (`tekla-estyma.yaml`) i rdzeń (`tekla-estyma-core.yaml`) pobierany z GitHuba przy każdej kompilacji. Wymaga dostępu ESPHome do internetu przy buildzie.
-- **`test`** – jeden kompletny plik `esphome/tekla-estyma.yaml` ze wszystkim w środku (bez pobierania z GitHuba). Użyj, gdy chcesz mieć wszystko lokalnie albo gdy podział nie działa: `git clone -b test https://github.com/GieOeRZet/Igneo-CAN.git`.
+- **`test`** – jeden kompletny plik `esphome/tekla-estyma.yaml` ze wszystkim w środku (bez pobierania z GitHuba). Użyj, gdy chcesz mieć wszystko lokalnie albo gdy podział nie działa: `git clone -b test https://github.com/GieOeRZet/PelletCAN.git`.
 
 ## Plik secrets.yaml – wymagane wpisy
 Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozytorium (`.gitignore`).
@@ -171,7 +171,7 @@ Odczyt ustawień: po starcie ESP czyta wszystkie ustawienia (najpierw poziom 0),
 Historia alarmów jest czytana z bufora kotła (20 ostatnich wpisów, encje „Alarm wpis 1..20” – wymaga firmware ≥ 2.25).
 
 ## Grafiki
-Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpeg, svg – w tej kolejności). Wgraj własny plik do folderu `img/` obok karty (HACS: `/config/www/community/igneo-can/img/`, ręcznie: `/config/www/community/igneo-ha/img/`), aby podmienić domyślny, i odśwież stronę (Ctrl+F5).
+Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpeg, svg – w tej kolejności). Wgraj własny plik do folderu `img/` obok karty (HACS: `/config/www/community/pelletcan/img/`, ręcznie: `/config/www/community/pelletcan/img/`), aby podmienić domyślny, i odśwież stronę (Ctrl+F5).
 
 ## Rozwiązywanie problemów
 - **Wszędzie „-”** – karta nie widzi encji. Sprawdź, czy nazwy encji zawierają `tekla` (albo ustaw `entity_prefix`) i czy urządzenie jest dodane w HA.
@@ -185,8 +185,8 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 |---|---|
 | `esphome/tekla-estyma.yaml` | firmware ESPHome (historia zmian w nagłówku) |
 | `esphome/secrets.example.yaml` | wzór `secrets.yaml` |
-| `dist/igneo-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
-| `dist/tekla-panel-card.js` | rdzeń karty, pobierany przez `igneo-card.js` |
+| `dist/pelletcan-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
+| `dist/tekla-panel-card.js` | rdzeń karty, pobierany przez `pelletcan-card.js` |
 | `dist/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
 | `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
 | `docs/img/` | zrzuty ekranu do tego README |
@@ -202,16 +202,16 @@ Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmw
 
 ## Ważne zastrzeżenia
 
-- **Projekt niezależny i nieoficjalny.** Igneo CAN nie jest produktem, nie jest współtworzony, zatwierdzony ani wspierany przez firmę Tekla (producenta kotłów) ani Estyma (producenta sterowników). Nie zastępuje oryginalnego produktu.
+- **Projekt niezależny i nieoficjalny.** PelletCAN nie jest produktem, nie jest współtworzony, zatwierdzony ani wspierany przez firmę Tekla (producenta kotłów) ani Estyma (producenta sterowników). Nie zastępuje oryginalnego produktu.
 - **Zachęcamy do zakupu i instalacji wyłącznie oryginalnych modułów** dopuszczonych przez producenta kotła (Tekla) i producenta sterowników (Estyma).
 - **Gwarancja.** Odczyt i zapis parametrów za pomocą jakiegokolwiek urządzenia innego niż produkt dopuszczony przez producenta kotła (Tekla) i producenta sterowników (Estyma) może naruszać warunki gwarancji oraz prowadzić do uszkodzenia lub nieprawidłowej pracy kotła i sterownika. Autor za to nie odpowiada.
 - **Odpowiedzialność użytkownika.** Wszelkie zmiany sprzętowe (podłączenie do magistrali CAN, montaż modułów) oraz zapisy parametrów użytkownik wykonuje wyłącznie na własne ryzyko i własną odpowiedzialność. Oprogramowanie jest dostarczane „tak jak jest”, bez gwarancji.
 - **Skąd wiedza o protokole.** Projekt powstał na podstawie obserwacji komunikacji CAN (standard CANopen) własnej, legalnie zakupionej instalacji, w celu zapewnienia współpracy (interoperacyjności) z Home Assistant. Kod jest napisany samodzielnie przez autora. Repozytorium nie zawiera kodu, firmware'u, plików ani dokumentacji producentów i nie obchodzi żadnych zabezpieczeń technicznych.
 - **Znaki towarowe.** Nazwy Tekla, Estyma, Igneo i Igneo Touch oraz ich znaki towarowe należą do ich właścicieli i są użyte wyłącznie informacyjnie, dla opisania zgodności. Wygląd karty jest odwzorowaniem układu panelu na potrzeby własnej instalacji.
-- Właściciel praw, który uważa, że jakaś treść narusza jego prawa, może zgłosić to przez [Issues](https://github.com/GieOeRZet/Igneo-CAN/issues) – sprawa zostanie rozpatrzona, a treść w razie potrzeby usunięta.
+- Właściciel praw, który uważa, że jakaś treść narusza jego prawa, może zgłosić to przez [Issues](https://github.com/GieOeRZet/PelletCAN/issues) – sprawa zostanie rozpatrzona, a treść w razie potrzeby usunięta.
 
 ## Licencja
-Kod jest otwarty: możesz go czytać, pobierać, modyfikować i udostępniać dalej z zachowaniem informacji o autorze (Roman Gorz, Igneo CAN) i tej samej licencji – **ale wyłącznie niekomercyjnie**. Autor nie wyraża zgody na wykorzystanie tej pracy do zarobku (sprzedaż, usługi płatne, wbudowanie w produkt komercyjny) bez pisemnej zgody. Szczegóły w pliku [LICENSE](LICENSE). Uwaga: licencja z zakazem użycia komercyjnego nie spełnia formalnej definicji „open source” (OSI) – to kod z otwartymi źródłami (source-available).
+Kod jest otwarty: możesz go czytać, pobierać, modyfikować i udostępniać dalej z zachowaniem informacji o autorze (Roman Gorz, PelletCAN) i tej samej licencji – **ale wyłącznie niekomercyjnie**. Autor nie wyraża zgody na wykorzystanie tej pracy do zarobku (sprzedaż, usługi płatne, wbudowanie w produkt komercyjny) bez pisemnej zgody. Szczegóły w pliku [LICENSE](LICENSE). Uwaga: licencja z zakazem użycia komercyjnego nie spełnia formalnej definicji „open source” (OSI) – to kod z otwartymi źródłami (source-available).
 
 ## Wsparcie
 Projekt jest darmowy. Jeśli chcesz, możesz go wesprzeć przez [buycoffee.to/ergie](https://buycoffee.to/ergie) – to sposób, by docenić mój poświęcony czas, włożoną pracę i własne środki (sprzęt, testy). Wsparcie jest dobrowolne i niczego nie daje w zamian, nie jest płatnością za produkt ani usługę.

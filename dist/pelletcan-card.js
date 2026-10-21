@@ -1,4 +1,4 @@
-/* igneo-card v9.5 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* PelletCAN card v9.6 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
    Dziala tak: pobiera rdzen tekla-panel-card.js (z tego samego katalogu) (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -12,7 +12,7 @@
       console.warn('tekla-panel-card v7.8: element juz zarejestrowany (stara wersja w pamieci strony) - zrob twarde odswiezenie (Ctrl+F5)');
       return;
     }
-    const DIR = new URL('.', import.meta.url).pathname; // katalog tego pliku (HACS: /hacsfiles/igneo-can/, recznie: /local/community/igneo-ha/)
+    const DIR = new URL('.', import.meta.url).pathname; // katalog tego pliku (HACS: /hacsfiles/pelletcan/, recznie: /local/community/igneo-ha/)
     let code = await (await fetch(DIR + 'tekla-panel-card.js?v=62&_=' + Date.now())).text();
     const EDITS = [
 {
@@ -816,6 +816,9 @@
       customElements.define('tekla-panel-card_lite', class extends C { setConfig(c) { super.setConfig(Object.assign({}, c, { lite: true })); } });
     }
 
+    if (!customElements.get('pelletcan-card')) customElements.define('pelletcan-card', class extends C {});   // alias typu: custom:pelletcan-card = custom:tekla-panel-card
+    window.customCards = window.customCards || [];   // wybor karty w edytorze dashboardu
+    if (!window.customCards.some(c => c.type === 'pelletcan-card')) window.customCards.push({ type: 'pelletcan-card', name: 'PelletCAN-card', description: 'Panel kotła pelletowego (replika panelu Igneo Touch) dla PelletCAN', preview: false });
     // ---- edytor wizualny: sekcje wg ekranow i menu karty ----
     const PR2L = {}; ((W && W.PR2) || []).forEach(c => { PR2L[c.r] = c.t; });
     const LBL = {}; D.ENT_GROUPS.forEach(g => g[1].forEach(f => { LBL[f[0]] = f[1]; }));
@@ -916,8 +919,8 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '9.5';
-    const MAN = 'https://raw.githubusercontent.com/GieOeRZet/Igneo-CAN/main/version.json';
+    const CARD_VER = '9.6';
+    const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };
     const cmp = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };

@@ -3,6 +3,7 @@
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
 ## Karta
+- **v9.6** – projekt nazywa się teraz **PelletCAN** (nowe repozytorium `GieOeRZet/PelletCAN`): plik karty `pelletcan-card.js`, katalog HACS `pelletcan`, dodatkowy alias typu `custom:pelletcan-card` (typ `custom:tekla-panel-card` działa dalej); nazwa karty: **PelletCAN-card**.
 - **igneo-card v9.5** – instalacja przez HACS (katalog `dist/`, `hacs.json`); karta sama wykrywa swój katalog (rdzeń i grafiki ładowane z tego samego miejsca).
 - **igneo-card v9.4** – dyskretny przycisk wsparcia na dole ekranu INFO.
 - **igneo-card v9.3** – informacja o aktualizacjach: zielona dioda przy ikonie menu i zielony napis „Informacje o programie”, gdy `version.json` w repo ma nowszą wersję firmware lub karty; ekran INFO przebudowany (autor, wersje, changelog aktualizacji, przycisk „Odrzuć aktualizację”, zapamiętany w przeglądarce); nowa rola encji `fw_ver` (Wersja firmware).
