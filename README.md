@@ -44,7 +44,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 
 ## Instalacja – krok po kroku
 1. **Przygotuj `secrets.yaml`** w katalogu ESPHome – [wymagane wpisy](#plik-secretsyaml--wymagane-wpisy).
-2. **Sieć:** w `secrets.yaml` wpisz `wifi_ssid_iot` i `wifi_pass`. Wpisz `device_ip/device_gateway/device_subnet` (albo wyłącz stały adres i użyj DHCP) – patrz sekcja „Adres IP” niżej.
+2. **Sieć:** w `secrets.yaml` wpisz `wifi_ssid_iot` i `wifi_pass`. Ustaw `static_ip` (true = stały adres z `device_ip/device_gateway/device_subnet`, false = DHCP) – patrz sekcja „Adres IP” niżej.
 3. **Wgraj firmware**: skopiuj do ESPHome **tylko** plik `esphome/PelletCAN.yaml` (Twój plik: ustawienia `substitutions` + bloki `esphome`, `esp32`, `logger`, `web_server`, `captive_portal`, `api` i `packages`; cały kod, encje i usługi pobierze sam z GitHuba przez `packages`, niczego więcej nie edytujesz). **Aktualizując ze starszej wersji, wymień cały plik na nowy** (stare pliki użytkownika bez bloków `esp32`/`logger`/`api` z kluczem nie skompilują się z rdzeniem 1.2). Pierwszy raz wgraj po kablu USB. Kolejne aktualizacje: w ESPHome kliknij *Install* – pobierze najnowszy rdzeń z `main`.
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
 5. **Zainstaluj kartę** – wybierz jedną z dwóch dróg:
@@ -73,13 +73,14 @@ Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozyt
 PIN-y instalatora (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z oprogramowania panelu Tekla – są jawne w YAML (`pin_installer1`, `pin_installer2`) i nie wymagają wpisu w `secrets.yaml`.
 
 ## Adres IP: stały albo DHCP
-Adresy wpisujesz w `substitutions` pliku `esphome/PelletCAN.yaml`:
+Ustawiasz w `substitutions` pliku `esphome/PelletCAN.yaml`:
 ```yaml
+  static_ip: true                # true = stały adres, false = DHCP (bez cudzysłowów)
   device_ip: 192.168.10.250      # Twój adres (wpisz swoje wartości!)
   device_gateway: 192.168.10.1   # brama (router)
   device_subnet: 255.255.254.0   # maska sieci
 ```
-Na dole pliku jest blok `wifi: manual_ip`, który tych wartości używa. **Chcesz DHCP?** Zakomentuj albo usuń cały blok `wifi:` – wtedy HA znajdzie urządzenie po nazwie `tekla-estyma`. Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`.
+Przy `static_ip: true` plik dołącza pakiet z blokiem `wifi: manual_ip` (te trzy adresy). Przy `false` adresy są ignorowane i ESP bierze adres z DHCP – HA znajdzie urządzenie po nazwie `tekla-estyma`. Niczego nie komentujesz ręcznie. Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`.
 
 ## Awaryjny punkt dostępu Wi-Fi
 Jeśli ESP nie połączy się z siecią (zmiana routera, złe hasło, nowa sieć), po ok. minucie sam wystawia sieć **`Tekla-Estyma Fallback`** (hasło z `substitutions: ap_pass` w YAML, domyślnie `11223344`). Po połączeniu otwiera się strona logowania (portal captive; jeśli nie – wejdź na `192.168.4.1`), gdzie wybierasz sieć i wpisujesz hasło. Urządzenie zapisuje dane i łączy się z siecią. Ponieważ w firmware jest stały adres IP (`device_ip`), w nowej sieci musi on pasować do jej podsieci – w razie potrzeby wgraj firmware z poprawionym adresem. Po powrocie do sieci urządzenie pojawi się w ESPHome i w HA.

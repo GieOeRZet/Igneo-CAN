@@ -355,7 +355,7 @@ wifi:
   ap:
     ssid: "Tekla-Estyma Fallback"
     password: ${ap_pass}
-  # Staly adres IP (opcjonalny): blok "wifi: manual_ip" w pliku uzytkownika PelletCAN.yaml; bez niego ESP bierze adres z DHCP.
+  # Staly adres IP (opcjonalny): substitution static_ip (true/false) w pliku uzytkownika PelletCAN.yaml; false = DHCP.
 
 globals:
   - id: scan_on
