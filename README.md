@@ -199,12 +199,16 @@ Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmw
 
 ## Ważne zastrzeżenia
 
-- **Projekt niezależny i nieoficjalny.** Igneo CAN nie jest produktem, nie jest współtworzony, zatwierdzony ani wspierany przez firmę Estyma, Tekla ani producenta kotła. Nie zastępuje oryginalnego produktu Estyma.
-- **Zachęcamy do zakupu i instalacji wyłącznie oryginalnych modułów** dopuszczonych przez producenta kotła i firmę Estyma.
-- **Gwarancja.** Odczyt i zapis parametrów za pomocą jakiegokolwiek urządzenia innego niż produkt dopuszczony przez producenta kotła i firmę Estyma może naruszać warunki gwarancji oraz prowadzić do uszkodzenia lub nieprawidłowej pracy kotła i sterownika. Autor za to nie odpowiada.
+- **Projekt niezależny i nieoficjalny.** Igneo CAN nie jest produktem, nie jest współtworzony, zatwierdzony ani wspierany przez firmę Tekla (producenta kotłów) ani Estyma (producenta sterowników). Nie zastępuje oryginalnego produktu.
+- **Zachęcamy do zakupu i instalacji wyłącznie oryginalnych modułów** dopuszczonych przez producenta kotła (Tekla) i producenta sterowników (Estyma).
+- **Gwarancja.** Odczyt i zapis parametrów za pomocą jakiegokolwiek urządzenia innego niż produkt dopuszczony przez producenta kotła (Tekla) i producenta sterowników (Estyma) może naruszać warunki gwarancji oraz prowadzić do uszkodzenia lub nieprawidłowej pracy kotła i sterownika. Autor za to nie odpowiada.
 - **Odpowiedzialność użytkownika.** Wszelkie zmiany sprzętowe (podłączenie do magistrali CAN, montaż modułów) oraz zapisy parametrów użytkownik wykonuje wyłącznie na własne ryzyko i własną odpowiedzialność. Oprogramowanie jest dostarczane „tak jak jest”, bez gwarancji.
-- **Własna, niezależna implementacja.** Projekt zawiera wyłącznie autorski kod oraz informacje o zgodności uzyskane z obserwacji komunikacji własnej instalacji. Nie zawiera kodu, firmware’u, grafik ani dokumentacji należących do Estyma, Tekla ani producenta kotła i nie narusza zabezpieczeń technicznych. Nazwy Estyma, Tekla, Igneo i Igneo Touch oraz ich znaki towarowe należą do ich właścicieli i są użyte wyłącznie informacyjnie, dla opisania zgodności.
-- Jeśli jesteś właścicielem praw i uważasz, że jakaś treść narusza Twoje prawa, napisz do autora (roman.gorz@gmail.com) – sprawa zostanie rozpatrzona, a treść w razie potrzeby usunięta.
+- **Skąd wiedza o protokole.** Projekt powstał na podstawie obserwacji komunikacji CAN (standard CANopen) własnej, legalnie zakupionej instalacji, w celu zapewnienia współpracy (interoperacyjności) z Home Assistant. Kod jest napisany samodzielnie przez autora. Repozytorium nie zawiera kodu, firmware'u, plików ani dokumentacji producentów i nie obchodzi żadnych zabezpieczeń technicznych.
+- **Znaki towarowe.** Nazwy Tekla, Estyma, Igneo i Igneo Touch oraz ich znaki towarowe należą do ich właścicieli i są użyte wyłącznie informacyjnie, dla opisania zgodności. Wygląd karty jest odwzorowaniem układu panelu na potrzeby własnej instalacji.
+- Właściciel praw, który uważa, że jakaś treść narusza jego prawa, może zgłosić to przez [Issues](https://github.com/GieOeRZet/Igneo-CAN/issues) – sprawa zostanie rozpatrzona, a treść w razie potrzeby usunięta.
 
 ## Licencja
-Wszelkie prawa zastrzeżone © 2026 Roman Gorz. Kod jest publiczny do wglądu i osobistego, niekomercyjnego użytku; kopiowanie, rozpowszechnianie i użycie komercyjne wymaga zgody autora – szczegóły w pliku [LICENSE](LICENSE).
+Kod jest otwarty: możesz go czytać, pobierać, modyfikować i udostępniać dalej z zachowaniem informacji o autorze (Roman Gorz, Igneo CAN) i tej samej licencji – **ale wyłącznie niekomercyjnie**. Autor nie wyraża zgody na wykorzystanie tej pracy do zarobku (sprzedaż, usługi płatne, wbudowanie w produkt komercyjny) bez pisemnej zgody. Szczegóły w pliku [LICENSE](LICENSE). Uwaga: licencja z zakazem użycia komercyjnego nie spełnia formalnej definicji „open source” (OSI) – to kod z otwartymi źródłami (source-available).
+
+## Wsparcie
+Projekt jest darmowy. Jeśli chcesz, możesz go wesprzeć przez [buycoffee.to/ergie](https://buycoffee.to/ergie) – to docenienie włożonej pracy, poświęconego czasu i własnych środków (sprzęt, testy). Wsparcie jest dobrowolne i niczego nie daje w zamian, nie jest płatnością za produkt ani usługę.
