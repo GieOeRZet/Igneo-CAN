@@ -171,3 +171,11 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 | `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
 | `docs/img/` | zrzuty ekranu do tego README |
 | `CHANGELOG.md`, `CHANGELOG-firmware.md` | historia zmian karty i firmware |
+
+## Ostatnie zmiany
+- **Karta 9.3** – dioda aktualizacji w menu i nowy ekran INFO (wersje + changelog, „Odrzuć aktualizację”). Informacja o wersjach pochodzi z `version.json` w tym repo.
+- **Firmware 2.27** – diagnostyka zakładki Sieć panelu (podsłuch SDO 0x1000/0x1008/0x1018 i NMT).
+- Pełna historia: [CHANGELOG.md](CHANGELOG.md) (karta), [CHANGELOG-firmware.md](CHANGELOG-firmware.md) (firmware).
+
+### Jak działa informacja o aktualizacji
+Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmware (encja „Wersja firmware”) oraz z własną wersją. Przy nowszej wersji pokazuje zieloną diodę; „Odrzuć aktualizację” ukrywa daną wersję (pamięć przeglądarki). Aktualizacja firmware: pobierz repo i kliknij „Install” w ESPHome; karty: podmień pliki w `www/community/igneo-ha/` i zrób Ctrl+F5. Przy wydaniu nowej wersji podbij numer i changelog w `version.json`.

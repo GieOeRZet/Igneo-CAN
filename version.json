@@ -1,0 +1,18 @@
+{
+  "firmware": {
+    "version": "2.27",
+    "changelog": [
+      "Diagnostyka zakładki Sieć panelu: podsłuch ramek SDO 0x1000/0x1008/0x1018 i NMT/heartbeat",
+      "Skan węzła innego niż 4 publikuje odpowiedzi do encji „SDO ostatni odczyt”",
+      "v2.26: awaryjny AP „Tekla-Estyma Fallback” (wymaga ap_pass w secrets)"
+    ]
+  },
+  "card": {
+    "version": "9.3",
+    "changelog": [
+      "Zielona dioda przy ikonie menu, gdy jest nowa wersja firmware lub karty",
+      "Ekran INFO: autor, wersje, changelog aktualizacji i przycisk „Odrzuć aktualizację”",
+      "v9.2: autowykrywanie encji, tryb lite: true, nowy edytor wizualny"
+    ]
+  }
+}

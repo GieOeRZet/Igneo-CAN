@@ -1,4 +1,4 @@
-/* igneo-card v9.2 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* igneo-card v9.3 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
    Dziala tak: pobiera rdzen /local/community/igneo-ha/tekla-panel-card.js (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -350,7 +350,7 @@
     // rola -> koncowka entity_id (po nazwach z ESPHome)
     const NEW = {
       burn_kw: 'palnik_moc', burn_kgh: 'palnik_spalanie', burn_bright: 'palnik_jasnosc_plomienia', feeder: 'palnik_czas_podawania_paliwa',
-      acc: 'poziom_dostepu', legion: 'cwu_antylegionella',
+      acc: 'poziom_dostepu', legion: 'cwu_antylegionella', fw_ver: 'wersja_firmware',
       p_prefeed: 'palnik_wstepna_dawka_paliwa', p_feed_max: 'palnik_podawanie_max', p_photo: 'palnik_prog_foto',
       p_blow_ign: 'palnik_moc_dmuchawy_rozpalanie', p_blow_glow: 'palnik_moc_dmuchawy_rozzarzanie', p_blow_stop: 'palnik_moc_dmuchawy_wygaszanie',
       p_glow_time: 'palnik_czas_rozzarzania', p_glow_fuel: 'palnik_rozzarzanie_paliwo', p_stop_time: 'palnik_czas_wygaszania', p_lambda: 'palnik_sterowanie_lambda',
@@ -818,7 +818,7 @@
     // ---- edytor wizualny: sekcje wg ekranow i menu karty ----
     const PR2L = {}; ((W && W.PR2) || []).forEach(c => { PR2L[c.r] = c.t; });
     const LBL = {}; D.ENT_GROUPS.forEach(g => g[1].forEach(f => { LBL[f[0]] = f[1]; }));
-    const lab = r => LBL[r] || PR2L[r] || r;
+    const lab = r => LBL[r] || PR2L[r] || (r === 'fw_ver' ? 'Wersja firmware (ekran INFO)' : r);
     const GR = [
       ['Ekran główny i ekran Kocioł', ['boiler_temp', 'boiler_set', 'boiler_manual', 'mode', 'sch_boil', 'on', 'power_switch', 'outside', 'ret_temp'], 0],
       ['Ekran główny – Palnik i zbiornik paliwa', ['burner', 'burner_code', 'power', 'burn_kw', 'burn_kgh', 'burn_bright', 'burn_temp', 'ban', 'fan_pct', 'blower_run', 'feeder_run', 'feeder', 'burn_time', 'fuel', 'fuel_cap', 'fuel_pct', 'feed_time'], 0],
@@ -832,7 +832,7 @@
       ['Menu → Palnik → NASTAWY (klucz 1)', ['fan_mod_1', 'fan_mod_2', 'fan_mod_3', 'fan_mod_4', 'fan_mod_5', 'p_prefeed', 'p_feed_max', 'p_photo', 'p_blow_ign', 'p_blow_glow', 'p_blow_stop', 'p_glow_time', 'p_glow_fuel', 'p_stop_time', 'p_lambda', 'p_o2_30', 'p_o2_100', 'p_cleans', 'p_clean_gap', 'p_pause_time', 'p_pause_power', 'p_pause_blow'], 1],
       ['Menu → Palnik → NASTAWY (klucz 2)', ['p_inertia', 'p_grate_time', 'p_burner_feed', 'p_feeder_period', 'p_min_rpm'], 1],
       ['Menu → Statystyki i Test wyjść (klucz 1)', ['stats', 'blower_mode', 'blower_auto', 'blower_off', 'blower_on', 'feeder_mode', 'feeder_auto', 'feeder_off', 'feeder_on'], 1],
-      ['System', ['can_ok', 'mirror', 'acc'], 0],
+      ['System', ['can_ok', 'mirror', 'acc', 'fw_ver'], 0],
     ];
     class IgneoEditor extends HTMLElement {
       setConfig(c) { this._cfg = c || {}; this._draw(); }
@@ -908,6 +908,79 @@
     if (!customElements.get('igneo-card-editor')) customElements.define('igneo-card-editor', IgneoEditor);
     C.getConfigElement = () => document.createElement('igneo-card-editor');
     C.getStubConfig = () => ({ screen: 'main' });
+
+    })();
+    // ---- modul v9.3: aktualizacje (dioda w menu, ekran INFO, changelog z GitHuba) ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v93) return;
+    C.prototype.__v93 = true;
+    const CARD_VER = '9.3';
+    const MAN = 'https://raw.githubusercontent.com/GieOeRZet/Tekla-Igneo-HA/main/version.json';
+    const SK = 'igneo_upd_skip';
+    const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };
+    const cmp = (a, b) => { const x = String(a).split('.').map(Number), y = String(b).split('.').map(Number); for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] || 0) - (y[i] || 0); if (d) return d; } return 0; };
+    const esc = t => String(t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+    const skipped = () => { try { return JSON.parse(localStorage.getItem(SK) || '{}'); } catch (e) { return U.skipMem || {}; } };
+    const load = async () => {
+      if (Date.now() - U.t < 6 * 3600e3 && U.m) return;
+      U.t = Date.now();
+      try { const r = await fetch(MAN + '?_=' + Date.now(), { cache: 'no-store' }); if (r.ok) { U.m = await r.json(); window.dispatchEvent(new Event('tekla-img')); } } catch (e) { /* brak sieci = brak informacji o aktualizacji */ }
+    };
+    load(); setInterval(load, 6 * 3600e3);
+
+    C.prototype._fwVer = function () { const m = /^\s*(\d+(?:\.\d+)*)/.exec(String(this._t('fw_ver', ''))); return m ? m[1] : ''; };
+    // lista dostepnych (i nieodrzuconych) aktualizacji: [{n, v, log}]
+    C.prototype._upd = function () {
+      const m = U.m, out = []; if (!m) return out;
+      const sk = skipped(), fw = this._fwVer();
+      if (m.firmware && fw && cmp(m.firmware.version, fw) > 0 && sk.fw !== m.firmware.version) out.push({ k: 'fw', n: 'Firmware ESP', v: m.firmware.version, log: m.firmware.changelog || [] });
+      if (m.card && cmp(m.card.version, CARD_VER) > 0 && sk.card !== m.card.version) out.push({ k: 'card', n: 'Karta', v: m.card.version, log: m.card.changelog || [] });
+      return out;
+    };
+
+    const om = C.prototype._main;
+    C.prototype._main = function (ctx) {
+      const h = om.call(this, ctx);
+      return this._upd().length ? h.replace('<small class="mn" data-go="menu"></small>', '<small class="mn" data-go="menu"></small><i class="udot"></i>') : h;
+    };
+    const omenu = C.prototype._menu;
+    C.prototype._menu = function () {
+      const h = omenu.call(this);
+      return this._upd().length ? h.replace(/<div class="row go mi"( data-go="info")/, '<div class="row go mi upd"$1') : h;
+    };
+    const ob = C.prototype._body;
+    C.prototype._body = function (s) {
+      if (s !== 'info') return ob.call(this, s);
+      const up = this._upd(), fw = this._fwVer();
+      let b = '<div class="inf">';
+      if (up.length) b += '<div class="updbtn" data-act="updskip">Odrzuć aktualizację</div>';
+      b += '<div class="dim">Stworzone przez: <span class="wh">Gorz Roman</span></div>'
+        + '<div class="dim">Oprogramowanie: <span class="wh">firmware ' + (fw || '-') + ' · karta ' + CARD_VER + '</span></div>';
+      up.forEach(u => {
+        b += '<div class="gn upt">Aktualizacja: ' + u.n + ' do wersji ' + esc(u.v) + '</div>'
+          + u.log.map(l => '<div class="chg">• ' + esc(l) + '</div>').join('');
+      });
+      return this._page('INFO', 'menu', b + '</div>');
+    };
+    C.prototype._build = (function (o) {
+      return function () {
+        o.apply(this, arguments);
+        const R = this.shadowRoot, st = document.createElement('style');
+        st.textContent = '.udot{position:absolute;top:1.1cqw;right:1.3cqw;width:2.7cqw;height:2.7cqw;border-radius:50%;background:#2ee66b;box-shadow:0 0 1.4cqw #2ee66b;pointer-events:none}'
+          + '.row.upd .l,.row.upd ha-icon{color:#4cf08a!important}'
+          + '.updbtn{margin:0 0 2cqw;padding:2.2cqw 0!important;text-align:center;font-size:4.4cqw;color:#fff;background:linear-gradient(#6a93d8,#5079c0);border:.3cqw solid #86a9e4;border-radius:.6cqw;cursor:pointer}'
+          + '.inf{overflow-y:auto;max-height:100%;scrollbar-width:none}.inf::-webkit-scrollbar{display:none}.inf .wh{color:#fff}.inf .upt{font-size:3.8cqw;padding-top:1.6cqw}.inf .chg{font-size:3.2cqw;padding:.4cqw 0!important;color:#dfe8ff}.updbtn{margin-bottom:1cqw!important;padding:1.6cqw 0!important}';
+        R.appendChild(st);
+        R.addEventListener('click', e => {
+          if (!e.target.closest('[data-act="updskip"]')) return;
+          const m = U.m || {}, sk = skipped();
+          this._upd().forEach(u => { sk[u.k] = u.v; });
+          try { localStorage.setItem(SK, JSON.stringify(sk)); } catch (er) { /* bez zapisu: odrzucenie tylko do odswiezenia */ U.skipMem = sk; }
+          window.dispatchEvent(new Event('tekla-img')); this._render(true);
+        });
+      };
+    })(C.prototype._build);
 
     })();
   } catch (e) { console.error('igneo-card', e); }
