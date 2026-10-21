@@ -2,6 +2,11 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.1 – Test wyjść
+- **Ekran Test wyjść jak na panelu Igneo Touch**: 21 pozycji w kolejności z panelu, A/OFF/ON i A/CLOSE/OPEN (ruszt, mieszacze), suwak WentWyc, zaznaczenie stanu odczytanego z kotła. Sterowanie tylko na poziomie 2 (PIN klucza 2); na poziomie 1 podgląd.
+- Wyjścia wracają na Automat po wyjściu z ekranu (i po 2 min w firmware). Pompa CWU, Wymiennik i Podajnik palnika są tylko do podglądu (rejestr nieznany).
+- Wymaga firmware ≥ 1.1 (akcje `set_output`, `set_output_pct`, `test_refresh`, `test_reset`, sensor „Test wyjsc stany”).
+
 ## v1.0 – pierwsze oficjalne wydanie
 Wszystko, co powstało w wersjach roboczych, jest stanem v1.0:
 - **Wierna replika panelu Igneo Touch** (typ `custom:pelletcan-card`; stary `custom:tekla-panel-card` działa dalej): ekran główny, Ogrzewanie, Woda, Kocioł, Palnik, Menu, Historia alarmów, Informacje o programie, harmonogramy tygodniowe (paski, edycja), Test wyjść i Statystyki (poziom 1).

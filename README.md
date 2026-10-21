@@ -140,8 +140,8 @@ Dawne typy `custom:tekla-panel-card` i `custom:tekla-panel-card_lite` działają
 
 ## Poziomy dostępu i PIN-y
 - **Poziom 0** – użytkownik: Kocioł, Palnik, Ogrzewanie obwód 1, Ciepła woda, Historia alarmów, Informacje.
-- **Klucz 1** (PIN 0900) – dodatkowo Język, Alarm dźwiękowy, Konfiguracja, Test wyjść, Statystyki, Sieć oraz nastawy palnika klucza 1.
-- **Klucz 2** (PIN 0999) – dodatkowo nastawy palnika klucza 2 (bezwładność, ruch rusztu, itd.).
+- **Klucz 1** (PIN 0900) – dodatkowo Język, Alarm dźwiękowy, Konfiguracja, Test wyjść (podgląd), Statystyki, Sieć oraz nastawy palnika klucza 1.
+- **Klucz 2** (PIN 0999) – dodatkowo nastawy palnika klucza 2 (bezwładność, ruch rusztu, itd.) oraz **sterowanie w Teście wyjść**.
 
 PIN wpisuje się w menu **Poziom menu (PIN)**. Poziom jest utrzymywany w ESP (sensor „Poziom dostępu”), wraca do 0 po 5 min bezczynności (`pin_autolock_min`) i po restarcie. Po wpisaniu któregokolwiek PIN-u ustawienia danego poziomu odświeżają się automatycznie. ESP odrzuca zapis parametru wymagającego wyższego poziomu.
 

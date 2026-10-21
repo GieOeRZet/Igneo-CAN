@@ -50,7 +50,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.0"
+  fw_version: "1.1"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -72,6 +72,10 @@ substitutions:
   feeder_write: "true"
   # Dmuchawa (0x2283: 0 = Automat, 1 = Wylaczona, 2 = Wlaczona; predkosc testowa ustawiasz na panelu).
   blower_write: "true"
+  # Test wyjsc z karty (v1.1): akcje set_output / set_output_pct (18 wyjsc, wymagany poziom dostepu 2 = PIN klucza 2).
+  # Wyjscie ustawione na OFF/ON samo wraca do Automatu po test_revert_s sekundach (0 = nie wraca; akcja test_reset wraca wszystko od razu).
+  output_test_write: "true"
+  test_revert_s: "120"
   # Przycisk "Potwierdz alarm" (zapis bitu 18 w rejestrze najnowszego alarmu wg SDO_SCADA: [18] alarm confirm request).
   alarm_confirm: "true"
   # Po wlaczeniu dmuchawy / podajnika przyciskiem "ON" wracaja same do Automatu po tylu sekundach (0 = nie wracaja).
@@ -228,6 +232,44 @@ api:
             if (key == 0 && value > id(power_max).state) { ESP_LOGW("igneo", "Moc min > Moc max - zapis odrzucony"); return; }
             if (key == 1 && value < id(power_min).state) { ESP_LOGW("igneo", "Moc max < Moc min - zapis odrzucony"); return; }
             id(reg_write).execute((int) ix[key], raw, 2);
+    # v1.1 TEST WYJSC: out 0..17, mode 0 = A (Automat), 1 = OFF/CLOSE, 2 = ON/OPEN. Wymaga poziomu dostepu 2 (PIN klucza 2).
+    # out: 0 Podajnik, 1 Dmuchawa, 2 Zapalarka, 3 Pompa kotlowa, 4 Pompa solarna, 5..8 Pompa CO1..CO4, 9..12 Mieszacz CO1..CO4,
+    #      13 Mieszacz powrotu, 14 Magazyn transporter, 15 Magazyn podajnik, 16 Ruszt, 17 WentWyc tryb (18 = WentWyc suwak: set_output_pct).
+    - action: set_output
+      variables:
+        out: int
+        mode: int
+      then:
+        - lambda: |-
+            if (std::string("${mirror}") == "true" || std::string("${output_test_write}") != "true") { ESP_LOGW("igneo", "Test wyjsc wylaczony (mirror: true lub output_test_write: false)"); return; }
+            if (out < 0 || out > 17 || mode < 0 || mode > 2) { ESP_LOGW("igneo", "Test wyjsc: zle wyjscie lub tryb"); return; }
+            id(access_t) = millis();
+            if (id(access_level) < 2) { ESP_LOGW("igneo", "Test wyjsc wymaga poziomu dostepu 2 (PIN)"); return; }
+            static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+            id(reg_write).execute((int) tix[out], 0x0100 | mode, 2);
+            if (mode) id(test_mask) |= (1u << out); else id(test_mask) &= ~(1u << out);
+            id(test_t) = millis();
+    # v1.1: suwak WentWyc (0..100 %, rejestr 0x2298 = 256 + %); dziala przy trybie ON.
+    - action: set_output_pct
+      variables:
+        value: int
+      then:
+        - lambda: |-
+            if (std::string("${mirror}") == "true" || std::string("${output_test_write}") != "true") { ESP_LOGW("igneo", "Test wyjsc wylaczony (mirror: true lub output_test_write: false)"); return; }
+            if (value < 0 || value > 100) return;
+            id(access_t) = millis();
+            if (id(access_level) < 2) { ESP_LOGW("igneo", "Test wyjsc wymaga poziomu dostepu 2 (PIN)"); return; }
+            id(reg_write).execute(0x2298, 0x0100 | value, 2);
+            if (value) id(test_mask) |= (1u << 18); else id(test_mask) &= ~(1u << 18);
+            id(test_t) = millis();
+    # v1.1: odczyt stanow wyjsc testowych na zadanie (karta: przy otwarciu ekranu Test wyjsc) -> text_sensor "Test wyjsc stany".
+    - action: test_refresh
+      then:
+        - script.execute: test_q
+    # v1.1: wszystkie wyjscia z powrotem na Automat (bez wymagania PIN-u - to bezpieczny kierunek).
+    - action: test_reset
+      then:
+        - script.execute: test_reset_s
     # Zapis ustawien palnika - menu palnika (v2.20), key 22..43: patrz CHANGELOG v2.20; value w jednostkach panelu.
     # Skan zakresu indeksow (dla igneo_katalog.py): sub zwykle 1.
     - action: sdo_scan
@@ -446,6 +488,14 @@ globals:
   - id: blower_alt
     type: bool
     initial_value: "false"
+  - id: test_mask
+    type: uint32_t
+    initial_value: "0"
+  - id: test_t
+    type: uint32_t
+    initial_value: "0"
+  - id: test_vals
+    type: std::vector<int32_t>
   - id: snap_on
     type: bool
     initial_value: "false"
@@ -708,6 +758,19 @@ canbus:
               if (sub != 0x01) {
                 id(sdo_last).publish_state(buf);
                 return;
+              }
+              // v1.1: stany wyjsc testowych (19 rejestrow: tryb 0 = A, 1 = OFF/CLOSE, 2 = ON/OPEN; ostatni = suwak WentWyc w %) -> "Test wyjsc stany"
+              {
+                static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+                int ti = -1;
+                for (int k = 0; k < 19; k++) if (tix[k] == idx) { ti = k; break; }
+                if (ti >= 0) {
+                  if (id(test_vals).size() != 19) id(test_vals).assign(19, -1);
+                  id(test_vals)[ti] = (int32_t) (raw & 0xFF);
+                  std::string so; char tt[8];
+                  for (size_t k = 0; k < 19; k++) { if (id(test_vals)[k] < 0) snprintf(tt, sizeof(tt), "-"); else snprintf(tt, sizeof(tt), "%d", (int) id(test_vals)[k]); if (k) so += ' '; so += tt; }
+                  id(test_state_txt).publish_state(so);
+                }
               }
               // Harmonogramy: CWU 0x2154..0x2159 + 0x2160, CO obwod 1 = 0x2126 + 4*dzien, kociol 0x2209..0x220F. 24 bity: bit i = godzina i, 1 = komfort.
               {
@@ -1158,6 +1221,13 @@ interval:
           id(sch_burst)--;
           std::vector<uint8_t> d = {0x40, (uint8_t) (ix & 0xFF), (uint8_t) (ix >> 8), 0x01, 0, 0, 0, 0};
           id(igneo_can)->send_data(0x604, false, d);
+
+  # v1.1: automatyczny powrot wyjsc testowych na Automat po test_revert_s sekundach (0 = wylaczone).
+  - interval: 5s
+    then:
+      - lambda: |-
+          const int lim = atoi("${test_revert_s}");
+          if (lim > 0 && id(test_mask) != 0 && (millis() - id(test_t)) > (uint32_t) lim * 1000UL) id(test_reset_s).execute();
 
   # Automatyczna blokada poziomu dostepu po bezczynnosci (substitution pin_autolock_min, 0 = wylaczona).
   - interval: 10s
@@ -1990,6 +2060,11 @@ text_sensor:
     icon: "mdi:calendar-clock"
     entity_category: diagnostic
   - platform: template
+    id: test_state_txt
+    name: "Test wyjsc stany"
+    icon: "mdi:toggle-switch-outline"
+    entity_category: diagnostic
+  - platform: template
     id: sdo_last
     name: "SDO ostatni odczyt"
     entity_category: diagnostic
@@ -2097,6 +2172,24 @@ script:
             o = id(ah_txt)[slot] + b;
           }
           s[slot]->publish_state(o);
+  # v1.1: kolejkuje odczyt stanow 19 wyjsc testowych
+  - id: test_q
+    mode: single
+    then:
+      - lambda: |-
+          static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+          auto &q = id(par_q);
+          if (q.size() > 100) return;
+          for (auto r : tix) q.push_back(r);
+  # v1.1: zapis Automatu (256) do wszystkich wyjsc ustawionych z karty na OFF/ON
+  - id: test_reset_s
+    mode: single
+    then:
+      - lambda: |-
+          static const uint16_t tix[] = {0x2259, 0x2283, 0x2284, 0x2286, 0x311F, 0x229D, 0x229E, 0x229F, 0x22A0, 0x22B9, 0x22BA, 0x22BB, 0x22BC, 0x216D, 0x351E, 0x351F, 0x2279, 0x2293, 0x2298};
+          const uint32_t m = id(test_mask);
+          id(test_mask) = 0;
+          for (int k = 0; k < 19; k++) if (m & (1u << k)) { id(reg_write).execute((int) tix[k], 0x0100, 2); ESP_LOGW("igneo", "TEST WYJSC: powrot na Automat 0x%04X", (unsigned) tix[k]); }
   # Kolejkuje odczyt ustawien do biezacego poziomu dostepu (0 = uzytkownik, 1 = klucz 1, 2 = klucz 2).
   - id: par_refresh
     mode: restart

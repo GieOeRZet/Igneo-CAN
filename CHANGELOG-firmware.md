@@ -2,6 +2,13 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.1 – Test wyjść
+- **Test wyjść z karty**: nowe akcje `set_output` (wyjście 0–17, tryb 0 = A, 1 = OFF/CLOSE, 2 = ON/OPEN) i `set_output_pct` (suwak WentWyc 0–100 %). Wymagany **poziom dostępu 2** (PIN klucza 2); blokuje je `mirror: true` albo `output_test_write: "false"`.
+- **18 wyjść z rejestrami** (zapis U16: 256 = A, 257 = OFF/CLOSE, 258 = ON/OPEN): Podajnik 0x2259, Dmuchawa 0x2283, Zapalarka 0x2284, Pompa kotłowa 0x2286, Pompa solarna 0x311F, Pompy CO1–CO4 0x229D–0x22A0, Mieszacze CO1–CO4 0x22B9–0x22BC, Mieszacz powrotu 0x216D, Magazyn paliwa transporter 0x351E i podajnik 0x351F, Ruszt 0x2279, WentWyc tryb 0x2293 i suwak 0x2298 (256 + %). Rejestry wyznaczone testem na panelu 21.10. Brak rejestru (prawdopodobnie węzeł 86): Pompa CWU (polecenie), Wymiennik, Podajnik palnika.
+- **Bezpieczeństwo**: wyjście ustawione na OFF/ON samo wraca na Automat po `test_revert_s` sekundach (domyślnie 120, 0 = wyłączone); akcja `test_reset` (bez PIN-u) wraca wszystkie od razu.
+- **Stany**: akcja `test_refresh` czyta 19 rejestrów, wynik w nowym diagnostycznym sensorze „Test wyjsc stany” (19 liczb po spacji).
+- Niesprawdzone kompilacją ESPHome (składnia YAML sprawdzona).
+
 ## v1.0 – pierwsze oficjalne wydanie
 Wszystko, co powstało w wersjach roboczych, jest stanem v1.0:
 - **Komunikacja z kotłem** po CAN (CANopen SDO, węzeł 4, 125 kbit/s) na XIAO ESP32-C6 + MCP2515: odczyt cykliczny parametrów pracy, zapis nastaw z karty (`set_param` 0–44), odczyt ustawień na żądanie (`param_refresh`).

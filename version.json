@@ -1,14 +1,14 @@
 {
   "firmware": {
-    "version": "1.0",
+    "version": "1.1",
     "changelog": [
-      "Pierwsze oficjalne wydanie PelletCAN: odczyt i zapis parametrów kotła po CAN (CANopen), poziomy dostępu PIN, historia alarmów z kotła, podział firmware na plik użytkownika i rdzeń z GitHuba (packages)."
+      "Test wyjść: 18 wyjść kotła (pompy, mieszacze, podajniki, ruszt, zapalarka, dmuchawa, WentWyc) sterowane z karty po PIN-ie klucza 2, z automatycznym powrotem na Automat."
     ]
   },
   "card": {
-    "version": "1.0",
+    "version": "1.1",
     "changelog": [
-      "Pierwsze oficjalne wydanie PelletCAN-card: wierna replika panelu Igneo Touch, instalacja przez HACS, automatyczne wykrywanie encji, tryb lite, informacja o aktualizacjach."
+      "Ekran Test wyjść jak na panelu Igneo Touch: A/OFF/ON i A/CLOSE/OPEN dla 18 wyjść, suwak WentWyc, powrót na Automat po wyjściu z ekranu."
     ]
   }
 }

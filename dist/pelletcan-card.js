@@ -1,4 +1,4 @@
-/* PelletCAN-card v1.0 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* PelletCAN-card v1.1 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
    Dziala tak: pobiera rdzen tekla-panel-card.js (z tego samego katalogu) (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -915,12 +915,110 @@
     const PC = customElements.get('pelletcan-card'); if (PC) { PC.getConfigElement = C.getConfigElement; PC.getStubConfig = C.getStubConfig; }
 
     })();
+    // ---- modul v1.1: Test wyjsc (18 wyjsc z rejestrami, A/OFF/ON lub A/CLOSE/OPEN, suwak WentWyc) ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v11) return;
+    C.prototype.__v11 = true;
+    const W = window.__tekla80 = window.__tekla80 || {};
+    W.NEW = W.NEW || {};
+    W.NEW.test_state = 'test_wyjsc_stany';   // text_sensor z ESP: 19 liczb po spacji (0 = A, 1 = OFF/CLOSE, 2 = ON/OPEN; ostatnia = suwak WentWyc %)
+    // [numer wyjscia w firmware (-1 = rejestr nieznany), nazwa, 'cl' = A/CLOSE/OPEN, suwak %]
+    const TR = [
+      [-1, 'Pompa CWU'], [3, 'Pompa kotłowa'], [4, 'Pompa solarna'], [0, 'Podajnik'], [16, 'Ruszt', 'cl'], [-1, 'Wymiennik'], [2, 'Zapalarka'],
+      [-1, 'Podajnik palnika'], [14, 'Magazyn paliwa transporter'], [15, 'Magazyn paliwa podajnik'], [1, 'Dm.'], [17, 'WentWyc', '', true],
+      [5, 'Pompa CO1'], [6, 'Pompa CO2'], [7, 'Pompa CO3'], [8, 'Pompa CO4'],
+      [9, 'Mieszacz CO1', 'cl'], [10, 'Mieszacz CO2', 'cl'], [11, 'Mieszacz CO3', 'cl'], [12, 'Mieszacz CO4', 'cl'], [13, 'Mieszacz powrotu', 'cl'],
+    ];
+    C.prototype._tVals = function () {
+      const t = this._t('test_state', '').trim().split(/\s+/), a = [];
+      for (let i = 0; i < 19; i++) { const n = parseInt(t[i], 10); a.push(isNaN(n) ? NaN : n); }
+      return a;
+    };
+    C.prototype._tMode = function (i) {
+      const v = this._tVals()[i], m = isNaN(v) ? -1 : Math.min(v, 2);
+      const p = this._tp && this._tp[i];
+      if (p) { if (m === p.m || Date.now() - p.t > 20000) delete this._tp[i]; else return p.m; }
+      return m;
+    };
+    C.prototype._tPct = function () {
+      const v = this._tVals()[18], p = this._tpp;
+      if (p) { if (v === p.v || Date.now() - p.t > 20000) this._tpp = null; else return p.v; }
+      return isNaN(v) ? 0 : Math.max(0, Math.min(100, v));
+    };
+    C.prototype._testBody = function (back) {
+      const ok = this._lvl() >= 2 && !this._mirror();
+      const row = ([i, name, kind, sl]) => {
+        const known = i >= 0, en = ok && known, m = known ? this._tMode(i) : -1, L = kind === 'cl' ? ['A', 'CLOSE', 'OPEN'] : ['A', 'OFF', 'ON'];
+        const b = k => `<em ${en ? `data-act="tout" data-i="${i}" data-m="${k}"` : ''} class="${en ? 'cl' : 'dis'}"><small>${L[k]}</small><b class="${m === k ? 'ck' : ''}">${m === k ? '&#10003;' : ''}</b></em>`;
+        let h = `<div class="row tst${known ? '' : ' ro'}"><span class="l">${this._lamp(m === 2)}${name}</span><span class="abo">${b(0)}${b(1)}${b(2)}</span></div>`;
+        if (sl) {
+          const pc = this._tPct();
+          h += `<div class="row tst"><span class="l">${name} – obroty</span><span class="tsw"><input class="tsl" type="range" min="0" max="100" step="1" value="${pc}" ${en ? '' : 'disabled'} data-act="tpct"><b class="tsv">${pc}%</b></span></div>`;
+        }
+        return h;
+      };
+      const note = !this._unl() ? '' : this._lvl() < 2
+        ? '<div class="dim" style="padding:1.6cqw 1.2cqw">Test wyjść wymaga poziomu 2 (PIN klucza 2): Menu → Poziom menu.</div>'
+        : '<div class="dim" style="padding:1.6cqw 1.2cqw">Wyjścia wracają na A po wyjściu z ekranu i po 2 minutach. Pompa CWU, Wymiennik i Podajnik palnika: rejestr nieznany (podgląd).</div>';
+      return this._page('TEST WYJŚĆ', back, TR.map(row).join('') + note);
+    };
+    C.prototype._body = (function (o) {
+      return function (s) {
+        if (s === 'test') return this._testBody('menu');
+        return o.call(this, s);
+      };
+    })(C.prototype._body);
+    // wejscie na ekran = odczyt stanow; wyjscie = wszystko z powrotem na Automat
+    C.prototype._go = (function (o) {
+      return function (s, b) {
+        if (this._scr === 'test' && s !== 'test') { this._svc('test_reset'); this._tp = {}; this._tpp = null; }
+        if (s === 'test' && this._scr !== 'test') { this._svc('test_refresh'); }
+        return o.call(this, s, b);
+      };
+    })(C.prototype._go);
+    C.prototype._build = (function (o) {
+      return function () {
+        o.apply(this, arguments);
+        const R = this.shadowRoot, st = document.createElement('style');
+        st.textContent = '.tsw{display:flex;align-items:center;gap:2cqw;flex:1;justify-content:flex-end}.tsl{width:38cqw;accent-color:#19d3f7}.tsv{width:9cqw;text-align:right;font-weight:400}';
+        R.appendChild(st);
+        R.addEventListener('click', e => {
+          const a = e.target.closest('[data-act="tout"]');
+          if (!a || this._mirror() || this._lvl() < 2) return;
+          const i = parseInt(a.dataset.i, 10), m = parseInt(a.dataset.m, 10);
+          (this._tp = this._tp || {})[i] = { m, t: Date.now() };
+          this._svc('set_output', { out: i, mode: m });
+          if (i === 17 && m !== 2) { this._tpp = { v: 0, t: Date.now() }; }
+          this._render(true);
+        });
+        R.addEventListener('change', e => {
+          const a = e.target.closest && e.target.closest('[data-act="tpct"]');
+          if (!a || this._mirror() || this._lvl() < 2) return;
+          const v = Math.max(0, Math.min(100, parseInt(a.value, 10) || 0));
+          this._tpp = { v, t: Date.now() };
+          this._svc('set_output_pct', { value: v });
+          this._render(true);
+        });
+        R.addEventListener('input', e => {
+          const a = e.target.closest && e.target.closest('[data-act="tpct"]');
+          if (a) { const b = a.parentNode.querySelector('.tsv'); if (b) b.textContent = a.value + '%'; this._tpp = { v: parseInt(a.value, 10) || 0, t: Date.now() + 60000 }; }
+        });
+      };
+    })(C.prototype._build);
+    // odswiezanie stanow co 6 s, gdy ekran Test wyjsc jest otwarty
+    if (!W.testTimer) W.testTimer = setInterval(() => {
+      const c = W.card;
+      if (c && c._hass && c._scr === 'test' && c._lvl() >= 1) c._svc('test_refresh');
+    }, 6000);
+    })();
+
     // ---- modul v9.3: aktualizacje (dioda w menu, ekran INFO, changelog z GitHuba) ----
     await (async () => {
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '1.0';
+    const CARD_VER = '1.1';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };
