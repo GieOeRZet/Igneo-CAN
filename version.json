@@ -1,16 +1,14 @@
 {
   "firmware": {
-    "version": "2.32",
+    "version": "1.0",
     "changelog": [
-      "Podział firmware: mały plik użytkownika + rdzeń pobierany z GitHuba przy kompilacji (branch test = jeden pełny plik)",
-      "Uporządkowane substitutions (Wi‑Fi, API, OTA, dwa obiegi CO, reszta); stały adres IP domyślnie włączony",
-      "Stały adres IP jedną opcją static_ip: \"true\"/\"false\" w substitutions (domyślnie DHCP)"
+      "Pierwsze oficjalne wydanie PelletCAN: odczyt i zapis parametrów kotła po CAN (CANopen), poziomy dostępu PIN, historia alarmów z kotła, podział firmware na plik użytkownika i rdzeń z GitHuba (packages)."
     ]
   },
   "card": {
-    "version": "9.6",
+    "version": "1.0",
     "changelog": [
-      "Projekt przemianowany na PelletCAN (nowe repozytorium, karta pelletcan-card.js, alias typu custom:pelletcan-card)"
+      "Pierwsze oficjalne wydanie PelletCAN-card: wierna replika panelu Igneo Touch, instalacja przez HACS, automatyczne wykrywanie encji, tryb lite, informacja o aktualizacjach."
     ]
   }
 }
