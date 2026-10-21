@@ -323,7 +323,7 @@ ota:
 
 # v2.30: staly adres IP przelaczany jedna substitution (static_ip: "true"/"false"), bez edycji sekcji wifi.
 packages:
-  network_ip: ${ {'wifi': {'manual_ip': {'static_ip': device_ip, 'gateway': device_gateway, 'subnet': device_subnet}}} if static_ip == 'true' else {} }
+  network_ip: "${ {'wifi': {'manual_ip': {'static_ip': device_ip, 'gateway': device_gateway, 'subnet': device_subnet}}} if static_ip == 'true' else {} }"
 
 wifi:
   ssid: ${wifi_ssid}
