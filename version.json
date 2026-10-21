@@ -8,9 +8,9 @@
     ]
   },
   "card": {
-    "version": "9.5",
+    "version": "9.6",
     "changelog": [
-      "Instalacja przez HACS (niestandardowe repozytorium): karta sama znajduje swój katalog, bez sztywnej ścieżki /local/community/igneo-ha"
+      "Projekt przemianowany na PelletCAN (nowe repozytorium, karta pelletcan-card.js, alias typu custom:pelletcan-card)"
     ]
   }
 }

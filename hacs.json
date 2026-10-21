@@ -1,5 +1,5 @@
 {
-  "name": "Igneo CAN",
-  "filename": "igneo-card.js",
+  "name": "PelletCAN-card",
+  "filename": "pelletcan-card.js",
   "render_readme": true
 }
