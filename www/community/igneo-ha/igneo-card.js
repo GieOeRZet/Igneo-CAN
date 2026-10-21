@@ -941,17 +941,18 @@
 
     const om = C.prototype._main;
     C.prototype._main = function (ctx) {
-      const h = om.call(this, ctx);
+      const h = om.call(this, ctx); wire(this);
       return this._upd().length ? h.replace('<small class="mn" data-go="menu"></small>', '<small class="mn" data-go="menu"></small><i class="udot"></i>') : h;
     };
     const omenu = C.prototype._menu;
     C.prototype._menu = function () {
-      const h = omenu.call(this);
+      const h = omenu.call(this); wire(this);
       return this._upd().length ? h.replace(/<div class="row go mi"( data-go="info")/, '<div class="row go mi upd"$1') : h;
     };
     const ob = C.prototype._body;
     C.prototype._body = function (s) {
       if (s !== 'info') return ob.call(this, s);
+      wire(this);
       const up = this._upd(), fw = this._fwVer();
       let b = '<div class="inf">';
       if (up.length) b += '<div class="updbtn" data-act="updskip">Odrzuć aktualizację</div>';
@@ -963,10 +964,9 @@
       });
       return this._page('INFO', 'menu', b + '</div>');
     };
-    C.prototype._build = (function (o) {
-      return function () {
-        o.apply(this, arguments);
-        const R = this.shadowRoot, st = document.createElement('style');
+    const wire = self => {
+      if (self.__v93w || !self.shadowRoot) return; self.__v93w = true;
+        const R = self.shadowRoot, st = document.createElement('style');
         st.textContent = '.udot{position:absolute;top:1.1cqw;right:1.3cqw;width:2.7cqw;height:2.7cqw;border-radius:50%;background:#2ee66b;box-shadow:0 0 1.4cqw #2ee66b;pointer-events:none}'
           + '.row.upd .l,.row.upd ha-icon{color:#4cf08a!important}'
           + '.updbtn{margin:0 0 2cqw;padding:2.2cqw 0!important;text-align:center;font-size:4.4cqw;color:#fff;background:linear-gradient(#6a93d8,#5079c0);border:.3cqw solid #86a9e4;border-radius:.6cqw;cursor:pointer}'
@@ -980,11 +980,13 @@
           }
           if (!e.target.closest('[data-act="updskip"]')) return;
           const m = U.m || {}, sk = skipped();
-          this._upd().forEach(u => { sk[u.k] = u.v; });
+          self._upd().forEach(u => { sk[u.k] = u.v; });
           try { localStorage.setItem(SK, JSON.stringify(sk)); } catch (er) { /* bez zapisu: odrzucenie tylko do odswiezenia */ U.skipMem = sk; }
-          window.dispatchEvent(new Event('tekla-img')); this._render(true);
+          window.dispatchEvent(new Event('tekla-img')); self._render(true);
         });
-      };
+    };
+    C.prototype._build = (function (o) {
+      return function () { o.apply(this, arguments); wire(this); };
     })(C.prototype._build);
 
     })();
