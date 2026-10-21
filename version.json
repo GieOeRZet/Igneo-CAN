@@ -4,7 +4,7 @@
     "changelog": [
       "Diagnostyka magistrali w HA: encje „CAN diag” (zapisy panelu, zmiany rejestrów i PDO) i „CAN ID ramek”; ESP odpowiada na zapytania tożsamości węzła (nazwa PelletCAN, wersja) dla zakładki Sieć panelu.",
       "Nowe ustawienia w PelletCAN.yaml: can_node_id, can_identity, can_heartbeat – wymień swój plik PelletCAN.yaml na nowy.",
-      "Wcześniej (1.2): Podajnik palnika, stany mieszaczy, CWU Źródło/Zwiększenie/Delta, stały IP przez static_ip, nowy podział plików."
+      "Wcześniej (1.2): Podajnik palnika, stany mieszaczy, CWU Źródło/Zwiększenie/Delta, nowy podział plików."
     ]
   },
   "card": {
