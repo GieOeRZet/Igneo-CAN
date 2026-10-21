@@ -2,7 +2,7 @@
 
 Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
 
-Kod ESPHome i karta: Gorz Roman.
+Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej instalacji) z pomocą Claude – asystenta AI firmy Anthropic, który pomagał przy pisaniu kodu i dokumentacji.
 
 [![Postaw kawę](https://img.shields.io/badge/%E2%98%95-Postaw%20kaw%C4%99-orange)](https://buycoffee.to/ergie)
 
@@ -213,4 +213,4 @@ Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmw
 Kod jest otwarty: możesz go czytać, pobierać, modyfikować i udostępniać dalej z zachowaniem informacji o autorze (Roman Gorz, Igneo CAN) i tej samej licencji – **ale wyłącznie niekomercyjnie**. Autor nie wyraża zgody na wykorzystanie tej pracy do zarobku (sprzedaż, usługi płatne, wbudowanie w produkt komercyjny) bez pisemnej zgody. Szczegóły w pliku [LICENSE](LICENSE). Uwaga: licencja z zakazem użycia komercyjnego nie spełnia formalnej definicji „open source” (OSI) – to kod z otwartymi źródłami (source-available).
 
 ## Wsparcie
-Projekt jest darmowy. Jeśli chcesz, możesz go wesprzeć przez [buycoffee.to/ergie](https://buycoffee.to/ergie) – to docenienie włożonej pracy, poświęconego czasu i własnych środków (sprzęt, testy). Wsparcie jest dobrowolne i niczego nie daje w zamian, nie jest płatnością za produkt ani usługę.
+Projekt jest darmowy. Jeśli chcesz, możesz go wesprzeć przez [buycoffee.to/ergie](https://buycoffee.to/ergie) – to sposób, by docenić mój poświęcony czas, włożoną pracę i własne środki (sprzęt, testy). Wsparcie jest dobrowolne i niczego nie daje w zamian, nie jest płatnością za produkt ani usługę.
