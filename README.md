@@ -1,39 +1,173 @@
 # Tekla-Igneo-HA
 
-Karta Home Assistant (`custom:tekla-panel-card`) – replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja ESPHome (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po CANopen (SDO, węzeł 4, 125 kbit/s).
+Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
 
 Kod ESPHome i karta: Gorz Roman.
 
-## Zawartość
+> Zrzuty ekranu poniżej pochodzą z danych testowych (nie z działającego kotła).
 
-| Ścieżka | Co to |
+| Ekran główny | Palnik | Menu |
+|---|---|---|
+| ![Ekran główny](docs/img/01-ekran-glowny.png) | ![Palnik](docs/img/04-palnik.png) | ![Menu](docs/img/05-menu.png) |
+
+## Spis treści
+1. [Co jest w środku](#co-jest-w-środku)
+2. [Wymagania i połączenie](#wymagania-i-połączenie)
+3. [Instalacja – krok po kroku](#instalacja--krok-po-kroku)
+4. [Plik secrets.yaml – wymagane wpisy](#plik-secretsyaml--wymagane-wpisy)
+5. [Awaryjny punkt dostępu Wi-Fi](#awaryjny-punkt-dostępu-wi-fi)
+6. [Dodanie karty i konfiguracja](#dodanie-karty-i-konfiguracja)
+7. [Tryb lite](#tryb-lite)
+8. [Poziomy dostępu i PIN-y](#poziomy-dostępu-i-pin-y)
+9. [Przegląd ekranów](#przegląd-ekranów)
+10. [Grafiki](#grafiki)
+11. [Rozwiązywanie problemów](#rozwiązywanie-problemów)
+12. [Struktura repozytorium](#struktura-repozytorium)
+
+## Co jest w środku
+- **Firmware ESPHome** (`esphome/tekla-estyma.yaml`) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
+- **Karta** (`www/community/igneo-ha/igneo-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
+- **Katalog rejestrów CANopen** (`docs/rejestry/`) – opis i CSV znanych rejestrów węzła 4 i 86.
+
+Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez encji pokazują „-”.
+
+## Wymagania i połączenie
+- Home Assistant z integracją **ESPHome** (dodawanie urządzenia z kluczem API).
+- Płytka **Seeed XIAO ESP32-C6** z **Seeed CAN Bus Breakout** (MCP2515, kwarc 16 MHz).
+- Połączenie CAN z kotłem (CAN-H, CAN-L, masa); zworka P1 na płytce = terminator 120 Ω (domyślnie rozłączona).
+- Piny SPI: SCK = GPIO19 (D8), MISO = GPIO20 (D9), MOSI = GPIO18 (D10), CS = GPIO17 (D7).
+- Prędkość magistrali `125KBPS`, kwarc `16MHZ` (substitutions `can_bitrate`, `can_clock` – zmień, jeśli CAN pokazuje błąd).
+
+## Instalacja – krok po kroku
+1. **Przygotuj `secrets.yaml`** w katalogu ESPHome – [wymagane wpisy](#plik-secretsyaml--wymagane-wpisy).
+2. **Dostosuj sieć** w sekcji `substitutions` pliku `esphome/tekla-estyma.yaml`: `device_ip`, `device_gateway`, `device_subnet` (adres stały).
+3. **Wgraj firmware**: skopiuj `esphome/tekla-estyma.yaml` do ESPHome, wgraj (pierwszy raz po kablu USB).
+4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
+5. **Skopiuj kartę** – zawartość `www/community/igneo-ha/` do `/config/www/community/igneo-ha/` (powstanie `igneo-card.js`, `tekla-panel-card.js` i folder `img/`). Pliki muszą leżeć dokładnie w tym folderze.
+6. **Dodaj zasób** (Ustawienia → Dashboardy → ⋮ → Zasoby): typ *moduł JavaScript*, adres `/local/community/igneo-ha/igneo-card.js?v=1`. Po każdej aktualizacji pliku zmień `?v=` i odśwież stronę (Ctrl+F5).
+7. **Dodaj kartę** na dashboard – [opis poniżej](#dodanie-karty-i-konfiguracja).
+
+> Instalacja przez HACS jest możliwa po drobnej przebudowie repo (pliki w `dist/`, `hacs.json`, release, ścieżka względna) i wymaga repozytorium publicznego – na razie niewdrożona.
+
+## Plik secrets.yaml – wymagane wpisy
+Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozytorium (`.gitignore`).
+
+| Klucz | Do czego | Uwagi |
+|---|---|---|
+| `wifi_ssid_iot` | nazwa sieci Wi-Fi | sieć 2,4 GHz |
+| `wifi_pass` | hasło sieci Wi-Fi | |
+| `esp_api_key_tekla_CAN` | klucz szyfrowania API (HA ↔ ESP) | 32 bajty w base64; wygeneruj w ESPHome (*Encryption key*) |
+| `ota_pass` | hasło aktualizacji bezprzewodowej (OTA) | dowolne, silne |
+| `ap_pass` | hasło awaryjnej sieci `Tekla-Estyma Fallback` | min. 8 znaków |
+
+PIN-y instalatora (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z oprogramowania panelu Tekla – są jawne w YAML (`pin_installer1`, `pin_installer2`) i nie wymagają wpisu w `secrets.yaml`.
+
+## Awaryjny punkt dostępu Wi-Fi
+Jeśli ESP nie połączy się z siecią (zmiana routera, złe hasło, nowa sieć), po ok. minucie sam wystawia sieć **`Tekla-Estyma Fallback`** (hasło z `ap_pass`). Po połączeniu otwiera się strona logowania (portal captive; jeśli nie – wejdź na `192.168.4.1`), gdzie wybierasz sieć i wpisujesz hasło. Urządzenie zapisuje dane i łączy się z siecią. Ponieważ w firmware jest stały adres IP (`device_ip`), w nowej sieci musi on pasować do jej podsieci – w razie potrzeby wgraj firmware z poprawionym adresem. Po powrocie do sieci urządzenie pojawi się w ESPHome i w HA.
+
+## Dodanie karty i konfiguracja
+Dodaj kartę **Tekla panel** z listy kart (edytor wizualny) albo wklej YAML. Najprostsza konfiguracja:
+
+```yaml
+type: custom:tekla-panel-card
+```
+
+Karta **sama znajduje encje** urządzenia po nazwie (domyślny prefiks `tekla`). Pozycje bez encji pokazują „-”, a brak encji nigdy nie powoduje błędu karty.
+
+### Opcje YAML
+| Opcja | Domyślnie | Opis |
+|---|---|---|
+| `screen` | `main` | ekran startowy (`main`, `heat`, `water`, `burn`, `menu`, `alarm`, `info` i inne – lista w edytorze) |
+| `lite` | `false` | tryb lite – patrz [niżej](#tryb-lite); tylko w YAML, nie ma go w edytorze |
+| `entity_prefix` | `tekla` | fragment nazwy urządzenia używany do wykrywania encji |
+| `esphome_node` | `tekla_estyma` | nazwa węzła ESPHome (usługi `esphome.<węzeł>_...`) |
+| `mirror` | z ESP | `true` blokuje zapisy w tej karcie (tylko podgląd) |
+| `entities` | – | ręczne wskazanie encji dla wybranych pozycji (nadpisuje wykrywanie) |
+
+```yaml
+type: custom:tekla-panel-card
+screen: main
+entity_prefix: tekla
+entities:
+  boiler_temp: sensor.moj_kociol_temperatura   # opcjonalnie – własna encja zamiast wykrytej
+```
+
+### Edytor wizualny
+Edytor jest podzielony tak jak karta – według ekranów i menu:
+1. **Ogólne** – ekran startowy, prefiks encji, węzeł ESPHome, tryb mirror (u góry widać, ile pozycji wykryto automatycznie i których brakuje).
+2. **Ekran główny i ekran Kocioł**, **Ekran główny – Palnik i zbiornik**, **Ekran Ogrzewanie (CO)**, **Ekran Woda użytkowa (CWU)**.
+3. **Menu →** Palnik → NASTAWY (użytkownik / klucz 1 / klucz 2), Ciepła woda → NASTAWY, Ogrzewanie obwód 1 → NASTAWY, Kocioł → NASTAWY, Historia alarmów, Statystyki i Test wyjść.
+4. **System** – łączność CAN, tryb mirror, poziom dostępu.
+
+W trybie lite sekcje klucza 1 i 2 są ukryte.
+
+## Tryb lite
+Jedna karta, dwa tryby. W YAML (wysoko w konfiguracji karty):
+
+```yaml
+type: custom:tekla-panel-card
+lite: true
+```
+
+- `lite: false` (domyślnie) – pełna karta z poziomami dostępu i PIN-em.
+- `lite: true` – karta zawsze na **poziomie 0** (zwykły użytkownik). W menu nie ma pozycji **Poziom menu (PIN)**, klucz 1 i 2 są niedostępne, nie ma też ekranów serwisowych (Test wyjść, Statystyki, Sieć). Nawet jeśli w HA jest odblokowany wyższy poziom, karta lite go nie pokazuje.
+
+Dawny typ `custom:tekla-panel-card_lite` działa nadal jako alias (`lite: true`).
+
+| Pełna karta, poziom 0 | Pełna karta, klucz 1 | Lite |
+|---|---|---|
+| ![Pełna](docs/img/32-pelna-menu-poziom0.png) | ![Klucz 1](docs/img/20-klucz1-menu.png) | ![Lite](docs/img/30-lite-menu.png) |
+
+## Poziomy dostępu i PIN-y
+- **Poziom 0** – użytkownik: Kocioł, Palnik, Ogrzewanie obwód 1, Ciepła woda, Historia alarmów, Informacje.
+- **Klucz 1** (PIN 0900) – dodatkowo Język, Alarm dźwiękowy, Konfiguracja, Test wyjść, Statystyki, Sieć oraz nastawy palnika klucza 1.
+- **Klucz 2** (PIN 0999) – dodatkowo nastawy palnika klucza 2 (bezwładność, ruch rusztu, itd.).
+
+PIN wpisuje się w menu **Poziom menu (PIN)**. Poziom jest utrzymywany w ESP (sensor „Poziom dostępu”), wraca do 0 po 5 min bezczynności (`pin_autolock_min`) i po restarcie. Po wpisaniu któregokolwiek PIN-u ustawienia danego poziomu odświeżają się automatycznie. ESP odrzuca zapis parametru wymagającego wyższego poziomu.
+
+Odczyt ustawień: po starcie ESP czyta wszystkie ustawienia (najpierw poziom 0), poziom 0 jest odświeżany cyklicznie, a klucz 1 i 2 – po PIN-ie, po zapisie i na żądanie (klik w nazwę dnia tygodnia na ekranie głównym).
+
+## Przegląd ekranów
+| Ogrzewanie | Woda | Kocioł |
+|---|---|---|
+| ![Ogrzewanie](docs/img/02-ogrzewanie.png) | ![Woda](docs/img/03-woda.png) | ![Kocioł](docs/img/06-kociol.png) |
+
+| Nastawy palnika | Nastawy ogrzewania | Nastawy wody |
+|---|---|---|
+| ![Palnik](docs/img/07-palnik-nastawy.png) | ![CO](docs/img/08-ogrzewanie-nastawy.png) | ![CWU](docs/img/09-woda-nastawy.png) |
+
+| Historia alarmów | Harmonogram | Informacje |
+|---|---|---|
+| ![Alarmy](docs/img/10-historia-alarmow.png) | ![Program](docs/img/12-program-harmonogram.png) | ![Info](docs/img/11-informacje.png) |
+
+| Szybkie ustawienia | Paliwo | PIN |
+|---|---|---|
+| ![Szybkie](docs/img/13-okno-szybkie-ustawienia.png) | ![Paliwo](docs/img/14-okno-paliwo.png) | ![PIN](docs/img/15-poziom-menu-pin.png) |
+
+| Nastawy palnika, klucz 1 | Nastawy palnika, klucz 2 |
 |---|---|
-| `esphome/tekla-estyma.yaml` | firmware ESPHome (aktualna wersja w nagłówku `CHANGELOG`) |
-| `esphome/secrets.example.yaml` | wzór pliku `secrets.yaml` (hasła, klucz API) |
-| `www/community/igneo-ha/igneo-card.js` | karta (jedyny plik do dodania jako zasób dashboardu) |
-| `www/community/igneo-ha/tekla-panel-card.js` | rdzeń karty, pobierany przez `igneo-card.js` |
-| `www/community/igneo-ha/igneo-card-lite.js` | wersja lite, tylko podgląd (na razie nierozwijana) |
-| `www/community/igneo-ha/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
-| `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
+| ![Klucz 1](docs/img/21-klucz1-palnik-nastawy.png) | ![Klucz 2](docs/img/22-klucz2-palnik-nastawy.png) |
 
-## Instalacja
-
-1. **ESP:** skopiuj `esphome/secrets.example.yaml` do `secrets.yaml`, uzupełnij, wgraj `tekla-estyma.yaml` do ESPHome.
-2. **Karta:** skopiuj zawartość `www/community/igneo-ha/` do `/config/www/community/igneo-ha/`.
-3. **Zasób dashboardu** (Ustawienia → Dashboardy → Zasoby): typ *moduł JavaScript*, adres `/local/community/igneo-ha/igneo-card.js?v=1`. Dla lite dodatkowo `/local/community/igneo-ha/igneo-card-lite.js?v=1`.
-4. Po każdej zmianie pliku podbij `?v=` i odśwież stronę (Ctrl+F5).
-5. Karta: `type: custom:tekla-panel-card` (konfiguracja encji jak dotąd).
-
-Karta pobiera rdzeń i grafiki z ustalonej ścieżki `/local/community/igneo-ha/`, dlatego pliki muszą leżeć dokładnie tam. Instalacja przez HACS jest możliwa po drobnej przebudowie (pliki w `dist/`, `hacs.json`, release, ścieżka względna) i wymaga publicznego repo – na razie niewdrożona, repo jest prywatne.
+Historia alarmów jest czytana z bufora kotła (20 ostatnich wpisów, encje „Alarm wpis 1..20” – wymaga firmware ≥ 2.25).
 
 ## Grafiki
+Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpeg, svg – w tej kolejności). Wgraj własny plik do `/config/www/community/igneo-ha/img/`, aby podmienić domyślny, i odśwież stronę (Ctrl+F5).
 
-Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpeg, svg – w tej kolejności). Wgraj własny plik, aby podmienić domyślny.
+## Rozwiązywanie problemów
+- **Wszędzie „-”** – karta nie widzi encji. Sprawdź, czy nazwy encji zawierają `tekla` (albo ustaw `entity_prefix`) i czy urządzenie jest dodane w HA.
+- **Karta się nie zmienia po aktualizacji** – zmień `?v=` w adresie zasobu i odśwież stronę (Ctrl+F5); pliki z `/local/` są mocno buforowane.
+- **Edycja nie działa** – sprawdź tryb mirror (encja „Tryb mirror”, opcja `mirror`) i poziom dostępu (część nastaw wymaga klucza 1 lub 2).
+- **CAN pokazuje błąd** – sprawdź okablowanie, terminator, `can_bitrate` i `can_clock` w substitutions.
+- **Brak sieci Wi-Fi po zmianie routera** – skorzystaj z [awaryjnego punktu dostępu](#awaryjny-punkt-dostępu-wi-fi).
 
-## Uwagi
-
-- Rejestr „Antylegionella" nie został jeszcze zidentyfikowany (w karcie „-"); 0x216F okazał się błędnym tropem.
-- Historia alarmów (fw ≥ 2.25, karta ≥ 9.1) jest czytana z bufora kotła (20 wpisów), nie z rekordera HA.
-- Odczyt ustawień (fw ≥ 2.24): po starcie wszystkie poziomy, poziom 0 cyklicznie, klucz 1/2 po wpisaniu PIN-u i na żądanie.
-- Zapis do kotła jest aktywny (`mirror: "false"`); tryb lustra blokuje wszystkie zapisy poza włącz/wyłącz i potwierdzeniem alarmu.
-- Poziomy menu: użytkownik, klucz 1, klucz 2 – PIN-y (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z softu panelu Tekla, zapisane jawnie w YAML.
+## Struktura repozytorium
+| Ścieżka | Co to |
+|---|---|
+| `esphome/tekla-estyma.yaml` | firmware ESPHome (historia zmian w nagłówku) |
+| `esphome/secrets.example.yaml` | wzór `secrets.yaml` |
+| `www/community/igneo-ha/igneo-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
+| `www/community/igneo-ha/tekla-panel-card.js` | rdzeń karty, pobierany przez `igneo-card.js` |
+| `www/community/igneo-ha/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
+| `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
+| `docs/img/` | zrzuty ekranu do tego README |
+| `CHANGELOG.md` | historia zmian karty i firmware |

@@ -1,9 +1,9 @@
-/* igneo-card v9.1 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* igneo-card v9.2 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (wersja lite jest osobno: igneo-card-lite.js).
    Dziala tak: pobiera rdzen /local/community/igneo-ha/tekla-panel-card.js (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
-     | czas podawania | historia alarmow z HA | grafiki z folderu img/ | autor na ekranie INFO.
-   Zasob w HA: ten plik (plus igneo-card-lite.js, jesli uzywasz karty lite). Po zmianie podbij ?v= w adresie zasobu i zrob Ctrl+F5. */
+     | czas podawania | historia alarmow z kotla | grafiki z folderu img/ | autor na ekranie INFO | v9.2: automatyczne wykrywanie encji, tryb lite (lite: true w YAML), nowy edytor.
+   Zasob w HA: tylko ten plik. Po zmianie podbij ?v= w adresie zasobu i zrob Ctrl+F5. */
 (async () => {
   if (window.__igneoCard) return;
   window.__igneoCard = true;
@@ -196,6 +196,11 @@
 },
 {
 "t": "x",
+"old": "class TeklaPanelCard extends HTMLElement {",
+"new": "window.__teklaDefs = { ENT_GROUPS, ROLE_KEY, SCREEN_OPTS };\nclass TeklaPanelCard extends HTMLElement {"
+},
+{
+"t": "x",
 "old": "customElements.define('tekla-panel-card', TeklaPanelCard);",
 "new": "if (!customElements.get('tekla-panel-card')) customElements.define('tekla-panel-card', TeklaPanelCard);"
 },
@@ -354,6 +359,7 @@
       p_inertia: 'palnik_bezwladnosc', p_grate_time: 'palnik_czas_ruchu_rusztu', p_burner_feed: 'palnik_podawanie_palnika_podajnika_zasobnika',
       p_feeder_period: 'palnik_okres_podajnika_zasobnika', p_min_rpm: 'palnik_minimalne_obroty_dmuchawy',
     };
+    W.NEW = NEW;
     // parametry menu palnika i CWU: k = klucz set_param, lv = poziom (0/1/2)
     const PR2 = [
       { k: 22, t: 'Wstępna dawka paliwa [s]', r: 'p_prefeed', lo: 0, hi: 200, st: 1, dc: 0, lv: 1 },
@@ -380,6 +386,7 @@
       { k: 43, t: 'Minimalne obroty dmuchawy [x100]', r: 'p_min_rpm', lo: 0, hi: 5, st: 1, dc: 0, lv: 2 },
       { k: 44, t: 'Antylegionella', r: 'legion', tog: true, lv: 0 },
     ];
+    W.PR2 = PR2;
     const L1 = [1, 0, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'wsp', 13, 14, 15, 16], L2 = [17, 18, 19, 20, 21];
     const q = (v, c) => Number(Math.max(c.lo, Math.min(c.hi, Math.round(v / c.st) * c.st)).toFixed(c.dc));
     const KEYDIV = n => `<div class="svsep"><ha-icon icon="mdi:wrench" style="--mdc-icon-size:5cqw"></ha-icon><sup>${n}</sup></div>`;
@@ -758,6 +765,149 @@
       if (s !== 'info' || typeof r !== 'string') return r;
       return r.replace('Controller by Estyma (www.estyma.pl)</div>', 'Controller by Estyma (www.estyma.pl)</div><div class="dim">Kod EspHome i karta: Gorz Roman</div>');
     };
+
+    })();
+
+    // ---- modul v9.2: automatyczne wykrywanie encji, tryb lite, edytor wizualny ----
+    await (async () => {
+    const C = customElements.get('tekla-panel-card');
+    if (C.prototype.__v92) return;
+    C.prototype.__v92 = true;
+    const W = window.__tekla80, D = window.__teklaDefs || { ENT_GROUPS: [], ROLE_KEY: {}, SCREEN_OPTS: [] };
+    const ROLE_DOM = {};
+    D.ENT_GROUPS.forEach(g => g[1].forEach(f => { ROLE_DOM[f[0]] = f[2]; }));
+    const keysAll = () => Object.assign({}, D.ROLE_KEY, (W && W.NEW) || {});
+    const SENS = ['sensor', 'input_number', 'number'];
+
+    // znajduje encje roli po koncowce entity_id (nazwy z ESPHome tekla_estyma); prefix = fragment nazwy urzadzenia (domyslnie "tekla")
+    const findRole = (ids, role, key, pf) => {
+      const doms = ROLE_DOM[role] || SENS, re = new RegExp('(^|_)' + key + '(_\\d+)?$');
+      const c = ids.filter(id => { const i = id.indexOf('.'), o = id.slice(i + 1); return doms.includes(id.slice(0, i)) && (!pf || o.includes(pf)) && re.test(o); }).sort((a, b) => a.length - b.length);
+      return c[0] || '';
+    };
+    window.__igneoFind = { findRole, keysAll, ROLE_DOM };
+    const pfOf = cfg => String(cfg && cfg.entity_prefix != null ? cfg.entity_prefix : 'tekla').trim().toLowerCase();
+
+    // brak encji = "-" (jak na panelu); jawne wpisy z konfiguracji maja pierwszenstwo, reszta wykrywana sama
+    C.prototype._res = function (h) {
+      if (!h || !h.states) return;
+      const ids = Object.keys(h.states), pf = pfOf(this._cfg), sig = ids.length + '|' + pf;
+      if (sig === this._idn) return;
+      this._idn = sig;
+      const keys = keysAll();
+      for (const r in keys) { if (this.E[r]) continue; const e = findRole(ids, r, keys[r], pf); if (e) this.E[r] = e; }
+    };
+
+    // ---- tryb lite (tylko w YAML: lite: true) = poziom 0 dla zwyklego uzytkownika, bez "Poziom menu" ----
+    const LITE_GO = ['level', 'test', 'stats', 'net', 'fanmod'];
+    const sc = C.prototype.setConfig;
+    C.prototype.setConfig = function (c) { this._lite = !!(c && c.lite === true); return sc.call(this, c); };
+    const ol = C.prototype._lvl;
+    C.prototype._lvl = function () { return this._lite ? 0 : ol.call(this); };
+    const om = C.prototype._menu;
+    C.prototype._menu = function () {
+      const h = om.call(this);
+      return this._lite ? h.replace(/<div class="row go mi" data-go="level"[\s\S]*?<\/div>/, '') : h;
+    };
+    const og2 = C.prototype._go;
+    C.prototype._go = function (s, b) { if (this._lite && LITE_GO.includes(s)) return; return og2.call(this, s, b); };
+    if (!customElements.get('tekla-panel-card_lite')) {   // zgodnosc wsteczna: stara karta lite = ta sama karta z lite: true
+      customElements.define('tekla-panel-card_lite', class extends C { setConfig(c) { super.setConfig(Object.assign({}, c, { lite: true })); } });
+    }
+
+    // ---- edytor wizualny: sekcje wg ekranow i menu karty ----
+    const PR2L = {}; ((W && W.PR2) || []).forEach(c => { PR2L[c.r] = c.t; });
+    const LBL = {}; D.ENT_GROUPS.forEach(g => g[1].forEach(f => { LBL[f[0]] = f[1]; }));
+    const lab = r => LBL[r] || PR2L[r] || r;
+    const GR = [
+      ['Ekran główny i ekran Kocioł', ['boiler_temp', 'boiler_set', 'boiler_manual', 'mode', 'sch_boil', 'on', 'power_switch', 'outside', 'ret_temp'], 0],
+      ['Ekran główny – Palnik i zbiornik paliwa', ['burner', 'burner_code', 'power', 'burn_kw', 'burn_kgh', 'burn_bright', 'burn_temp', 'ban', 'fan_pct', 'blower_run', 'feeder_run', 'feeder', 'burn_time', 'fuel', 'fuel_cap', 'fuel_pct', 'feed_time'], 0],
+      ['Ekran Ogrzewanie (CO)', ['co_temp', 'co_set', 'co_manual', 'co_pump', 'co_aux', 'co_comfort', 'co_eco', 'sch_co', 'co_mode', 'co_mode_sel'], 0],
+      ['Ekran Woda użytkowa (CWU)', ['cwu_temp', 'cwu_set', 'cwu_comfort', 'cwu_eco', 'sch_cwu', 'cwu_mode', 'cwu_mode_sel', 'cwu_pump'], 0],
+      ['Menu → Palnik → NASTAWY (użytkownik)', ['air_corr', 'power_min', 'power_max', 'fuel_heat', 'fuel_test'], 0],
+      ['Menu → Ciepła woda → NASTAWY', ['cwu_hyst', 'cwu_boost', 'cwu_prio', 'legion'], 0],
+      ['Menu → Historia alarmów', ['alarm', 'last_alarm', 'alarm_start', 'alarm_end', 'confirm'], 0],
+      ['Menu → Kocioł → NASTAWY (klucz 1)', ['boiler_hyst_on', 'boiler_hyst_off'], 1],
+      ['Menu → Ogrzewanie obwód 1 → NASTAWY (klucz 1)', ['co_hyst', 'co_calib', 'co_mode_s', 'co_cur_m20', 'co_cur_0', 'co_cur_10'], 1],
+      ['Menu → Palnik → NASTAWY (klucz 1)', ['fan_mod_1', 'fan_mod_2', 'fan_mod_3', 'fan_mod_4', 'fan_mod_5', 'p_prefeed', 'p_feed_max', 'p_photo', 'p_blow_ign', 'p_blow_glow', 'p_blow_stop', 'p_glow_time', 'p_glow_fuel', 'p_stop_time', 'p_lambda', 'p_o2_30', 'p_o2_100', 'p_cleans', 'p_clean_gap', 'p_pause_time', 'p_pause_power', 'p_pause_blow'], 1],
+      ['Menu → Palnik → NASTAWY (klucz 2)', ['p_inertia', 'p_grate_time', 'p_burner_feed', 'p_feeder_period', 'p_min_rpm'], 1],
+      ['Menu → Statystyki i Test wyjść (klucz 1)', ['stats', 'blower_mode', 'blower_auto', 'blower_off', 'blower_on', 'feeder_mode', 'feeder_auto', 'feeder_off', 'feeder_on'], 1],
+      ['System', ['can_ok', 'mirror', 'acc'], 0],
+    ];
+    class IgneoEditor extends HTMLElement {
+      setConfig(c) { this._cfg = c || {}; this._draw(); }
+      set hass(h) { this._hass = h; if (this._form) this._form.hass = h; this._status(); }
+      _groups() {
+        const known = new Set(GR.flatMap(g => g[1])), all = Object.keys(keysAll());
+        const rest = all.filter(r => !known.has(r));
+        const gs = GR.filter(g => !(this._cfg.lite && g[2] === 1));
+        if (rest.length && !this._cfg.lite) gs.push(['Inne', rest, 1]);
+        return gs;
+      }
+      _flat() {
+        const c = this._cfg, d = {
+          screen: c.screen || 'main', entity_prefix: c.entity_prefix != null ? c.entity_prefix : 'tekla',
+          esphome_node: c.esphome_node || 'tekla_estyma', mirror_mode: typeof c.mirror === 'boolean' ? (c.mirror ? 'on' : 'off') : 'auto',
+        };
+        const e = c.entities || {};
+        Object.keys(keysAll()).forEach(r => { d['e_' + r] = e[r] || ''; });
+        return d;
+      }
+      _draw() {
+        if (!this._form) {
+          const info = document.createElement('div');
+          info.style.cssText = 'font-size:13px;line-height:1.45;margin:0 0 10px;opacity:.9';
+          info.innerHTML = '<b>Zwykle nie musisz nic wybierać.</b> Karta sama znajduje encje urządzenia po prefiksie nazwy (domyślnie „tekla”). Pola encji poniżej służą tylko do wskazania własnej encji zamiast wykrytej. Pozycje bez encji pokażą „-”.';
+          this.appendChild(info);
+          this._st = document.createElement('div');
+          this._st.style.cssText = 'font-size:12px;opacity:.8;margin:0 0 10px';
+          this.appendChild(this._st);
+          this._form = document.createElement('ha-form');
+          this._form.computeLabel = s => s.label || s.name;
+          this._form.addEventListener('value-changed', ev => this._changed(ev.detail.value));
+          this.appendChild(this._form);
+        }
+        const dom = r => (ROLE_DOM[r] || SENS);
+        const schema = [{
+          type: 'expandable', title: 'Ogólne (ekran startowy, prefiks encji, węzeł ESPHome)', expanded: true, flatten: true, schema: [
+            { name: 'screen', label: 'Ekran startowy karty', selector: { select: { mode: 'dropdown', options: D.SCREEN_OPTS.map(o => ({ value: o[0], label: o[1] })) } } },
+            { name: 'entity_prefix', label: 'Prefiks encji (fragment nazwy urządzenia, np. tekla)', selector: { text: {} } },
+            { name: 'esphome_node', label: 'Nazwa węzła ESPHome (usługi esphome.<węzeł>_...)', selector: { text: {} } },
+            { name: 'mirror_mode', label: 'Tryb mirror (blokada zapisów w tej karcie)', selector: { select: { mode: 'dropdown', options: [{ value: 'auto', label: 'wg ESP (domyślnie)' }, { value: 'on', label: 'włączony – tylko podgląd' }, { value: 'off', label: 'wyłączony' }] } } },
+          ],
+        }];
+        this._groups().forEach(g => schema.push({
+          type: 'expandable', title: g[0], flatten: true,
+          schema: g[1].filter(r => keysAll()[r]).map(r => ({ name: 'e_' + r, label: lab(r), selector: { entity: { domain: dom(r) } } })),
+        }));
+        this._form.schema = schema;
+        this._form.data = this._flat();
+        if (this._hass) this._form.hass = this._hass;
+        this._status();
+      }
+      _status() {
+        if (!this._st || !this._hass) return;
+        const ids = Object.keys(this._hass.states), pf = pfOf(this._cfg), keys = keysAll(), ex = this._cfg.entities || {};
+        let ok = 0, miss = [];
+        Object.keys(keys).forEach(r => { if (ex[r] || findRole(ids, r, keys[r], pf)) ok++; else miss.push(lab(r)); });
+        this._st.textContent = `Znaleziono encje dla ${ok} z ${Object.keys(keys).length} pozycji.` + (miss.length ? ` Bez encji („-”): ${miss.slice(0, 12).join(', ')}${miss.length > 12 ? ' i ' + (miss.length - 12) + ' innych' : ''}.` : '');
+      }
+      _changed(v) {
+        const entities = {};
+        Object.keys(keysAll()).forEach(r => { if (v['e_' + r]) entities[r] = v['e_' + r]; });
+        const cfg = Object.assign({}, this._cfg, { screen: v.screen || 'main', entities });
+        const pf = (v.entity_prefix || '').trim(); if (pf && pf !== 'tekla') cfg.entity_prefix = pf; else delete cfg.entity_prefix;
+        const nd = (v.esphome_node || '').trim(); if (nd && nd !== 'tekla_estyma') cfg.esphome_node = nd; else delete cfg.esphome_node;
+        if (v.mirror_mode === 'on') cfg.mirror = true; else if (v.mirror_mode === 'off') cfg.mirror = false; else delete cfg.mirror;
+        if (!Object.keys(entities).length) delete cfg.entities;
+        this._cfg = cfg;
+        this._status();
+        this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: cfg }, bubbles: true, composed: true }));
+      }
+    }
+    if (!customElements.get('igneo-card-editor')) customElements.define('igneo-card-editor', IgneoEditor);
+    C.getConfigElement = () => document.createElement('igneo-card-editor');
+    C.getStubConfig = () => ({ screen: 'main' });
 
     })();
   } catch (e) { console.error('igneo-card', e); }

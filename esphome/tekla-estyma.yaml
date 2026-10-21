@@ -1,4 +1,5 @@
 # CHANGELOG
+# v2.26: AWARYJNY AP + captive_portal (brak sieci Wi-Fi -> siec "Tekla-Estyma Fallback", haslo w secrets: ap_pass, strona 192.168.4.1 do wpisania danych sieci); karta v9.2: autowykrywanie encji, tryb lite w jednej karcie.
 # v2.25: HISTORIA ALARMOW Z KOTLA: ESP czyta caly bufor 20 alarmow kotla (kod 0x4010+i, poczatek 0x4024+i, koniec 0x4038+i; po starcie, przy nowym alarmie i akcja alarm_refresh) i publikuje 20 diagnostycznych text_sensorow "Alarm wpis 1..20" w formacie "kod N (opis)|poczatek unix|koniec unix" (pusty = "-"); karta nie korzysta juz z rekordera HA.
 # v2.24: ODCZYT USTAWIEN: po starcie wszystkie ustawienia (najpierw poziom 0, potem klucz 1 i 2); poziom 0 (0x2270/0x2271/0x2273/0x2212/0x2210/0x300D) czytany tez cyklicznie; klucz 1 i 2 na zadanie - po wpisaniu PIN-u (automatycznie, akcja unlock) i po param_refresh.
 # v2.23: MIGAWKA KATALOGOWA rozszerzona z 538 do 593 rejestrow (dodane 55 rejestrow wezla 4 znalezionych od v2.20: m.in. 0x2116, 0x2151, 0x2216, 0x2260, 0x226E-0x2271, 0x2296, 0x2999, 0x300F, 0x3524-0x3526, 0x3701, 0x7D1-0x7E1, 0xBB9-0xBBB); lista CAT = suma rejestrow z katalogu docs/rejestry (wezel 4).
@@ -31,7 +32,7 @@
 # Zapis: akcja "sdo_write" dziala dopiero po ustawieniu write_enabled: "true".
 # =====================================================================
 substitutions:
-  fw_version: "2.25"
+  fw_version: "2.26"
   pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN z softu panelu, nie zmieniamy
   pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN z softu panelu, nie zmieniamy
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
@@ -339,6 +340,11 @@ wifi:
   ssid: ${wifi_ssid}
   password: ${wifi_password}
   fast_connect: true
+  # v2.26: awaryjny punkt dostepu - gdy ESP nie polaczy sie z siecia (zla nazwa/haslo, nowa siec), po ok. 1 min wystawia siec
+  # "Tekla-Estyma Fallback" (haslo: secret ap_pass); po polaczeniu z nia strona 192.168.4.1 (captive_portal) pozwala wybrac siec i wpisac haslo.
+  ap:
+    ssid: "Tekla-Estyma Fallback"
+    password: !secret ap_pass
   manual_ip:
     static_ip: ${device_ip}
     gateway: ${device_gateway}
