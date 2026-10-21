@@ -24,7 +24,7 @@ Kod ESPHome i karta: Gorz Roman.
 4. Po każdej zmianie pliku podbij `?v=` i odśwież stronę (Ctrl+F5).
 5. Karta: `type: custom:tekla-panel-card` (konfiguracja encji jak dotąd).
 
-Karta pobiera rdzeń z ustalonej ścieżki `/local/community/igneo-ha/`, dlatego pliki muszą leżeć dokładnie tam (instalacja przez HACS nie jest przewidziana).
+Karta pobiera rdzeń i grafiki z ustalonej ścieżki `/local/community/igneo-ha/`, dlatego pliki muszą leżeć dokładnie tam. Instalacja przez HACS jest możliwa po drobnej przebudowie (pliki w `dist/`, `hacs.json`, release, ścieżka względna) i wymaga publicznego repo – na razie niewdrożona, repo jest prywatne.
 
 ## Grafiki
 
@@ -32,6 +32,8 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 
 ## Uwagi
 
-- Rejestry „Antylegionella" nie zostały jeszcze zidentyfikowane (w karcie „-").
+- Rejestr „Antylegionella" nie został jeszcze zidentyfikowany (w karcie „-"); 0x216F okazał się błędnym tropem.
+- Historia alarmów (fw ≥ 2.25, karta ≥ 9.1) jest czytana z bufora kotła (20 wpisów), nie z rekordera HA.
+- Odczyt ustawień (fw ≥ 2.24): po starcie wszystkie poziomy, poziom 0 cyklicznie, klucz 1/2 po wpisaniu PIN-u i na żądanie.
 - Zapis do kotła jest aktywny (`mirror: "false"`); tryb lustra blokuje wszystkie zapisy poza włącz/wyłącz i potwierdzeniem alarmu.
 - Poziomy menu: użytkownik, klucz 1, klucz 2 – PIN-y (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z softu panelu Tekla, zapisane jawnie w YAML.

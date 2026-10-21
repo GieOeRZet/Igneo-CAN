@@ -45,7 +45,7 @@ Przeskanowane w całości: 0x0000–0xFFFF (sub 1). Puste: 0x1000–0x1FFF, 0x50
 - T. palnika = 0x226C (27 °C).
 
 ## Ustalenia 19.10 23:40–00:00 (FW v2.20)
-- **Antylegionella = 0x216F** (256 wył., 257 wł.; z różnicy migawek wł./wył.; panel potwierdza stan wył. = 256). 0x300B i 0x311C to fałszywe tropy.
+- **Antylegionella: rejestr NIEZNANY.** 0x216F było przypisane błędnie (odczyt 256 przy włączonej na panelu, zapis 257 bez efektu) – wycofane w fw v2.21; 0x216F pozostaje nieopisanym rejestrem 256/257. 0x300B i 0x311C to fałszywe tropy.
 - **0x2290 Czas rozżarzania [min]**: flaga+bajt, zakres 0–20 (panel: 2→7 = raw 258→263). **0x299A Rozżarzanie paliwo [%]**: zakres 20–100 (20→22 = 276→278).
 - **Poziomy menu (PIN)**: 0 użytkownik; 1 = PIN 0900 (klucz 1); 2 = PIN 0999 (klucz 2). Palnik: poziom 0 = korekta powietrza, moc min/max, wartość opałowa, ilość paliwa test; poziom 1 = krzywa dmuchawy, podawanie max, wstępna dawka, próg foto, moce dmuchawy, czasy rozżarzania/wygaszania, rozżarzanie paliwo, lambda, tlen 30/100, liczba czyszczeń, wentylator wspomagający, odstęp czyszczenia, czas pauzy, moc/dmuchawa w pauzie; poziom 2 = bezwładność, czas ruchu rusztu, pod. palnika, okres podajnika, min. obroty. CWU: poziom 0 = komfort/eko/zagrzej teraz/histereza/antylegionella/priorytet; poziom 1 = źródło, zwiększenie temp. źródła, delta pompy, temp. max (rejestry nieznane). Menu główne: poziom 1 dodaje Język, Alarm dźwiękowy, Konfiguracja, Test wyjść, Statystyki, Sieć.
 - Moc [kW] = test × podawanie max / okres × wartość opałowa × 0,90 × moc[%]; spalanie [kg/h] = kW / (wartość opałowa × 0,85) – 0,85 empiryczne.
