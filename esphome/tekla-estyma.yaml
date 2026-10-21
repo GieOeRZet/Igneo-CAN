@@ -14,7 +14,7 @@
 # Zapis: akcja "sdo_write" dziala dopiero po ustawieniu write_enabled: "true".
 # =====================================================================
 substitutions:
-  fw_version: "2.29"
+  fw_version: "2.30"
   pin_installer1: "0900"   # PIN instalatora 1 (klucz 1) - domyslny PIN z softu panelu, nie zmieniamy
   pin_installer2: "0999"   # PIN instalatora 2 (klucz 2) - domyslny PIN z softu panelu, nie zmieniamy
   ap_pass: "11223344"        # haslo awaryjnej sieci "Tekla-Estyma Fallback" - JAWNE w substitutions (nie w secrets); WPA2 wymaga min. 8 znakow
@@ -30,10 +30,11 @@ substitutions:
   # Siec (WiFi + stały adres IP).
   wifi_ssid: !secret wifi_ssid_iot
   wifi_password: !secret wifi_pass
-  # Adres IP: domyslnie DHCP (nic nie trzeba ustawiac). Stały adres: odkomentuj te 3 linie ORAZ blok manual_ip w sekcji wifi nizej (dopasuj do swojej sieci).
-  # device_ip: 192.168.10.250
-  # device_gateway: 192.168.10.1
-  # device_subnet: 255.255.254.0
+  # Adres IP: staly_ip "false" = DHCP (domyslnie, nic nie trzeba ustawiac); "true" = staly adres z trzech wartosci ponizej (dopasuj do swojej sieci)
+  static_ip: "false"
+  device_ip: 192.168.10.250
+  device_gateway: 192.168.10.1
+  device_subnet: 255.255.254.0
   # Klucz API (HA) i haslo OTA. Docelowo przenies do secrets.yaml, np.:
   #   api_key: !secret esp_api_key_tekla_CAN
   api_key: !secret esp_api_key_tekla_CAN
@@ -320,6 +321,10 @@ ota:
   - platform: esphome
     password: ${ota_password}
 
+# v2.30: staly adres IP przelaczany jedna substitution (static_ip: "true"/"false"), bez edycji sekcji wifi.
+packages:
+  network_ip: ${ {'wifi': {'manual_ip': {'static_ip': device_ip, 'gateway': device_gateway, 'subnet': device_subnet}}} if static_ip == 'true' else {} }
+
 wifi:
   ssid: ${wifi_ssid}
   password: ${wifi_password}
@@ -329,11 +334,7 @@ wifi:
   ap:
     ssid: "Tekla-Estyma Fallback"
     password: ${ap_pass}
-  # Stały adres IP (opcjonalnie; domyslnie DHCP) - odkomentuj razem z device_ip/device_gateway/device_subnet w substitutions:
-  # manual_ip:
-  #   static_ip: ${device_ip}
-  #   gateway: ${device_gateway}
-  #   subnet: ${device_subnet}
+  # Staly adres IP wlacza substitution static_ip: "true" (pakiet ponizej dodaje wifi.manual_ip); przy "false" ESP bierze adres z DHCP.
 
 globals:
   - id: scan_on

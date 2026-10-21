@@ -3,6 +3,8 @@
 Najnowsze na górze. Format wpisów: `vX.Y: opis`. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
 
+- **v2.30:** substitution `static_ip: "true"/"false"` przełącza stały adres IP (z `device_ip/device_gateway/device_subnet`) albo DHCP; realizowane pakietem `packages: network_ip` (Jinja) dodającym `wifi.manual_ip`. Wymaga ESPHome z obsługą Jinja w packages; niesprawdzone kompilacją.
+
 - **v2.29:** adres IP domyślnie z DHCP – `device_ip/device_gateway/device_subnet` i blok `manual_ip` w wifi zakomentowane (stały adres opcjonalny; instrukcja w README, bez secrets).
 
 - **v2.28:** hasło awaryjnej sieci `Tekla-Estyma Fallback` (`ap_pass`) przeniesione z secrets do `substitutions` (jawne, domyślnie 11223344); wpis `ap_pass` w secrets.yaml nie jest już potrzebny.

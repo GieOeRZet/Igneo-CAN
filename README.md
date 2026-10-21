@@ -40,7 +40,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 
 ## Instalacja – krok po kroku
 1. **Przygotuj `secrets.yaml`** w katalogu ESPHome – [wymagane wpisy](#plik-secretsyaml--wymagane-wpisy).
-2. **Sieć:** nic nie trzeba ustawiać – ESP dostaje adres z DHCP (potrzebne tylko `wifi_ssid_iot` i `wifi_pass` w secrets). Stały adres IP jest opcjonalny, patrz sekcja „Stały adres IP” niżej.
+2. **Sieć:** nic nie trzeba ustawiać – ESP dostaje adres z DHCP (potrzebne tylko `wifi_ssid_iot` i `wifi_pass` w secrets). Stały adres IP to jedna opcja `static_ip: "true"`, patrz sekcja „Stały adres IP” niżej.
 3. **Wgraj firmware**: skopiuj `esphome/tekla-estyma.yaml` do ESPHome, wgraj (pierwszy raz po kablu USB).
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
 5. **Skopiuj kartę** – zawartość `www/community/igneo-ha/` do `/config/www/community/igneo-ha/` (powstanie `igneo-card.js`, `tekla-panel-card.js` i folder `img/`). Pliki muszą leżeć dokładnie w tym folderze.
@@ -64,11 +64,14 @@ Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozyt
 PIN-y instalatora (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z oprogramowania panelu Tekla – są jawne w YAML (`pin_installer1`, `pin_installer2`) i nie wymagają wpisu w `secrets.yaml`.
 
 ## Stały adres IP (opcjonalnie)
-Domyślnie ESP używa DHCP, więc zwykły użytkownik nie musi nic robić. HA znajduje urządzenie po nazwie (`tekla-estyma`), więc zmiana adresu nie przeszkadza. Jeśli wolisz stały adres (albo wolisz zarezerwować go w routerze), w `esphome/tekla-estyma.yaml` odkomentuj:
-- w `substitutions`: `device_ip`, `device_gateway`, `device_subnet` (wpisz swoje wartości),
-- w sekcji `wifi:` blok `manual_ip:` (3 linie `static_ip`, `gateway`, `subnet`).
-
-Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`.
+Domyślnie ESP używa DHCP (`static_ip: "false"`), więc zwykły użytkownik nie musi nic robić. HA znajduje urządzenie po nazwie (`tekla-estyma`), więc zmiana adresu nie przeszkadza. Jeśli wolisz stały adres, w `substitutions` pliku `esphome/tekla-estyma.yaml` ustaw:
+```yaml
+  static_ip: "true"
+  device_ip: 192.168.10.250      # Twój adres
+  device_gateway: 192.168.10.1   # brama (router)
+  device_subnet: 255.255.255.0   # maska sieci
+```
+Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`. Wymaga nowszego ESPHome (obsługa wyrażeń Jinja w `packages`).
 
 ## Awaryjny punkt dostępu Wi-Fi
 Jeśli ESP nie połączy się z siecią (zmiana routera, złe hasło, nowa sieć), po ok. minucie sam wystawia sieć **`Tekla-Estyma Fallback`** (hasło z `substitutions: ap_pass` w YAML, domyślnie `11223344`). Po połączeniu otwiera się strona logowania (portal captive; jeśli nie – wejdź na `192.168.4.1`), gdzie wybierasz sieć i wpisujesz hasło. Urządzenie zapisuje dane i łączy się z siecią. Ponieważ w firmware jest stały adres IP (`device_ip`), w nowej sieci musi on pasować do jej podsieci – w razie potrzeby wgraj firmware z poprawionym adresem. Po powrocie do sieci urządzenie pojawi się w ESPHome i w HA.
