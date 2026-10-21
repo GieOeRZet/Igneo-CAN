@@ -912,6 +912,7 @@
     if (!customElements.get('igneo-card-editor')) customElements.define('igneo-card-editor', IgneoEditor);
     C.getConfigElement = () => document.createElement('igneo-card-editor');
     C.getStubConfig = () => ({ screen: 'main' });
+    const PC = customElements.get('pelletcan-card'); if (PC) { PC.getConfigElement = C.getConfigElement; PC.getStubConfig = C.getStubConfig; }
 
     })();
     // ---- modul v9.3: aktualizacje (dioda w menu, ekran INFO, changelog z GitHuba) ----

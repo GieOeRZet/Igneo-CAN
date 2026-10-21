@@ -1,6 +1,6 @@
 # PelletCAN
 
-Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
+Karta Home Assistant (`custom:pelletcan-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
 
 Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej instalacji) z pomocą Claude – asystenta AI firmy Anthropic, który pomagał przy pisaniu kodu i dokumentacji.
 
@@ -89,7 +89,7 @@ Jeśli ESP nie połączy się z siecią (zmiana routera, złe hasło, nowa sieć
 Dodaj kartę **Tekla panel** z listy kart (edytor wizualny) albo wklej YAML. Najprostsza konfiguracja:
 
 ```yaml
-type: custom:tekla-panel-card
+type: custom:pelletcan-card
 ```
 
 Karta **sama znajduje encje** urządzenia po nazwie (domyślny prefiks `tekla`). Pozycje bez encji pokazują „-”, a brak encji nigdy nie powoduje błędu karty.
@@ -105,7 +105,7 @@ Karta **sama znajduje encje** urządzenia po nazwie (domyślny prefiks `tekla`).
 | `entities` | – | ręczne wskazanie encji dla wybranych pozycji (nadpisuje wykrywanie) |
 
 ```yaml
-type: custom:tekla-panel-card
+type: custom:pelletcan-card
 screen: main
 entity_prefix: tekla
 entities:
@@ -125,14 +125,14 @@ W trybie lite sekcje klucza 1 i 2 są ukryte.
 Jedna karta, dwa tryby. W YAML (wysoko w konfiguracji karty):
 
 ```yaml
-type: custom:tekla-panel-card
+type: custom:pelletcan-card
 lite: true
 ```
 
 - `lite: false` (domyślnie) – pełna karta z poziomami dostępu i PIN-em.
 - `lite: true` – karta zawsze na **poziomie 0** (zwykły użytkownik). W menu nie ma pozycji **Poziom menu (PIN)**, klucz 1 i 2 są niedostępne, nie ma też ekranów serwisowych (Test wyjść, Statystyki, Sieć). Nawet jeśli w HA jest odblokowany wyższy poziom, karta lite go nie pokazuje.
 
-Dawny typ `custom:tekla-panel-card_lite` działa nadal jako alias (`lite: true`).
+Dawne typy `custom:tekla-panel-card` i `custom:tekla-panel-card_lite` działają nadal (to ta sama karta; `_lite` = `lite: true`). Nowe karty dodawaj jako `custom:pelletcan-card`.
 
 | Pełna karta, poziom 0 | Pełna karta, klucz 1 | Lite |
 |---|---|---|
