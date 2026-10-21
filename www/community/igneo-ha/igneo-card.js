@@ -955,13 +955,12 @@
       const up = this._upd(), fw = this._fwVer();
       let b = '<div class="inf">';
       if (up.length) b += '<div class="updbtn" data-act="updskip">Odrzuć aktualizację</div>';
-      b += '<div class="dim">Stworzone przez: <span class="wh">Gorz Roman</span></div>'
+      b += '<div class="dim auth"><span>Stworzone przez: <span class="wh">Gorz Roman</span></span><span class="zq" data-act="zq"><i><svg viewBox="0 0 24 24"><path d="M5 8h11v5a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z" fill="#fff"/><path d="M16 9.5h1.6a2 2 0 0 1 0 4H16" fill="none" stroke="#fff" stroke-width="1.6"/><rect x="5" y="18.2" width="11" height="1.6" rx=".8" fill="#fff"/></svg></i>Postaw kawę</span></div>'
         + '<div class="dim">Oprogramowanie: <span class="wh">firmware ' + (fw || '-') + ' · karta ' + CARD_VER + '</span></div>';
       up.forEach(u => {
         b += '<div class="gn upt">Aktualizacja: ' + u.n + ' do wersji ' + esc(u.v) + '</div>'
           + u.log.map(l => '<div class="chg">• ' + esc(l) + '</div>').join('');
       });
-      b += '<div class="zq" data-act="zq" title="&#9749;">&#9749;</div>';
       return this._page('INFO', 'menu', b + '</div>');
     };
     C.prototype._build = (function (o) {
@@ -971,7 +970,7 @@
         st.textContent = '.udot{position:absolute;top:1.1cqw;right:1.3cqw;width:2.7cqw;height:2.7cqw;border-radius:50%;background:#2ee66b;box-shadow:0 0 1.4cqw #2ee66b;pointer-events:none}'
           + '.row.upd .l,.row.upd ha-icon{color:#4cf08a!important}'
           + '.updbtn{margin:0 0 2cqw;padding:2.2cqw 0!important;text-align:center;font-size:4.4cqw;color:#fff;background:linear-gradient(#6a93d8,#5079c0);border:.3cqw solid #86a9e4;border-radius:.6cqw;cursor:pointer}'
-          + '.zq{margin:3cqw auto 0;width:7cqw;height:7cqw;line-height:7cqw;text-align:center;font-size:4cqw;opacity:.35;cursor:pointer;border-radius:50%}.zq:hover{opacity:.9}.inf{overflow-y:auto;max-height:100%;scrollbar-width:none}.inf::-webkit-scrollbar{display:none}.inf .wh{color:#fff}.inf .upt{font-size:3.8cqw;padding-top:1.6cqw}.inf .chg{font-size:3.2cqw;padding:.4cqw 0!important;color:#dfe8ff}.updbtn{margin-bottom:1cqw!important;padding:1.6cqw 0!important}';
+          + '.auth{display:flex!important;align-items:center;justify-content:space-between;gap:2cqw}.zq{display:inline-flex;align-items:center;gap:1.2cqw;padding:.4cqw 1.6cqw .4cqw .4cqw;border-radius:5cqw;background:#fff;color:#0a8f4a;font-size:2.7cqw;font-weight:600;line-height:1;cursor:pointer;opacity:.92;flex:none}.zq:hover{opacity:1}.zq i{display:inline-block;width:4.6cqw;height:4.6cqw;border-radius:50%;background:#0a9a4f;padding:.9cqw;box-sizing:border-box}.zq svg{width:100%;height:100%;display:block}.inf{overflow-y:auto;max-height:100%;scrollbar-width:none}.inf::-webkit-scrollbar{display:none}.inf .wh{color:#fff}.inf .upt{font-size:3.8cqw;padding-top:1.6cqw}.inf .chg{font-size:3.2cqw;padding:.4cqw 0!important;color:#dfe8ff}.updbtn{margin-bottom:1cqw!important;padding:1.6cqw 0!important}';
         R.appendChild(st);
         R.addEventListener('click', e => {
           if (e.target.closest('[data-act="zq"]')) {
