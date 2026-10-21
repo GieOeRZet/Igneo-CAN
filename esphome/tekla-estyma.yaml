@@ -1,5 +1,5 @@
 # CHANGELOG
-# v2.27: DIAGNOSTYKA zakladki Siec panelu: ESP loguje (ESP_LOGW "IDENT ..." i encja "SDO ostatni odczyt") kazda nowa ramke SDO o indeksach 0x1000/0x1008/0x1018 (zapytania i odpowiedzi dowolnego wezla), zeby ustalic jak panel pobiera nazwy urzadzen (cel: nazwa "CAN (ESPHome)" zamiast unknown). Bez wysylania czegokolwiek na CAN.
+# v2.27: DIAGNOSTYKA zakladki Siec panelu: ESP loguje (ESP_LOGW "IDENT ..." i encja "SDO ostatni odczyt") kazda nowa ramke SDO o indeksach 0x1000/0x1008/0x1018 (zapytania i odpowiedzi dowolnego wezla) oraz nowe ramki NMT/heartbeat/emergency (0x000, 0x080-0x0FF, 0x700-0x77F), zeby ustalic jak panel pobiera nazwy urzadzen (cel: nazwa "CAN (ESPHome)" zamiast unknown). Bez wysylania czegokolwiek na CAN.
 # v2.26: AWARYJNY AP + captive_portal (brak sieci Wi-Fi -> siec "Tekla-Estyma Fallback", haslo w secrets: ap_pass, strona 192.168.4.1 do wpisania danych sieci); karta v9.2: autowykrywanie encji, tryb lite w jednej karcie.
 # v2.25: HISTORIA ALARMOW Z KOTLA: ESP czyta caly bufor 20 alarmow kotla (kod 0x4010+i, poczatek 0x4024+i, koniec 0x4038+i; po starcie, przy nowym alarmie i akcja alarm_refresh) i publikuje 20 diagnostycznych text_sensorow "Alarm wpis 1..20" w formacie "kod N (opis)|poczatek unix|koniec unix" (pusty = "-"); karta nie korzysta juz z rekordera HA.
 # v2.24: ODCZYT USTAWIEN: po starcie wszystkie ustawienia (najpierw poziom 0, potem klucz 1 i 2); poziom 0 (0x2270/0x2271/0x2273/0x2212/0x2210/0x300D) czytany tez cyklicznie; klucz 1 i 2 na zadanie - po wpisaniu PIN-u (automatycznie, akcja unlock) i po param_refresh.
@@ -505,6 +505,17 @@ canbus:
               for (size_t i = 0; i < x.size() && o < 56; i++) o += snprintf(b + o, sizeof(b) - o, "%02X ", x[i]);
               if (std::string("${can_debug}") == "true") {
                 ESP_LOGI("igneo", "RX id=0x%03X dlc=%d data=%s", (unsigned) can_id, (int) x.size(), b);
+              }
+              // v2.27: NMT / heartbeat / emergency (0x000, 0x080-0x0FF, 0x700-0x77F) - jak panel buduje liste urzadzen; loguj nowe (id + dane)
+              if (can_id == 0x000 || (can_id >= 0x080 && can_id <= 0x0FF) || (can_id >= 0x700 && can_id <= 0x77F)) {
+                static std::set<std::string> nmt_seen;
+                const std::string kn = std::to_string((unsigned) can_id) + "|" + b;
+                if (nmt_seen.size() < 80 && nmt_seen.insert(kn).second) {
+                  char nb[96];
+                  snprintf(nb, sizeof(nb), "NMT id=0x%03X dlc=%d dane=%s", (unsigned) can_id, (int) x.size(), b);
+                  ESP_LOGW("igneo", "%s", nb);
+                  id(sdo_last).publish_state(nb);
+                }
               }
               // ---- PODSLUCH SDO innych wezlow (panel, videRoom/videNET) ----
               // Loguje tylko NOWE ramki SDO lub takie, w ktorych zmienily sie dane. PDO (0x1xx-0x4xx) pomija.
