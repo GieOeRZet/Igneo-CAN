@@ -194,3 +194,6 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 
 ### Jak działa informacja o aktualizacji
 Karta pobiera `version.json` z GitHuba (raz na 6 h) i porównuje z wersją firmware (encja „Wersja firmware”) oraz z własną wersją. Przy nowszej wersji pokazuje zieloną diodę; „Odrzuć aktualizację” ukrywa daną wersję (pamięć przeglądarki). Aktualizacja firmware: pobierz repo i kliknij „Install” w ESPHome; karty: podmień pliki w `www/community/igneo-ha/` i zrób Ctrl+F5. Przy wydaniu nowej wersji podbij numer i changelog w `version.json`.
+
+## Licencja
+Wszelkie prawa zastrzeżone © 2026 Roman Gorz. Kod jest publiczny do wglądu i osobistego, niekomercyjnego użytku; kopiowanie, rozpowszechnianie i użycie komercyjne wymaga zgody autora – szczegóły w pliku [LICENSE](LICENSE).
