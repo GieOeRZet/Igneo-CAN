@@ -1,4 +1,4 @@
-# igneo-ha – grafiki karty
+# PelletCAN – grafiki karty
 
 Karta szuka w tym folderze plików (kolejność: png, webp, jpg, jpeg, svg):
 

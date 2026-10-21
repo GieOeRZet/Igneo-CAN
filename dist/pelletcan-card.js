@@ -220,7 +220,7 @@
     document.head.appendChild(s);
 
     const C = customElements.get('tekla-panel-card');
-    if (!C) { console.error('igneo-card: brak elementu po zaladowaniu'); return; }
+    if (!C) { console.error('pelletcan-card: brak elementu po zaladowaniu'); return; }
     // key -> { tytul, rola encji, min, max, krok, miejsca po przecinku }
     const PR = [
       { t: 'Moc min [%]', r: 'power_min', lo: 30, hi: 100, st: 1, dc: 0 },
@@ -909,8 +909,8 @@
         this.dispatchEvent(new CustomEvent('config-changed', { detail: { config: cfg }, bubbles: true, composed: true }));
       }
     }
-    if (!customElements.get('igneo-card-editor')) customElements.define('igneo-card-editor', IgneoEditor);
-    C.getConfigElement = () => document.createElement('igneo-card-editor');
+    if (!customElements.get('pelletcan-card-editor')) customElements.define('pelletcan-card-editor', IgneoEditor);
+    C.getConfigElement = () => document.createElement('pelletcan-card-editor');
     C.getStubConfig = () => ({ screen: 'main' });
     const PC = customElements.get('pelletcan-card'); if (PC) { PC.getConfigElement = C.getConfigElement; PC.getStubConfig = C.getStubConfig; }
 
@@ -995,5 +995,5 @@
     })(C.prototype._build);
 
     })();
-  } catch (e) { console.error('igneo-card', e); }
+  } catch (e) { console.error('pelletcan-card', e); }
 })();
