@@ -4,6 +4,8 @@ Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Est
 
 Kod ESPHome i karta: Gorz Roman.
 
+[![Postaw kawę](https://img.shields.io/badge/%E2%98%95-Postaw%20kaw%C4%99-orange)](https://buycoffee.to/ergie)
+
 > ⚠️ Projekt nieoficjalny – nie zastępuje produktów Estyma. Zobacz [Ważne zastrzeżenia](#ważne-zastrzeżenia).
 
 > Zrzuty ekranu poniżej pochodzą z danych testowych (nie z działającego kotła).
