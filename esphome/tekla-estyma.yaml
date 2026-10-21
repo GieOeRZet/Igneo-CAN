@@ -49,7 +49,7 @@ esphome:
 packages:
   # Rdzen firmware z GitHuba (odswiezany co godzine przy kompilacji).
   tekla:
-    url: https://github.com/GieOeRZet/Tekla-Igneo-HA
+    url: https://github.com/GieOeRZet/Igneo-CAN
     ref: main
     files: [esphome/tekla-estyma-core.yaml]
     refresh: 1h

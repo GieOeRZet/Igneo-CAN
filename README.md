@@ -1,4 +1,4 @@
-# Tekla-Igneo-HA
+# Igneo CAN
 
 Karta Home Assistant (`custom:tekla-panel-card`) – wierna replika panelu **Estyma / Tekla Igneo Touch** – oraz konfiguracja **ESPHome** (XIAO ESP32-C6 + MCP2515), która czyta i zapisuje parametry kotła po magistrali CAN (CANopen SDO, węzeł 4, 125 kbit/s).
 
@@ -51,7 +51,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 
 ## Dwie wersje firmware: `main` i `test`
 - **`main`** (domyślna) – podział na plik użytkownika (`tekla-estyma.yaml`) i rdzeń (`tekla-estyma-core.yaml`) pobierany z GitHuba przy każdej kompilacji. Wymaga dostępu ESPHome do internetu przy buildzie.
-- **`test`** – jeden kompletny plik `esphome/tekla-estyma.yaml` ze wszystkim w środku (bez pobierania z GitHuba). Użyj, gdy chcesz mieć wszystko lokalnie albo gdy podział nie działa: `git clone -b test https://github.com/GieOeRZet/Tekla-Igneo-HA.git`.
+- **`test`** – jeden kompletny plik `esphome/tekla-estyma.yaml` ze wszystkim w środku (bez pobierania z GitHuba). Użyj, gdy chcesz mieć wszystko lokalnie albo gdy podział nie działa: `git clone -b test https://github.com/GieOeRZet/Igneo-CAN.git`.
 
 ## Plik secrets.yaml – wymagane wpisy
 Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozytorium (`.gitignore`).
