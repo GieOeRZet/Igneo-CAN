@@ -29,7 +29,7 @@ Projekt stworzony przez Romana Gorza (pomysł, kierunek, testy na własnej insta
 12. [Struktura repozytorium](#struktura-repozytorium)
 
 ## Co jest w środku
-- **Firmware ESPHome** – plik użytkownika `esphome/tekla-estyma.yaml` (ustawienia) + rdzeń `esphome/tekla-estyma-core.yaml` (logika, pobierany z GitHuba przy kompilacji) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
+- **Firmware ESPHome** – plik użytkownika `esphome/PelletCAN.yaml` (ustawienia) + rdzeń `esphome/PelletCAN_packages.yaml` (logika, pobierany z GitHuba przy kompilacji) – odczyt temperatur, trybów, alarmów, harmonogramów i ustawień palnika, zapis nastaw, moc palnika w kW i spalanie liczone w ESP, poziomy dostępu z PIN-em, historia 20 alarmów z kotła.
 - **Karta** (`dist/pelletcan-card.js`) – jeden plik wejściowy. Ma ekrany jak panel (główny, Ogrzewanie, Woda, Palnik, Menu z podmenu), edycję nastaw i harmonogramów, historię alarmów.
 - **Katalog rejestrów CANopen** (`docs/rejestry/`) – opis i CSV znanych rejestrów węzła 4 i 86.
 
@@ -45,7 +45,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 ## Instalacja – krok po kroku
 1. **Przygotuj `secrets.yaml`** w katalogu ESPHome – [wymagane wpisy](#plik-secretsyaml--wymagane-wpisy).
 2. **Sieć:** w `secrets.yaml` wpisz `wifi_ssid_iot` i `wifi_pass`. Wpisz `device_ip/device_gateway/device_subnet` (albo wyłącz stały adres i użyj DHCP) – patrz sekcja „Adres IP” niżej.
-3. **Wgraj firmware**: skopiuj do ESPHome **tylko** plik `esphome/tekla-estyma.yaml` (Twój plik: ustawienia `substitutions` + bloki `esphome`, `esp32`, `logger`, `web_server`, `captive_portal`, `api` i `packages`; cały kod, encje i usługi pobierze sam z GitHuba przez `packages`, niczego więcej nie edytujesz). **Aktualizując ze starszej wersji, wymień cały plik na nowy** (stare pliki użytkownika bez bloków `esp32`/`logger`/`api` z kluczem nie skompilują się z rdzeniem 1.2). Pierwszy raz wgraj po kablu USB. Kolejne aktualizacje: w ESPHome kliknij *Install* – pobierze najnowszy rdzeń z `main`.
+3. **Wgraj firmware**: skopiuj do ESPHome **tylko** plik `esphome/PelletCAN.yaml` (Twój plik: ustawienia `substitutions` + bloki `esphome`, `esp32`, `logger`, `web_server`, `captive_portal`, `api` i `packages`; cały kod, encje i usługi pobierze sam z GitHuba przez `packages`, niczego więcej nie edytujesz). **Aktualizując ze starszej wersji, wymień cały plik na nowy** (stare pliki użytkownika bez bloków `esp32`/`logger`/`api` z kluczem nie skompilują się z rdzeniem 1.2). Pierwszy raz wgraj po kablu USB. Kolejne aktualizacje: w ESPHome kliknij *Install* – pobierze najnowszy rdzeń z `main`.
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
 5. **Zainstaluj kartę** – wybierz jedną z dwóch dróg:
    - **HACS (zalecane):** HACS → ⋮ → *Niestandardowe repozytoria* → adres `https://github.com/GieOeRZet/PelletCAN`, kategoria **Dashboard** (Lovelace) → *Dodaj* → znajdź „PelletCAN” → *Pobierz*. Zasób dashboardu doda się sam (`/hacsfiles/PelletCAN/pelletcan-card.js`). Aktualizacje pojawią się w HACS.
@@ -55,7 +55,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 
 
 ## Dwie wersje firmware: `main` i `test`
-- **`main`** (domyślna) – podział na plik użytkownika (`tekla-estyma.yaml`) i rdzeń (`tekla-estyma-core.yaml`) pobierany z GitHuba przy każdej kompilacji. Wymaga dostępu ESPHome do internetu przy buildzie.
+- **`main`** (domyślna) – podział na plik użytkownika (`PelletCAN.yaml`) i rdzeń (`PelletCAN_packages.yaml`) pobierany z GitHuba przy każdej kompilacji. Wymaga dostępu ESPHome do internetu przy buildzie.
 - **`test`** – jeden kompletny plik `esphome/tekla-estyma.yaml` ze wszystkim w środku (bez pobierania z GitHuba). Użyj, gdy chcesz mieć wszystko lokalnie albo gdy podział nie działa: `git clone -b test https://github.com/GieOeRZet/PelletCAN.git`.
 
 ## Plik secrets.yaml – wymagane wpisy
@@ -68,12 +68,12 @@ Wzór: `esphome/secrets.example.yaml`. Plik `secrets.yaml` nie trafia do repozyt
 | `esp_api_key_tekla_CAN` | klucz szyfrowania API (HA ↔ ESP) | 32 bajty w base64; wygeneruj w ESPHome (*Encryption key*) |
 | `ota_pass` | hasło aktualizacji bezprzewodowej (OTA) | dowolne, silne |
 
-**Hasło awaryjnej sieci (`ap_pass`) NIE jest w `secrets.yaml`** – jest jawne w sekcji `substitutions` pliku `tekla-estyma.yaml` (domyślnie `11223344`) i możesz je tam zmienić. Dotyczy tylko awaryjnej sieci `Tekla-Estyma Fallback`.
+**Hasło awaryjnej sieci (`ap_pass`) NIE jest w `secrets.yaml`** – jest jawne w sekcji `substitutions` pliku `PelletCAN.yaml` (domyślnie `11223344`) i możesz je tam zmienić. Dotyczy tylko awaryjnej sieci `Tekla-Estyma Fallback`.
 
 PIN-y instalatora (0900 = klucz 1, 0999 = klucz 2) to domyślne PIN-y z oprogramowania panelu Tekla – są jawne w YAML (`pin_installer1`, `pin_installer2`) i nie wymagają wpisu w `secrets.yaml`.
 
 ## Adres IP: stały albo DHCP
-Adresy wpisujesz w `substitutions` pliku `esphome/tekla-estyma.yaml`:
+Adresy wpisujesz w `substitutions` pliku `esphome/PelletCAN.yaml`:
 ```yaml
   device_ip: 192.168.10.250      # Twój adres (wpisz swoje wartości!)
   device_gateway: 192.168.10.1   # brama (router)
@@ -182,7 +182,7 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 ## Struktura repozytorium
 | Ścieżka | Co to |
 |---|---|
-| `esphome/tekla-estyma.yaml` | firmware ESPHome (historia zmian w nagłówku) |
+| `esphome/PelletCAN.yaml` | firmware ESPHome (historia zmian w nagłówku) |
 | `esphome/secrets.example.yaml` | wzór `secrets.yaml` |
 | `dist/pelletcan-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
 | `dist/tekla-panel-card.js` | rdzeń karty, pobierany przez `pelletcan-card.js` |

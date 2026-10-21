@@ -1,5 +1,5 @@
 # RDZEN firmware (logika) - pobierany przez ESPHome z GitHuba przy kazdej kompilacji (packages). NIE edytuj lokalnie.
-# Ustawienia (Wi-Fi, API, OTA, IP, dwa obiegi) sa w pliku uzytkownika esphome/tekla-estyma.yaml.
+# Ustawienia (Wi-Fi, API, OTA, IP, dwa obiegi) sa w pliku uzytkownika esphome/PelletCAN.yaml.
 # Historia zmian firmware: CHANGELOG-firmware.md (w repo); historia karty: CHANGELOG.md
 # =====================================================================
 # Estyma Igneo Touch (CAN I/O BIG) -> Home Assistant
@@ -17,7 +17,7 @@
 # =====================================================================
 substitutions:
   # ===================================================================
-  # DOMYSLNE WARTOSCI (nadpisywane w pliku uzytkownika tekla-estyma.yaml).
+  # DOMYSLNE WARTOSCI (nadpisywane w pliku uzytkownika PelletCAN.yaml).
   # BRAK tu hasel i kluczy: wifi_ssid, wifi_password, api_key, ota_password musza byc ustawione w pliku uzytkownika
   # (zdalny pakiet nie moze zawierac !secret).
   # ===================================================================
@@ -92,7 +92,7 @@ substitutions:
   can_auto_restart: "false"
 
 esphome:
-  # name / friendly_name, esp32, logger, web_server, captive_portal oraz klucz API sa w pliku uzytkownika (tekla-estyma.yaml).
+  # name / friendly_name, esp32, logger, web_server, captive_portal oraz klucz API sa w pliku uzytkownika (PelletCAN.yaml).
   on_boot:
     priority: 600
     then:
@@ -355,7 +355,7 @@ wifi:
   ap:
     ssid: "Tekla-Estyma Fallback"
     password: ${ap_pass}
-  # Staly adres IP (opcjonalny): blok "wifi: manual_ip" w pliku uzytkownika tekla-estyma.yaml; bez niego ESP bierze adres z DHCP.
+  # Staly adres IP (opcjonalny): blok "wifi: manual_ip" w pliku uzytkownika PelletCAN.yaml; bez niego ESP bierze adres z DHCP.
 
 globals:
   - id: scan_on

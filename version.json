@@ -3,7 +3,7 @@
     "version": "1.2",
     "changelog": [
       "Podajnik palnika (test wyjść + encja), stany mieszaczy, CWU Źródło/Zwiększenie/Delta z zapisem, histerezy na poziomie 0.",
-      "Nowy podział plików: wymień swój plik tekla-estyma.yaml na nowy (ustawienia + esphome/esp32/logger/web_server/captive_portal/api + packages); rdzeń pobiera się z GitHuba."
+      "Nowy podział plików: wymień swój plik PelletCAN.yaml na nowy (ustawienia + esphome/esp32/logger/web_server/captive_portal/api + packages); rdzeń pobiera się z GitHuba."
     ]
   },
   "card": {

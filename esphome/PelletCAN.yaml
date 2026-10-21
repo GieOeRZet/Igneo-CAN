@@ -119,7 +119,7 @@ packages:
   tekla:
     url: https://github.com/GieOeRZet/PelletCAN
     ref: main
-    files: [esphome/tekla-estyma-core.yaml]
+    files: [esphome/PelletCAN_packages.yaml]
     refresh: 1h
 
 wifi:
