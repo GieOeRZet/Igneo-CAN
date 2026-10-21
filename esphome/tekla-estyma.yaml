@@ -36,11 +36,58 @@ substitutions:
   name: tekla-estyma
   friendly_name: "Tekla"
 
-  # Inne ustawienia (domyslne wartosci sa w rdzeniu). Aby zmienic, dopisz tutaj, np.:
-  #   mirror: "true"             # tylko podglad, bez zapisow do kotla
-  #   can_bitrate: 125KBPS
-  #   can_clock: 16MHZ
-  #   external_antenna: "false"
+  # ===================================================================
+  # 5. UKLAD CAN (zmieniaj tylko przy problemach z lacznoscia)
+  # ===================================================================
+  # Predkosc magistrali i kwarc na plytce (nadruk na srebrnym elemencie: 16.000 = 16MHZ, 8.000 = 8MHZ).
+  # Jesli CAN dalej FAILED przy wlaczonym kotle, sprobuj kolejno 250KBPS, 500KBPS, 100KBPS, 50KBPS.
+  can_bitrate: 125KBPS
+  can_clock: 16MHZ
+  # Antena zewnetrzna U.FL na XIAO ESP32-C6: "true" dopiero PO podpieciu anteny (bez niej Wi-Fi zniknie).
+  external_antenna: "false"
+
+  # ===================================================================
+  # 6. POZIOMY DOSTEPU (PIN)
+  # ===================================================================
+  # PIN-y instalatora = domyslne PIN-y z softu panelu Igneo Touch.
+  pin_installer1: "0900"   # klucz 1
+  pin_installer2: "0999"   # klucz 2 (wymagany do Testu wyjsc)
+  pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
+
+  # ===================================================================
+  # 7. ZAPIS DO KOTLA ("true" = wolno zapisywac, "false" = tylko odczyt)
+  # ===================================================================
+  # TRYB MIRROR: "true" = karta to tylko lustro Igneo Touch (bez edycji); z zapisow dziala TYLKO wlacz/wylacz kociol i potwierdzenie alarmu.
+  #              "false" = pelne sterowanie z karty, zgodnie z flagami ponizej.
+  mirror: "false"
+  write_enabled: "true"      # ogolna akcja sdo_write (reczne testy z Narzedzi deweloperskich)
+  power_write: "true"        # wlacz/wylacz kociol
+  mode_write: "true"         # tryb CO/CWU (Off/Eko/Harmonogram/Komfort)
+  schedule_write: "true"     # zapis harmonogramow z karty
+  setpoint_write: "true"     # temperatury zadane CO/CWU, tryb zadawania i reczna zadana kotla
+  feeder_write: "true"       # podajnik (Automat/Wylaczony/Wlaczony)
+  blower_write: "true"       # dmuchawa (Automat/Wylaczona/Wlaczona)
+  alarm_confirm: "true"      # przycisk "Potwierdz alarm"
+  # Test wyjsc z karty (poziom 2): "false" = ekran tylko do podgladu. Wlaczone wyjscie samo wraca na Automat po test_revert_s sekundach (0 = nie wraca).
+  output_test_write: "true"
+  test_revert_s: "120"
+  # Po wlaczeniu dmuchawy / podajnika przyciskiem "ON" wracaja same do Automatu po tylu sekundach (0 = nie wracaja).
+  blower_on_seconds: "20"
+  feeder_on_seconds: "30"
+
+  # ===================================================================
+  # 8. OBLICZENIA I SKALOWANIE
+  # ===================================================================
+  temp_div: "10"           # skalowanie temperatur (raw / temp_div)
+  burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
+  burner_eff_fuel: "0.85"  # empiryczny wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
+
+  # ===================================================================
+  # 9. DIAGNOSTYKA
+  # ===================================================================
+  can_debug: "false"         # loguje WSZYSTKIE ramki CAN (tylko do diagnozy)
+  sniff: "true"              # podsluch SDO innych wezlow (szukanie rejestrow)
+  can_auto_restart: "false"  # automatyczny restart, gdy CAN nie wystartuje
 
 esphome:
   name: ${name}

@@ -7,6 +7,7 @@ Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 - **18 wyjść z rejestrami** (zapis U16: 256 = A, 257 = OFF/CLOSE, 258 = ON/OPEN): Podajnik 0x2259, Dmuchawa 0x2283, Zapalarka 0x2284, Pompa kotłowa 0x2286, Pompa solarna 0x311F, Pompy CO1–CO4 0x229D–0x22A0, Mieszacze CO1–CO4 0x22B9–0x22BC, Mieszacz powrotu 0x216D, Magazyn paliwa transporter 0x351E i podajnik 0x351F, Ruszt 0x2279, WentWyc tryb 0x2293 i suwak 0x2298 (256 + %). Rejestry wyznaczone testem na panelu 21.10. Brak rejestru (prawdopodobnie węzeł 86): Pompa CWU (polecenie), Wymiennik, Podajnik palnika.
 - **Bezpieczeństwo**: wyjście ustawione na OFF/ON samo wraca na Automat po `test_revert_s` sekundach (domyślnie 120, 0 = wyłączone); akcja `test_reset` (bez PIN-u) wraca wszystkie od razu.
 - **Stany**: akcja `test_refresh` czyta 19 rejestrów, wynik w nowym diagnostycznym sensorze „Test wyjsc stany” (19 liczb po spacji).
+- **Plik użytkownika `tekla-estyma.yaml`** zawiera teraz wszystkie substitutions (Wi‑Fi, IP, PIN-y, flagi zapisu, CAN, diagnostyka) z domyślnymi wartościami i opisami – wszystko do zmiany w jednym miejscu.
 - Niesprawdzone kompilacją ESPHome (składnia YAML sprawdzona).
 
 ## v1.0 – pierwsze oficjalne wydanie
