@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.2"
+  fw_version: "1.3"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -90,6 +90,12 @@ substitutions:
   sniff: "true"
   # Automatyczny restart gdy CAN nie wystartuje ("true"/"false"). Do diagnozy zostaw "false".
   can_auto_restart: "false"
+  # v1.3: ESP odpowiada jako wezel CAN o tym numerze (dziesietnie) na zapytania SDO o tozsamosc 0x1000/0x1008/0x100A/0x1018
+  # (zakladka "Siec" panelu pokaze nazwe "PelletCAN" i wersje softu). Wylacz: can_identity "false".
+  can_node_id: "87"
+  can_identity: "true"
+  # Heartbeat NMT (0x700+wezel co 1 s, stan "operational"). Domyslnie wylaczony - wlacz tylko jesli panel nie widzi urzadzenia bez niego.
+  can_heartbeat: "false"
 
 esphome:
   # name / friendly_name, esp32, logger, web_server, captive_portal oraz klucz API sa w pliku uzytkownika (PelletCAN.yaml).
@@ -520,6 +526,15 @@ canbus:
               if (std::string("${can_debug}") == "true") {
                 ESP_LOGI("igneo", "RX id=0x%03X dlc=%d data=%s", (unsigned) can_id, (int) x.size(), b);
               }
+              // v1.3: lista unikalnych ID ramek widzianych na magistrali (encja "CAN ID ramek", maks. 60 ID - limit 255 znakow stanu w HA)
+              {
+                static std::set<uint32_t> ids_seen;
+                if (ids_seen.size() < 60 && ids_seen.insert((uint32_t) can_id).second) {
+                  std::string ls; char tb[12];
+                  for (auto v : ids_seen) { snprintf(tb, sizeof(tb), "%03X ", (unsigned) v); ls += tb; }
+                  id(can_ids).publish_state(ls);
+                }
+              }
               // v2.27: NMT / heartbeat / emergency (0x000, 0x080-0x0FF, 0x700-0x77F) - jak panel buduje liste urzadzen; loguj nowe (id + dane)
               if (can_id == 0x000 || (can_id >= 0x080 && can_id <= 0x0FF) || (can_id >= 0x700 && can_id <= 0x77F)) {
                 static std::set<std::string> nmt_seen;
@@ -554,9 +569,13 @@ canbus:
                 }
                 for (size_t i = 0; i < pn; i++) {
                   if (x[i] != pdo_last[can_id][i]) {
-                    if (pdo_cnt[can_id][i] < 6)
+                    if (pdo_cnt[can_id][i] < 6) {
                       ESP_LOGW("igneo", "SNIFF PDO id=0x%03X bajt%d: %02X->%02X dane=%s", (unsigned) can_id, (int) i,
                                pdo_last[can_id][i], x[i], b);
+                      char db[96];
+                      snprintf(db, sizeof(db), "PDO 0x%03X bajt%d %02X>%02X dane=%s", (unsigned) can_id, (int) i, pdo_last[can_id][i], x[i], b);
+                      id(can_diag).publish_state(db);
+                    }
                     if (pdo_cnt[can_id][i] < 255) pdo_cnt[can_id][i]++;
                     pdo_last[can_id][i] = x[i];
                   }
@@ -601,6 +620,11 @@ canbus:
                 if (p.first == key) {
                   if (p.second != val) {
                     ESP_LOGW("igneo", "SNIFF %sZMIANA id=0x%03X idx=0x%04X.%d dane=%s", is_wr ? "ZAPIS " : "", (unsigned) can_id, sidx, ssub, b);
+                    if (!id(scan_on) && !id(snap_on)) {
+                      char db[96];
+                      snprintf(db, sizeof(db), "%sZMIANA id=0x%03X 0x%04X.%d dane=%s", is_wr ? "ZAPIS " : "", (unsigned) can_id, sidx, ssub, b);
+                      id(can_diag).publish_state(db);
+                    }
                     p.second = val;
                   }
                   return;
@@ -608,6 +632,11 @@ canbus:
               }
               if (seen.size() < 600) seen.push_back({key, val});
               ESP_LOGI("igneo", "SNIFF %sNOWY id=0x%03X idx=0x%04X.%d dane=%s", is_wr ? "ZAPIS " : "", (unsigned) can_id, sidx, ssub, b);
+              if (!id(scan_on) && !id(snap_on)) {
+                char db[96];
+                snprintf(db, sizeof(db), "%sNOWY id=0x%03X 0x%04X.%d dane=%s", is_wr ? "ZAPIS " : "", (unsigned) can_id, sidx, ssub, b);
+                id(can_diag).publish_state(db);
+              }
       # Podajnik pracuje: PDO modulu CAN IO BIG (wezel 86) = 0x400 + 0x56 = 0x456, bajt 0, bit 0.
       # Z logow: 00->01 gdy podajnik wlaczony (ON), 01->00 gdy wrocil do Automatu/OFF.
       - can_id: 0x456
@@ -646,6 +675,65 @@ canbus:
                   for (size_t i = 0; i < x.size() && i < 8; i++) p += snprintf(b + p, sizeof(b) - p, "%02X ", x[i]);
                   ESP_LOGW("igneo", "PDO 0x356 zmiana: %s", b);
                 }
+              }
+      # v1.3: tozsamosc ESP jako wezel ${can_node_id} - odpowiedzi SDO (upload) na 0x1000 / 0x1001 / 0x1008 (nazwa, segmentowo) / 0x100A (wersja) / 0x1018.
+      - can_id: 0x600
+        can_id_mask: 0x780
+        then:
+          - lambda: |-
+              if (std::string("${can_identity}") != "true") return;
+              const uint32_t me = 0x600 + ${can_node_id};
+              if ((uint32_t) can_id != me || x.size() < 4) return;
+              const uint8_t cs = x[0];
+              std::vector<uint8_t> r(8, 0);
+              const uint32_t rid = 0x580 + ${can_node_id};
+              static std::string seg_data;
+              static size_t seg_pos = 0;
+              auto abort_with = [&](uint32_t code) {
+                r[0] = 0x80; r[1] = x[1]; r[2] = x[2]; r[3] = x[3];
+                for (int i = 0; i < 4; i++) r[4 + i] = (code >> (8 * i)) & 0xFF;
+                id(igneo_can)->send_data(rid, false, r);
+              };
+              if (cs == 0x40) {
+                const uint16_t idx = x[1] | (x[2] << 8);
+                const uint8_t sub = x[3];
+                auto exp = [&](uint32_t v, int n) {
+                  r[0] = 0x43 | ((4 - n) << 2); r[1] = x[1]; r[2] = x[2]; r[3] = x[3];
+                  for (int i = 0; i < n; i++) r[4 + i] = (v >> (8 * i)) & 0xFF;
+                  id(igneo_can)->send_data(rid, false, r);
+                };
+                auto str = [&](const std::string &t) {
+                  if (t.size() <= 4) {
+                    r[0] = 0x43 | ((4 - (int) t.size()) << 2); r[1] = x[1]; r[2] = x[2]; r[3] = x[3];
+                    for (size_t i = 0; i < t.size(); i++) r[4 + i] = (uint8_t) t[i];
+                  } else {
+                    seg_data = t; seg_pos = 0;
+                    r[0] = 0x41; r[1] = x[1]; r[2] = x[2]; r[3] = x[3];
+                    for (int i = 0; i < 4; i++) r[4 + i] = (t.size() >> (8 * i)) & 0xFF;
+                  }
+                  id(igneo_can)->send_data(rid, false, r);
+                };
+                if (idx == 0x1000 && sub == 0) exp(0, 4);
+                else if (idx == 0x1001 && sub == 0) exp(0, 1);
+                else if (idx == 0x1008 && sub == 0) str("PelletCAN");
+                else if (idx == 0x100A && sub == 0) str("${fw_version}");
+                else if (idx == 0x1018 && sub == 0) exp(4, 1);
+                else if (idx == 0x1018 && sub == 1) exp(0x4E4350, 4);  // identyfikator producenta (PCN)
+                else if (idx == 0x1018 && sub == 2) exp(1, 4);          // produkt
+                else if (idx == 0x1018 && sub == 3) exp(1, 4);          // rewizja
+                else if (idx == 0x1018 && sub == 4) exp(1, 4);          // numer seryjny
+                else abort_with(0x06020000);
+              } else if ((cs & 0xE0) == 0x60) {
+                // kolejny segment napisu (bit 4 = toggle zadany przez klienta)
+                const size_t left = seg_data.size() > seg_pos ? seg_data.size() - seg_pos : 0;
+                const size_t n = left > 7 ? 7 : left;
+                r[0] = (cs & 0x10) | ((7 - n) << 1) | (left <= 7 ? 1 : 0);
+                for (size_t i = 0; i < n; i++) r[1 + i] = (uint8_t) seg_data[seg_pos + i];
+                seg_pos += n;
+                id(igneo_can)->send_data(rid, false, r);
+                char db[64];
+                snprintf(db, sizeof(db), "TOZSAMOSC: odpowiedz SDO wezel %d", (int) ${can_node_id});
+                id(can_diag).publish_state(db);
               }
       # Odpowiedzi innych wezlow (0x580+node) - tylko podczas skanu wezla != 4
       - can_id: 0x580
@@ -1095,6 +1183,12 @@ canbus:
               }
 
 interval:
+  # v1.3: heartbeat NMT wezla ${can_node_id} (opcjonalny, can_heartbeat: "true")
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (std::string("${can_heartbeat}") != "true" || id(igneo_can)->is_failed()) return;
+          id(igneo_can)->send_data(0x700 + ${can_node_id}, false, std::vector<uint8_t>{0x05});
   # Cykliczny odczyt znanych rejestrow (jeden na 250 ms).
   - interval: 250ms
     then:
@@ -2096,6 +2190,19 @@ text_sensor:
   - platform: template
     id: sdo_last
     name: "SDO ostatni odczyt"
+    entity_category: diagnostic
+  # v1.3: podsluch magistrali do HA (historia stanu = log): zapisy innych wezlow (np. panelu), nowe/zmienione rejestry SDO, zmiany bajtow PDO.
+  # Wlaczone gdy sniff: "true"; w czasie skanu i migawki wstrzymane.
+  - platform: template
+    id: can_diag
+    name: "CAN diag"
+    icon: "mdi:lan-connect"
+    entity_category: diagnostic
+  # v1.3: unikalne ID ramek CAN widziane na magistrali (hex, do 60 ID).
+  - platform: template
+    id: can_ids
+    name: "CAN ID ramek"
+    icon: "mdi:format-list-bulleted"
     entity_category: diagnostic
 
 

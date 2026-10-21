@@ -2,6 +2,13 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.3 – Diagnostyka magistrali
+- **Encja „CAN diag”**: podsłuch magistrali trafia do HA (historia = log) – zapisy panelu i innych węzłów (`ZAPIS id=… 0xIDX.sub dane=…`), nowe i zmienione rejestry SDO, zmiany bajtów PDO. Wstrzymana w czasie skanu i migawki. Dzięki niej rejestry zmieniane na panelu (np. Temp. maksymalna CWU, ustawienia kotła i CO) znajdujemy bez czytania logów ESPHome.
+- **Encja „CAN ID ramek”**: lista unikalnych ID ramek widzianych na magistrali (do 60).
+- **Tożsamość węzła (zakładka Sieć panelu)**: ESP odpowiada jako węzeł `can_node_id` (domyślnie 87) na zapytania SDO 0x1000, 0x1001, 0x1008 (nazwa „PelletCAN”, transfer segmentowany), 0x100A (wersja softu) i 0x1018. Wyłączenie: `can_identity: "false"`. Opcjonalny heartbeat NMT: `can_heartbeat: "true"`. **Niesprawdzone na kotle** – nie wiadomo, pod jakim numerem i w jaki sposób panel wylicza węzły.
+- Nowe substitutions w `PelletCAN.yaml`: `can_node_id`, `can_identity`, `can_heartbeat`. Instrukcja szukania rejestrów: [docs/DIAGNOSTYKA.md](docs/DIAGNOSTYKA.md).
+- Niesprawdzone kompilacją ESPHome (składnia YAML sprawdzona).
+
 ## v1.2 – Podajnik palnika
 - **Stały adres IP sterowany przełącznikiem** `static_ip: true/false` w `PelletCAN.yaml` (false = DHCP, adresy `device_ip/gateway/subnet` wtedy ignorowane) – przez pakiet warunkowy `${ static_ip_pkg if static_ip else {} }`, bez ręcznego komentowania bloku `wifi`. Niesprawdzone kompilacją.
 - **Nowe nazwy plików**: `esphome/PelletCAN.yaml` (Twój plik, dawniej `tekla-estyma.yaml`) i `esphome/PelletCAN_packages.yaml` (rdzeń, dawniej `tekla-estyma-core.yaml`). Nazwa urządzenia (`name: tekla-estyma`) bez zmian, więc encje w HA zostają.

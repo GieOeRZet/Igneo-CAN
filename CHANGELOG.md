@@ -3,7 +3,7 @@
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
 ## v1.3 – Podajnik palnika
-- Wersja karty 1.3 wymaga firmware ≥ 1.2 (nowe encje: Podajnik palnika pracuje, stany mieszaczy, CWU Źródło/Zwiększenie/Delta). Bez nich pozycje pokazują „-”.
+- Wersja karty 1.3 wymaga firmware ≥ 1.2 (karta bez zmian względem firmware 1.3) (nowe encje: Podajnik palnika pracuje, stany mieszaczy, CWU Źródło/Zwiększenie/Delta). Bez nich pozycje pokazują „-”.
 - **Ekran Palnik: ikona „2”** (podajnik palnika) na dolnym pasku obok ikon wentylatora i podajnika „1” (kolejność jak na panelu). Encja „Podajnik palnika pracuje” z firmware ≥ 1.2.
 - **NASTAWY przebudowane według zdjęć panelu** (poziomy tylko 0 i 1; poziom 2 w tych menu nie występuje): Kocioł (poziom 0: Temperatura zadana, Histereza załączenia/wyłączenia; klucz 1: Minimalna temp. pomp, Wybieg pompy, Minimalna temp. powrotu, Czas mieszacza, Rezerwa paliwa stop), Ogrzewanie 1 (histereza, kalibracja, tryb, krzywa pogodowa na poziomie 0; reszta pod kluczem 1), Woda (klucz 1: Źródło, Zwiększenie temp. źródła, Delta załączenia pompy – z zapisem; Temp. maksymalna bez rejestru). Pozycje bez znanego rejestru są przyciemnione i pokazują „-”.
 - Histerezy kotła i ustawienia CO1 są teraz dostępne bez PIN-u (poziom 0), zgodnie z panelem.

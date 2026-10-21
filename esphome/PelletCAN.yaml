@@ -96,6 +96,9 @@ substitutions:
   can_debug: "false"         # loguje WSZYSTKIE ramki CAN (tylko do diagnozy)
   sniff: "true"              # podsluch SDO innych wezlow (szukanie rejestrow)
   can_auto_restart: "false"  # automatyczny restart, gdy CAN nie wystartuje
+  can_node_id: "87"          # ESP odpowiada jako wezel CAN o tym numerze (dziesietnie) na zapytania o tozsamosc (zakladka Siec panelu)
+  can_identity: "true"       # "true" = odpowiedzi SDO 0x1000/0x1008/0x100A/0x1018 (nazwa PelletCAN + wersja softu)
+  can_heartbeat: "false"     # heartbeat NMT wezla (0x700+wezel co 1 s); wlacz tylko, gdy panel nie widzi urzadzenia bez niego
 
 esphome:
   name: ${name}

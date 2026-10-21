@@ -82,6 +82,9 @@ Ustawiasz w `substitutions` pliku `esphome/PelletCAN.yaml`:
 ```
 Przy `static_ip: true` plik dołącza pakiet z blokiem `wifi: manual_ip` (te trzy adresy). Przy `false` adresy są ignorowane i ESP bierze adres z DHCP – HA znajdzie urządzenie po nazwie `tekla-estyma`. Niczego nie komentujesz ręcznie. Adresy to sieć lokalna, więc nie trafiają do `secrets.yaml`.
 
+## Diagnostyka magistrali
+Szukanie brakujących rejestrów i ramek bez logów ESPHome (encje „CAN diag”, „CAN ID ramek”, skan węzła 86): [docs/DIAGNOSTYKA.md](docs/DIAGNOSTYKA.md).
+
 ## Awaryjny punkt dostępu Wi-Fi
 Jeśli ESP nie połączy się z siecią (zmiana routera, złe hasło, nowa sieć), po ok. minucie sam wystawia sieć **`Tekla-Estyma Fallback`** (hasło z `substitutions: ap_pass` w YAML, domyślnie `11223344`). Po połączeniu otwiera się strona logowania (portal captive; jeśli nie – wejdź na `192.168.4.1`), gdzie wybierasz sieć i wpisujesz hasło. Urządzenie zapisuje dane i łączy się z siecią. Ponieważ w firmware jest stały adres IP (`device_ip`), w nowej sieci musi on pasować do jej podsieci – w razie potrzeby wgraj firmware z poprawionym adresem. Po powrocie do sieci urządzenie pojawi się w ESPHome i w HA.
 
