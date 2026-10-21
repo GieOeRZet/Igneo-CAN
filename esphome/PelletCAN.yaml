@@ -13,8 +13,8 @@ substitutions:
   wifi_ssid: !secret wifi_ssid_iot
   wifi_password: !secret wifi_pass
   ap_pass: "11223344"        # haslo awaryjnej sieci "Tekla-Estyma Fallback" - jawne tutaj; WPA2 wymaga min. 8 znakow
-  # Staly adres IP: static_ip: true = uzywa adresow ponizej, false = DHCP (adresy ponizej ignorowane). Bez cudzyslowow.
-  static_ip: true
+  # Staly adres IP: wpisz swoje wartosci ponizej; blok "wifi: manual_ip" na dole pliku je uzywa.
+  # DHCP: usun albo zakomentuj ten blok "wifi:" (cztery linie na dole pliku).
   device_ip: 192.168.10.250
   device_gateway: 192.168.10.1
   device_subnet: 255.255.254.0
@@ -122,6 +122,13 @@ packages:
   tekla:
     url: https://github.com/GieOeRZet/PelletCAN
     ref: main
-    # Drugi plik wybiera sie po static_ip: PelletCAN_ip_static.yaml (adresy z substitutions) albo PelletCAN_ip_dhcp.yaml (DHCP).
-    files: [esphome/PelletCAN_packages.yaml, "esphome/PelletCAN_ip_${'static' if static_ip else 'dhcp'}.yaml"]
-    refresh: 1h
+    files: [esphome/PelletCAN_packages.yaml]
+    refresh: 0s   # zawsze swiezy rdzen z GitHuba przy kazdej kompilacji (bez cache)
+
+wifi:
+  # Staly adres IP z substitutions device_ip / device_gateway / device_subnet.
+  # Chcesz DHCP? Usun albo zakomentuj caly ten blok "wifi:".
+  manual_ip:
+    static_ip: ${device_ip}
+    gateway: ${device_gateway}
+    subnet: ${device_subnet}

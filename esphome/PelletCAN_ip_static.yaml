@@ -1,6 +1,0 @@
-# Staly adres IP (wybierany przez static_ip: true w PelletCAN.yaml). NIE edytuj - adresy ustawiasz w PelletCAN.yaml.
-wifi:
-  manual_ip:
-    static_ip: ${device_ip}
-    gateway: ${device_gateway}
-    subnet: ${device_subnet}
