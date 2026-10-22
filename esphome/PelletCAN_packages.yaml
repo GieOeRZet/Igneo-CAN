@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.4.4"
+  fw_version: "1.4.5"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -678,8 +678,7 @@ canbus:
           - lambda: |-
               if (x.size() < 1) return;
               id(feeder_running).publish_state((x[0] & 0x01) != 0);
-              // v1.2: podajnik palnika (ikona 2 na ekranie Palnik) - HIPOTEZA: bajt 0, bit 1; surowe bajty PDO trafiaja do "SDO ostatni odczyt" (diagnostyka)
-              id(feeder2_running).publish_state((x[0] & 0x02) != 0);
+              // surowe bajty PDO trafiaja do "SDO ostatni odczyt" (diagnostyka)
               {
                 static uint8_t last[8] = {0}; static bool seen = false;
                 bool ch = !seen;
@@ -699,6 +698,8 @@ canbus:
           - lambda: |-
               if (x.size() < 1) return;
               id(blower_running).publish_state((x[0] & 0x01) != 0);
+              // v1.4.5: podajnik palnika (ikona 2): bajt 2, bit 0 tej samej ramki. Z logow: narastajace zbocze w tym samym ulamku sekundy co podajnik glowny (0x456 b0, okres 20 s), roznice rzedu ms
+              if (x.size() >= 3) id(feeder2_running).publish_state((x[2] & 0x01) != 0);
               {
                 static uint8_t last[8] = {0}; static bool seen = false;
                 bool ch = !seen;

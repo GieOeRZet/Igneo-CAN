@@ -1,7 +1,8 @@
 {
   "firmware": {
-    "version": "1.4.4",
+    "version": "1.4.5",
     "changelog": [
+      "Podajnik palnika pracuje: nowe źródło (PDO 0x356 bajt 2 bit 0, zbocze zgodne z podajnikiem głównym w ms). Do potwierdzenia testem wyjść.",
       "Nowe ustawienie can_product (kod produktu w zakładce Sieć panelu) – dodaj do PelletCAN.yaml.",
       "SKAN SIECI obejmuje 0x1001/0x100A (wersja softu).",
       "Raport SKAN SIECI także przy ciągłym skanie panelu (co 20 s).",

@@ -232,7 +232,7 @@
 4,—,—,Alarm dźwiękowy ON/OFF,NIEZNANY (prawdopodobnie lokalne w panelu),Przełączenie ON/OFF nie zmieniło żadnego rejestru katalogu.,,0,1,0/1,?,,,,,,Karta: tylko wyświetlanie,
 4,—,—,Wentylator wspomagający – krzywa,NIEZNANY (otwarte),"Kandydaci 0x2268, 0x226E, 0x226F, 0x2275, 0x227A.",,nieznany,nieznany,,?,,,,,,,
 4,—,—,Pompa CWU – polecenie testowe; Wymiennik (ON),NIEZNANY (otwarte),"Podejrzenie: węzeł 86 (CAN IO BIG, 0x6200/0x6411); nie znalezione w 0x2000–0x2314, 0x2968–0x29CC, 0x3000–0x3128, 0x3500–0x352B, 0x3600–0x3665, 0x3700–0x3728.",,nieznany,nieznany,,?,,,,,,,
-4,—,—,Bit „Podajnik palnika pracuje” (stan),NIEZNANY (otwarte),"Źródło stanu pracy nieznane; PDO 0x456 bajt0 bit0 = podajnik główny (puls ~7 s co 20 s), bit1 nigdy nie ustawiony.",,nieznany,nieznany,,?,,,,,,,
+4,PDO 0x356,bajt 2 bit 0,Bit „Podajnik palnika pracuje” (stan),PRAWDOPODOBNY (do potwierdzenia testem),"Stan pracy podajnika palnika (ikona 2). Z logów CAN diag (15 min): narastające zbocze 0x356 b2.0 w tym samym ułamku sekundy co podajnik główny (0x456 b0, cykl 20 s; faza 19,2–19,3 s), różnica rzędu ms; opada po kilku sekundach.",,nieznany,nieznany,,R (ramka PDO),,,,fw 1.4.5: feeder2_running,,,
 86,0x6000,1,"Wejścia cyfrowe (CiA 401, 1 B)",POTWIERDZONY,,,0,255 (maska 8 wejść),,R,0,,,Węzeł 86 CAN IO BIG (CiA 401),,odczyt,
 86,0x6200,1,Wyjścia cyfrowe (CiA 401),ODNALEZIONY – NIEPOTWIERDZONY,,,0,255 (maska 8 wyjść),,R (zapis nieprzetestowany),,,,Węzeł 86 CAN IO BIG (CiA 401),,Test wyjść (zapis) jeszcze nie zrobiony,
 86,0x6401,1,"Wejścia analogowe (CiA 401, 2 B)",POTWIERDZONY,,,-32768,32767,,R,1348,,,Węzeł 86 CAN IO BIG (CiA 401),,odczyt,

@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.5
+- **Podajnik palnika pracuje**: poprzednie źródło (PDO 0x456 bajt 0 bit 1) nigdy się nie ustawiało. Nowe: PDO 0x356 (węzeł 86) bajt 2 bit 0 – z logów rośnie dokładnie w tej samej chwili co podajnik główny (cykl 20 s, różnica rzędu ms), a opada po kilku sekundach. Do potwierdzenia testem wyjść „Podajnik palnika”.
+
 ## v1.4.4
 - Nowe ustawienie `can_product` (kod produktu 0x1018 sub2, dziesiętnie, domyślnie 1). Panel w zakładce Sieć rozpoznaje urządzenia wyłącznie po tym kodzie (CAN IO BIG = 65538). Pozwala sprawdzić, jaki kod pokaże nazwę/wersję.
 - Ustalone w 1.4.2–1.4.3: panel skanuje węzły 1–127 cyklicznie, pyta tylko o 0x1018 sub2 i widzi ESP jako węzeł 90.
