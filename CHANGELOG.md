@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.11 – Pompa CWU w Teście wyjść
+- **Pompa CWU** w Teście wyjść jest teraz aktywna (A / OFF / ON), rejestr 0x2296 znaleziony różnicowo 22.10 (ON = 258, A = 256). Stan Podajnika palnika w Teście wyjść jest odczytywany (karta czyta 21 wartości zamiast 19). Wymaga firmware ≥ 1.4.7.
+
 ## v1.10 – Konfiguracja
 - Przywrócona pozycja **Konfiguracja** w menu (od poziomu 1, przed Testem wyjść). Ekran pokazuje: Język, Alarm dźwiękowy (przełącznik jak na panelu, bez rejestru), Tryb pracy karty (sterowanie / lustro), Węzeł ESPHome, Poziom menu, wersje firmware i karty.
 

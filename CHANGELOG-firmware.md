@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.7
+- **Test wyjść: Pompa CWU** – wyjście nr 20, rejestr 0x2296 (256 = A, 257 = OFF, 258 = ON), znaleziony przez porównanie skanów 0x2270–0x22C4 z pompą na ON i na A. Stan wraca w „Test wyjsc stany” (21 wartości). Panel steruje tą pompą dalej przez PDO 0x256 bajt0 bit 0x10 (węzeł 86).
+
 ## v1.4.6
 - **Paliwo w zbiorniku – zapis** (`set_param` klucz 47 = rejestr 0x3601, kg, 0…pojemność zbiornika; poziom 0). Pod przyciski + i − w oknie Paliwo karty. Procent zapełnienia liczony jak dotąd: kg / pojemność (0x3601 / 0x3600).
 
