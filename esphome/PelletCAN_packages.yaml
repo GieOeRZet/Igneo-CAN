@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.4.7"
+  fw_version: "1.4.8"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -188,7 +188,7 @@ api:
             if ((std::string("${mirror}") == "true" || std::string("${setpoint_write}") != "true")) { ESP_LOGW("igneo", "Zapis trybu kotla wylaczony (setpoint_write: false)"); return; }
             if (mode < 0 || mode > 3) return;
             id(reg_write).execute(0x2002, mode, 2);
-    # Zapis ustawien palnika: key 0 Moc min, 1 Moc max, 2 Wartosc opalowa [kWh/kg], 3 Korekta powietrza, 4 Ilosc paliwa test [kg/h], 5..9 krzywa dmuchawy (20/40/60/80/100 %), 10 Histereza zalaczenia kotla 0x2208 (0..20), 11 Histereza wylaczenia kotla 0x2291 (0..20), 12 CO1 histereza 0x22BD (0..5 C, krok 0,1), 13 CO1 kalibracja czujnika 0x22C1 (-3..3 C), 14 CO1 tryb 0x2142 (0 reczny, 1 pogodowy), 15 CO1 temp. reczna 0x2146 (20..80), 16/17/18 CO1 krzywa pogodowa dla -20/0/+10 C 0x22C5/0x22C9/0x22CD (20..80), 19 CWU histereza 0x2212 (0..20), 20 Zagrzej teraz 0x2210 (0/1), 21 Priorytet CWU 0x300D (0/1); value w jednostkach panelu.
+    # Zapis ustawien palnika: key 0 Moc min, 1 Moc max, 2 Wartosc opalowa [kWh/kg], 3 Korekta powietrza, 4 Ilosc paliwa test [kg/h], 5..9 krzywa dmuchawy (20/40/60/80/100 %), 10 Histereza zalaczenia kotla 0x2208 (0..20), 11 Histereza wylaczenia kotla 0x2291 (0..20), 48 Min. temp. pomp 0x2207 (20..70, klucz 1), 49 Min. temp. powrotu 0x216C (35..75, klucz 1), 50 Czas mieszacza 0x216E (60..360 s, klucz 1), 12 CO1 histereza 0x22BD (0..5 C, krok 0,1), 13 CO1 kalibracja czujnika 0x22C1 (-3..3 C), 14 CO1 tryb 0x2142 (0 reczny, 1 pogodowy), 15 CO1 temp. reczna 0x2146 (20..80), 16/17/18 CO1 krzywa pogodowa dla -20/0/+10 C 0x22C5/0x22C9/0x22CD (20..80), 19 CWU histereza 0x2212 (0..20), 20 Zagrzej teraz 0x2210 (0/1), 21 Priorytet CWU 0x300D (0/1); value w jednostkach panelu.
     - action: set_param
       variables:
         key: int
@@ -196,11 +196,11 @@ api:
       then:
         - lambda: |-
             if (std::string("${mirror}") == "true") { ESP_LOGW("igneo", "Zapis ustawien wylaczony (mirror: true)"); return; }
-            static const uint16_t ix[] = {0x2270, 0x2271, 0x2292, 0x2273, 0x2272, 0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2208, 0x2291, 0x22BD, 0x22C1, 0x2142, 0x2146, 0x22C5, 0x22C9, 0x22CD, 0x2212, 0x2210, 0x300D, 0x2256, 0x2257, 0x226A, 0x2289, 0x3704, 0x300C, 0x2290, 0x299A, 0x226B, 0x3605, 0x214E, 0x2152, 0x2258, 0x2999, 0x3715, 0x3716, 0x3717, 0x2153, 0x3003, 0x370B, 0x3700, 0x300E, 0x2214, 0x2216, 0x2218, 0x3601};
-            static const float lo[] = {30, 30, 2.0f, -10, 5, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 20, 20, 20, 20, 0, 0, 0, 0, 1, 5, 0, 0, 0, 0, 20, 1, 0, 5, 5, 0, 1, 0, 5, 10, 1, 0, 50, 5, 0, 0, 5, 2, 0};
-            static const float hi[] = {100, 100, 10.0f, 40, 100, 100, 100, 100, 100, 100, 20, 20, 5, 3, 1, 80, 80, 80, 80, 20, 1, 1, 200, 15, 100, 100, 100, 100, 20, 100, 15, 1, 15, 15, 10, 12, 60, 30, 50, 60, 60, 300, 180, 5, 1, 20, 20, 1500};
-            static const uint8_t lv[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 0};
-            if (key < 0 || key > 47 || value < lo[key] || value > hi[key]) { ESP_LOGW("igneo", "Ustawienie: zly klucz lub poza zakresem"); return; }
+            static const uint16_t ix[] = {0x2270, 0x2271, 0x2292, 0x2273, 0x2272, 0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2208, 0x2291, 0x22BD, 0x22C1, 0x2142, 0x2146, 0x22C5, 0x22C9, 0x22CD, 0x2212, 0x2210, 0x300D, 0x2256, 0x2257, 0x226A, 0x2289, 0x3704, 0x300C, 0x2290, 0x299A, 0x226B, 0x3605, 0x214E, 0x2152, 0x2258, 0x2999, 0x3715, 0x3716, 0x3717, 0x2153, 0x3003, 0x370B, 0x3700, 0x300E, 0x2214, 0x2216, 0x2218, 0x3601, 0x2207, 0x216C, 0x216E};
+            static const float lo[] = {30, 30, 2.0f, -10, 5, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 20, 20, 20, 20, 0, 0, 0, 0, 1, 5, 0, 0, 0, 0, 20, 1, 0, 5, 5, 0, 1, 0, 5, 10, 1, 0, 50, 5, 0, 0, 5, 2, 0, 20, 35, 60};
+            static const float hi[] = {100, 100, 10.0f, 40, 100, 100, 100, 100, 100, 100, 20, 20, 5, 3, 1, 80, 80, 80, 80, 20, 1, 1, 200, 15, 100, 100, 100, 100, 20, 100, 15, 1, 15, 15, 10, 12, 60, 30, 50, 60, 60, 300, 180, 5, 1, 20, 20, 1500, 70, 75, 360};
+            static const uint8_t lv[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 0, 1, 1, 1};
+            if (key < 0 || key > 50 || value < lo[key] || value > hi[key]) { ESP_LOGW("igneo", "Ustawienie: zly klucz lub poza zakresem"); return; }
             id(access_t) = millis();
             if (lv[key] > id(access_level)) { ESP_LOGW("igneo", "Ustawienie wymaga wyzszego poziomu dostepu (PIN)"); return; }
             int raw;
@@ -639,7 +639,7 @@ canbus:
               if (req && sidx == 0x1018) return;  // skan wezlow (identyfikator urzadzenia) - po zalogowaniu
               if (can_id == 0x584) {
                 // odpowiedzi na NASZE odczyty pomijamy (lista + bufor alarmow)
-                static const uint16_t mine[] = {0x2214,0x2216,0x2218,0x22B9,0x216D,0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
+                static const uint16_t mine[] = {0x2207,0x216C,0x216E,0x2214,0x2216,0x2218,0x22B9,0x216D,0x2001,0x2003,0x2004,0x4001,0x2146,0x22AD,0x2299,0x4002,0x2147,0x22AE,0x229A,
                                                 0x2110,0x2010,0x2012,0x201A,0x2278,0x215F,0x4005,0x2007,0x2002,0x2005,0x2259,0x2283,0x2254,0x404C,0x404D,0x3600,0x3601,0x2267,0x370D,0x2064,0x2065,0x2014,0x2273,0x2272,0x226C,0x2006,0x2301,0x2270,0x2271,0x2292,0x2261,0x2262,0x2263,0x2264,0x2265,0x4000,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD,0x2212,0x2210,0x300D,0x2256,0x2257,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2153,0x3003,0x370B,0x3700,0x300E,0x2250,0x226D,0x216F};
                 for (auto m : mine) if (m == sidx) return;
                 if (sidx >= 0x4010 && sidx < 0x4060) return;
@@ -1098,6 +1098,9 @@ canbus:
                 case 0x2214: id(cwu_src).publish_state((float) low); break;
                 case 0x2216: id(cwu_src_inc).publish_state((float) low); break;
                 case 0x2218: id(cwu_delta).publish_state((float) low); break;
+                case 0x2207: id(boiler_pump_min).publish_state((float) (raw & 0xFFFF)); break;
+                case 0x216C: id(boiler_ret_min).publish_state((float) (raw & 0xFFFF)); break;
+                case 0x216E: id(boiler_mixer_time).publish_state((float) (raw & 0xFFFF)); break;
                 case 0x300D: id(cwu_prio).publish_state((float) low); break;
                 case 0x2292: id(fuel_heat).publish_state((float) (raw & 0xFF) / 10.0f); id(burner_calc).execute(); break;
                 case 0x4005: id(burner_power).publish_state((float) raw); id(burner_calc).execute(); break;
@@ -1329,7 +1332,7 @@ interval:
             id(par_boot) = true;
             // v2.24: po starcie czytamy WSZYSTKIE ustawienia (odczyt nie wymaga PIN-u): najpierw poziom 0, potem klucz 1, na koncu klucz 2
             static const uint16_t l0[] = {0x2270,0x2271,0x2273,0x2212,0x2210,0x300D};
-            static const uint16_t l1[] = {0x2214,0x2216,0x2218,0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
+            static const uint16_t l1[] = {0x2214,0x2216,0x2218,0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD,0x2207,0x216C,0x216E};
             static const uint16_t l2[] = {0x2153,0x3003,0x370B,0x300E};
             for (auto r : l0) id(par_q).push_back(r);
             for (auto r : l1) id(par_q).push_back(r);
@@ -1901,6 +1904,27 @@ sensor:
     icon: "mdi:delta"
     update_interval: never
   - platform: template
+    id: boiler_pump_min
+    name: "Kociol minimalna temp. pomp"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    icon: "mdi:thermometer-low"
+    update_interval: never
+  - platform: template
+    id: boiler_ret_min
+    name: "Kociol minimalna temp. powrotu"
+    unit_of_measurement: "°C"
+    accuracy_decimals: 0
+    icon: "mdi:thermometer-low"
+    update_interval: never
+  - platform: template
+    id: boiler_mixer_time
+    name: "Kociol czas mieszacza"
+    unit_of_measurement: "s"
+    accuracy_decimals: 0
+    icon: "mdi:timer-sand"
+    update_interval: never
+  - platform: template
     id: cwu_boost
     name: "CWU zagrzej teraz (0/1)"
     accuracy_decimals: 0
@@ -2386,7 +2410,7 @@ script:
     then:
       - lambda: |-
           static const uint16_t l0[] = {0x2270,0x2271,0x2273,0x2212,0x2210,0x300D};
-          static const uint16_t l1[] = {0x2214,0x2216,0x2218,0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD};
+          static const uint16_t l1[] = {0x2214,0x2216,0x2218,0x2261,0x2262,0x2263,0x2264,0x2265,0x2256,0x226A,0x2289,0x3704,0x300C,0x2290,0x299A,0x226B,0x3605,0x214E,0x2152,0x2258,0x2999,0x3715,0x3716,0x3717,0x2208,0x2291,0x22BD,0x22C1,0x2142,0x22C5,0x22C9,0x22CD,0x2207,0x216C,0x216E};
           static const uint16_t l2[] = {0x2153,0x3003,0x370B,0x300E};
           auto &q = id(par_q);
           q.clear();

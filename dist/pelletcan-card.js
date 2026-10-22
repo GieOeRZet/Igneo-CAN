@@ -177,7 +177,7 @@
 {
 "t": "x",
 "old": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror',",
-"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', mix_co1: 'mieszacz_co1_stan', mix_ret: 'mieszacz_powrotu_stan', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_src: 'cwu_zrodlo', cwu_src_inc: 'cwu_zwiekszenie_temp_zrodla', cwu_delta: 'cwu_delta_zalaczenia_pompy', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
+"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', boiler_pump_min: 'kociol_minimalna_temp_pomp', boiler_ret_min: 'kociol_minimalna_temp_powrotu', boiler_mixer_time: 'kociol_czas_mieszacza', mix_co1: 'mieszacz_co1_stan', mix_ret: 'mieszacz_powrotu_stan', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_src: 'cwu_zrodlo', cwu_src_inc: 'cwu_zwiekszenie_temp_zrodla', cwu_delta: 'cwu_delta_zalaczenia_pompy', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
 },
 {
 "t": "x",
@@ -268,6 +268,9 @@
       { t: 'Źródło', r: 'cwu_src', opts: ['Kocioł', 'Bufor'], sk: 44 },
       { t: 'Zwiększenie temperatury źródła [°C]', r: 'cwu_src_inc', lo: 5, hi: 20, st: 1, dc: 0, sk: 45 },
       { t: 'Delta załączenia pompy [°C]', r: 'cwu_delta', lo: 2, hi: 20, st: 1, dc: 0, sk: 46 },
+      { t: 'Minimalna temp. pomp [°C]', r: 'boiler_pump_min', lo: 20, hi: 70, st: 1, dc: 0, sk: 48 },
+      { t: 'Minimalna temp. powrotu [°C]', r: 'boiler_ret_min', lo: 35, hi: 75, st: 1, dc: 0, sk: 49 },
+      { t: 'Czas mieszacza [s]', r: 'boiler_mixer_time', lo: 60, hi: 360, st: 1, dc: 0, sk: 50 },
     ];
     C.prototype._po = function (k) {
       const c = PR[k], v = this._v(c.r);
@@ -569,7 +572,7 @@
       const l = this._lvl(), e = (a, b) => this._row(a, b), P = this._prow.bind(this);
       const sp = this._v('boiler_manual'), sv = isNaN(sp) ? this._v('boiler_set') : sp;
       const r = [e('Temperatura zadana [°C]', this._p(sv, 0)), P('Histereza załączenia [°C]', this._po(5), 5), P('Histereza wyłączenia [°C]', this._po(6), 6)];
-      if (l >= 1) r.push(KEYDIV(1), NA('Minimalna temp. pomp [°C]'), NA('Wybieg pompy [min]'), NA('Minimalna temp. powrotu [°C]'), NA('Czas mieszacza [s]'), NA('Rezerwa paliwa stop [kg]'));
+      if (l >= 1) r.push(KEYDIV(1), P('Minimalna temp. pomp [°C]', this._po(20), 20), NA('Wybieg pompy [min]'), P('Minimalna temp. powrotu [°C]', this._po(21), 21), P('Czas mieszacza [s]', this._po(22), 22), NA('Rezerwa paliwa stop [kg]'));
       return this._page('NASTAWY', this._backTo, r.join('')) + (this._pr ? this._prDlg() : '');
     };
     // pozycje klucza 1 (histerezy kotla, CO1) tylko od poziomu 1
@@ -895,6 +898,7 @@
       ['Menu → Ciepła woda → NASTAWY (klucz 1)', ['cwu_src', 'cwu_src_inc', 'cwu_delta'], 1],
       ['Menu → Historia alarmów', ['alarm', 'last_alarm', 'alarm_start', 'alarm_end', 'confirm'], 0],
       ['Menu → Kocioł → NASTAWY (użytkownik)', ['boiler_hyst_on', 'boiler_hyst_off'], 0],
+      ['Menu → Kocioł → NASTAWY (klucz 1)', ['boiler_pump_min', 'boiler_ret_min', 'boiler_mixer_time'], 1],
       ['Menu → Ogrzewanie obwód 1 → NASTAWY (użytkownik)', ['co_hyst', 'co_calib', 'co_mode_s', 'co_cur_m20', 'co_cur_0', 'co_cur_10'], 0],
       ['Menu → Palnik → NASTAWY (klucz 1)', ['fan_mod_1', 'fan_mod_2', 'fan_mod_3', 'fan_mod_4', 'fan_mod_5', 'p_prefeed', 'p_feed_max', 'p_photo', 'p_blow_ign', 'p_blow_glow', 'p_blow_stop', 'p_glow_time', 'p_glow_fuel', 'p_stop_time', 'p_lambda', 'p_o2_30', 'p_o2_100', 'p_cleans', 'p_clean_gap', 'p_pause_time', 'p_pause_power', 'p_pause_blow'], 1],
       ['Menu → Palnik → NASTAWY (klucz 2)', ['p_inertia', 'p_grate_time', 'p_burner_feed', 'p_feeder_period', 'p_min_rpm'], 1],
@@ -1115,7 +1119,7 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '1.11';
+    const CARD_VER = '1.12';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };

@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.8
+- **Kocioł NASTAWY**: `set_param` klucz 48 = Minimalna temp. pomp (0x2207, 20–70 °C), 49 = Minimalna temp. powrotu (0x216C, 35–75 °C), 50 = Czas mieszacza (0x216E, 60–360 s); nowe encje „Kociol minimalna temp. pomp”, „Kociol minimalna temp. powrotu”, „Kociol czas mieszacza”, odczyt po starcie i po PIN-ie (poziom 1). Rejestry znalezione zmianą wartości na panelu i skanem SDO. Wybieg pompy i Rezerwa paliwa stop: rejestry nieznane.
+
 ## v1.4.7
 - **Test wyjść: Pompa CWU** – wyjście nr 20, rejestr 0x2296 (256 = A, 257 = OFF, 258 = ON), znaleziony przez porównanie skanów 0x2270–0x22C4 z pompą na ON i na A. Stan wraca w „Test wyjsc stany” (21 wartości). Panel steruje tą pompą dalej przez PDO 0x256 bajt0 bit 0x10 (węzeł 86).
 

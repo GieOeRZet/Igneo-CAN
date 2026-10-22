@@ -1,7 +1,8 @@
 {
   "firmware": {
-    "version": "1.4.7",
+    "version": "1.4.8",
     "changelog": [
+      "Kocioł NASTAWY: Minimalna temp. pomp (0x2207), Minimalna temp. powrotu (0x216C), Czas mieszacza (0x216E) – odczyt i zapis (set_param 48–50). Wymaga karty ≥ 1.12.",
       "Test wyjść: Pompa CWU (rejestr 0x2296, 256 = A, 257 = OFF, 258 = ON; wyjście nr 20). Wymaga karty ≥ 1.11.",
       "Zapis ilości paliwa (rejestr 0x3601) dla przycisków + i − w oknie Paliwo karty.",
       "Podajnik palnika pracuje: nowe źródło (PDO 0x356 bajt 2 bit 0, zbocze zgodne z podajnikiem głównym w ms). Do potwierdzenia testem wyjść.",
@@ -16,8 +17,9 @@
     ]
   },
   "card": {
-    "version": "1.11",
+    "version": "1.12",
     "changelog": [
+      "Kocioł NASTAWY: Minimalna temp. pomp, Minimalna temp. powrotu i Czas mieszacza edytowalne (poziom 1). Wymaga firmware ≥ 1.4.8.",
       "Test wyjść: Pompa CWU sterowana z karty (rejestr 0x2296); stan Podajnika palnika czytany poprawnie (21 wartości). Wymaga firmware ≥ 1.4.7.",
       "Menu: przywrócona pozycja Konfiguracja (od poziomu 1) z ekranem: język, alarm dźwiękowy, tryb karty, węzeł ESPHome, poziom menu, wersje firmware i karty.",
       "Okno Paliwo: przyciski + i − zmieniają ilość paliwa (±1 kg, przytrzymanie powtarza). Wymaga firmware ≥ 1.4.6.",

@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.12 – Kocioł NASTAWY: pompy, powrót, mieszacz
+- Menu → Kocioł → NASTAWY (od poziomu 1): **Minimalna temp. pomp** (20–70 °C), **Minimalna temp. powrotu** (35–75 °C) i **Czas mieszacza** (60–360 s) są teraz odczytywane i zapisywane. **Wybieg pompy** i **Rezerwa paliwa stop** nadal „-” (rejestry nieznalezione). Wymaga firmware ≥ 1.4.8.
+
 ## v1.11 – Pompa CWU w Teście wyjść
 - **Pompa CWU** w Teście wyjść jest teraz aktywna (A / OFF / ON), rejestr 0x2296 znaleziony różnicowo 22.10 (ON = 258, A = 256). Stan Podajnika palnika w Teście wyjść jest odczytywany (karta czyta 21 wartości zamiast 19). Wymaga firmware ≥ 1.4.7.
 
