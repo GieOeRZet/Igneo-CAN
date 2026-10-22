@@ -2,6 +2,12 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.4 – Tłumaczenia
+- **Języki interfejsu**: PL, EN, DK, DE, SE, LT, SK, CZ, ES, RO, EST. Wybór w edytorze karty (pole „Język / Language”, także „Auto” = język Home Assistant) albo w YAML: `language: en` (kody: `pl en da de sv lt sk cs es ro et`; aliasy `dk se cz est`).
+- Nowy plik `dist/pelletcan-lang.js` (generowany z `docs/lang/pelletcan-lang.txt` skryptem `tools/gen_lang.py`) – ~245 tekstów × 10 języków (ekrany, NASTAWY, statystyki, test wyjść, alarmy, nazwy dni). Brak tłumaczenia = tekst polski. Dopisanie/poprawka tłumaczenia: edytuj plik .txt i uruchom `python3 tools/gen_lang.py`.
+- Wiersz „Język” w menu pokazuje aktualny język. Z menu usunięto pozycję „Konfiguracja” (decyzja: za dużo rzeczy, które mogą coś namieszać).
+- Wymaga wgrania obu plików: `pelletcan-card.js` i `pelletcan-lang.js` (HACS robi to sam).
+
 ## v1.3 – Podajnik palnika
 - Wersja karty 1.3 wymaga firmware ≥ 1.2 (karta bez zmian względem firmware 1.3) (nowe encje: Podajnik palnika pracuje, stany mieszaczy, CWU Źródło/Zwiększenie/Delta). Bez nich pozycje pokazują „-”.
 - **Ekran Palnik: ikona „2”** (podajnik palnika) na dolnym pasku obok ikon wentylatora i podajnika „1” (kolejność jak na panelu). Encja „Podajnik palnika pracuje” z firmware ≥ 1.2.

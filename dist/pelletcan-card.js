@@ -1,4 +1,4 @@
-/* PelletCAN-card v1.3 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* PelletCAN-card v1.4 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
    Dziala tak: pobiera rdzen tekla-panel-card.js (z tego samego katalogu) (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -498,8 +498,8 @@
       const l = this._lvl(), r = [
         mrow('kociol', 'Kocioł', 'mdi:water-boiler'), mrow('burner_s', 'Palnik', 'mdi:fire'), mrow('co_s', 'Ogrzewanie obwód 1', 'mdi:radiator'),
         mrow('cwu_s', 'Ciepła woda użytkowa', 'mdi:faucet'), mrow('alarm', 'Historia alarmów', 'mdi:clipboard-alert-outline')];
-      if (l >= 1) r.push(mrow(null, 'Język', 'mdi:translate', 'PL'), mrow(null, 'Alarm dźwiękowy', 'mdi:volume-high', '<span class="tgq on"><i></i></span>'),
-        mrow(null, 'Konfiguracja', 'mdi:cog'), mrow('test', 'Test wyjść', 'mdi:toggle-switch-outline'), mrow('stats', 'Statystyki', 'mdi:chart-box-outline'), mrow('net', 'Sieć', 'mdi:lan'));
+      if (l >= 1) r.push(mrow(null, 'Język', 'mdi:translate', (this._langLbl || 'PL')), mrow(null, 'Alarm dźwiękowy', 'mdi:volume-high', '<span class="tgq on"><i></i></span>'),
+        mrow('test', 'Test wyjść', 'mdi:toggle-switch-outline'), mrow('stats', 'Statystyki', 'mdi:chart-box-outline'), mrow('net', 'Sieć', 'mdi:lan'));
       r.push(mrow('info', 'Informacje o programie', 'mdi:information'));
       r.push(`<div class="row go mi" data-go="level" data-back="menu"><span class="l"><ha-icon icon="mdi:account-lock"></ha-icon>Poziom menu (PIN)</span></div>`);
       return this._page('MENU', 'main', r.join(''));
@@ -915,7 +915,7 @@
       _flat() {
         const c = this._cfg, ids = this._ids(), pf = pfOf(c, ids), keys = keysAll(), ex = c.entities || {};
         const d = {
-          screen: c.screen || 'main', device: c.entity_prefix ? String(c.entity_prefix) : 'auto',
+          screen: c.screen || 'main', language: ({ dk: 'da', se: 'sv', cz: 'cs', est: 'et' }[String(c.language || 'pl').toLowerCase()] || c.language || 'pl'), device: c.entity_prefix ? String(c.entity_prefix) : 'auto',
           esphome_node: c.esphome_node || '', mirror_mode: typeof c.mirror === 'boolean' ? (c.mirror ? 'on' : 'off') : 'auto',
         };
         Object.keys(keys).forEach(r => { d['e_' + r] = ex[r] || (ids.length ? findRole(ids, r, keys[r], pf, this._hass.states) : ''); });   // pola od razu pokazuja wykryte encje
@@ -942,6 +942,7 @@
         const schema = [{
           type: 'expandable', title: 'Ogólne', expanded: true, flatten: true, schema: [
             { name: 'screen', label: 'Ekran startowy karty', selector: { select: { mode: 'dropdown', options: D.SCREEN_OPTS.map(o => ({ value: o[0], label: o[1] })) } } },
+            { name: 'language', label: 'Język / Language', selector: { select: { mode: 'dropdown', options: [{ value: 'auto', label: 'Auto (język Home Assistant)' }].concat(Object.keys((window.__pcLang || {}).names || {}).map(k => ({ value: k, label: window.__pcLang.names[k] }))) } } },
             { name: 'device', label: 'Urządzenie (prefiks encji)', selector: { select: { mode: 'dropdown', custom_value: true, options: [{ value: 'auto', label: 'Automatycznie' + (devs.length ? ' (' + pf + ')' : '') }].concat(devs.map(d => ({ value: d.p, label: d.p }))) } } },
           ],
         }, {
@@ -974,6 +975,7 @@
         const old = this._cfg.entity_prefix || '';
         const dev = (v.device && v.device !== 'auto') ? String(v.device).trim() : '';
         const cfg = Object.assign({}, this._cfg, { screen: v.screen || 'main' });
+        if (v.language && v.language !== 'pl') cfg.language = v.language; else delete cfg.language;
         if (dev) cfg.entity_prefix = dev; else delete cfg.entity_prefix;
         const keys = keysAll();
         let entities = {};
@@ -1113,7 +1115,7 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '1.3';
+    const CARD_VER = '1.4';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };
@@ -1187,6 +1189,87 @@
       return function () { o.apply(this, arguments); wire(this); };
     })(C.prototype._build);
 
+    })();
+
+    // ---- modul v1.4: tlumaczenia (language: pl|en|da|de|sv|lt|sk|cs|es|ro|et|auto; slownik w pelletcan-lang.js) ----
+    await (async () => {
+      const C = customElements.get('tekla-panel-card');
+      if (C.prototype.__lang) return;
+      C.prototype.__lang = true;
+      let LG = window.__pcLang;
+      if (!LG) { try { LG = (await import(DIR + 'pelletcan-lang.js?v=14')).default; window.__pcLang = LG; } catch (e) { LG = { names: {}, dict: {} }; console.warn('pelletcan-card: brak pelletcan-lang.js - interfejs po polsku', e); } }
+      const ALIAS = { dk: 'da', se: 'sv', cz: 'cs', est: 'et', ee: 'et', gb: 'en', us: 'en', no: 'da', pl_pl: 'pl' };
+      const LBL = { pl: 'PL', en: 'EN', da: 'DK', de: 'DE', sv: 'SE', lt: 'LT', sk: 'SK', cs: 'CZ', es: 'ES', ro: 'RO', et: 'EST' };
+      const LOC = { pl: 'pl-PL', en: 'en-GB', da: 'da-DK', de: 'de-DE', sv: 'sv-SE', lt: 'lt-LT', sk: 'sk-SK', cs: 'cs-CZ', es: 'es-ES', ro: 'ro-RO', et: 'et-EE' };
+      const esc = t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const cache = {};
+      const table = lang => {
+        if (cache[lang]) return cache[lang];
+        const d = LG.dict[lang] || {}, ex = new Map(), pt = [], pre = [];
+        Object.keys(d).forEach(k => {
+          if (k.includes('{n}')) { const n = k.split('{n}').length - 1; pt.push([new RegExp('^' + k.split('{n}').map(esc).join('(.+?)') + '$'), d[k], k.length, n]); }
+          else { ex.set(k, d[k]); if (/[:]$/.test(k)) pre.push(k); }
+        });
+        pt.sort((a, b) => b[2] - a[2]); pre.sort((a, b) => b.length - a.length);
+        return (cache[lang] = { ex, pt, pre, d });
+      };
+      const tr = (t, s) => {
+        const m = /^(\s*)([\s\S]*?)(\s*)$/.exec(s); const core = m[2];
+        if (!core) return s;
+        let r = t.ex.get(core);
+        if (r === undefined) {
+          const a = /^([‹›«»\s]*)([\s\S]*?)([‹›«»\s]*)$/.exec(core);
+          if (a[2] && (a[1] || a[3])) { const r2 = t.ex.get(a[2]); if (r2 !== undefined) r = a[1] + r2 + a[3]; }
+        }
+        if (r === undefined) for (const q of t.pt) { const mm = q[0].exec(core); if (mm) { let i = 0; r = q[1].replace(/\{n\}/g, () => mm[++i]); break; } }
+        if (r === undefined) for (const k of t.pre) { if (core.startsWith(k)) { r = t.d[k] + core.slice(k.length); break; } }
+        return r === undefined ? s : m[1] + r + m[3];
+      };
+      const langOf = self => {
+        let l = String((self._cfg && self._cfg.language) || 'pl').toLowerCase().replace('-', '_');
+        if (l === 'auto') l = String((self._hass && (self._hass.language || (self._hass.locale && self._hass.locale.language))) || 'pl').toLowerCase().split(/[-_]/)[0];
+        l = ALIAS[l] || l;
+        return LG.dict[l] ? l : 'pl';
+      };
+      const doNode = (self, n) => {
+        if (n.nodeType === 3) {
+          if (n.__t === n.nodeValue) return;
+          if (n.__pl === undefined || n.__t !== n.nodeValue) n.__pl = n.nodeValue;
+          const r = tr(self._tt, n.__pl); n.__t = r; if (r !== n.nodeValue) n.nodeValue = r;
+        } else if (n.nodeType === 1) {
+          if (n.tagName === 'STYLE' || n.tagName === 'SCRIPT') return;
+          ['title', 'placeholder', 'aria-label'].forEach(a => { if (n.hasAttribute(a)) { const k = '__pl_' + a; const v = n.getAttribute(a); if (n[k] === undefined || n[k + 't'] !== v) n[k] = v; const r = tr(self._tt, n[k]); n[k + 't'] = r; if (r !== v) n.setAttribute(a, r); } });
+          n.childNodes.forEach(c => doNode(self, c));
+        }
+      };
+      const apply = self => {
+        const lang = langOf(self);
+        self._lang = lang; self._langLbl = LBL[lang] || 'PL';
+        if (self._tl === lang) return;
+        const first = self._tl === undefined; self._tl = lang;
+        self._tt = lang === 'pl' ? null : table(lang);
+        if (!first && self._built) { self._sig = ''; try { self._render(true); } catch (e) { /* wyrenderuje sie przy nastepnym hass */ } }
+      };
+      const sc = C.prototype.setConfig;
+      C.prototype.setConfig = function (c) { const r = sc.call(this, c); apply(this); return r; };
+      const desc = Object.getOwnPropertyDescriptor(C.prototype, 'hass');
+      if (desc && desc.set) Object.defineProperty(C.prototype, 'hass', { configurable: true, get: desc.get, set(h) { desc.set.call(this, h); if ((this._cfg || {}).language === 'auto') apply(this); } });
+      C.prototype._tr = function (s) { return this._tt ? tr(this._tt, s) : s; };
+      window.__pcLocale = self => LOC[langOf(self)] || 'pl-PL';
+      const wire = self => {
+        if (self.__lw || !self.shadowRoot) return; self.__lw = true;
+        const R = self.shadowRoot;
+        const mo = new MutationObserver(ms => {
+          if (!self._tt) return;
+          ms.forEach(m => {
+            if (m.type === 'characterData') doNode(self, m.target);
+            else m.addedNodes.forEach(n => doNode(self, n));
+          });
+        });
+        mo.observe(R, { childList: true, subtree: true, characterData: true });
+        if (self._tt) doNode(self, R);
+      };
+      C.prototype._build = (function (o) { return function () { o.apply(this, arguments); apply(this); wire(this); }; })(C.prototype._build);
     })();
   } catch (e) { console.error('pelletcan-card', e); }
 })();

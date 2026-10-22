@@ -13,8 +13,9 @@
     ]
   },
   "card": {
-    "version": "1.3",
+    "version": "1.4",
     "changelog": [
+      "Tłumaczenia interfejsu: PL, EN, DK, DE, SE, LT, SK, CZ, ES, RO, EST. Wybór: pole „Język” w edytorze karty albo language: w YAML. Nowy plik pelletcan-lang.js (HACS pobiera go razem z kartą). Usunięto pozycję Konfiguracja z menu.",
       "Ikona 2 (podajnik palnika) na Palniku, ikona zaworu na Kotle, NASTAWY Kocioł/Ogrzewanie 1/Woda według panelu, edytor odzwierciedla encje w YAML, zaokrąglony czas podawania. Wymaga firmware ≥ 1.2."
     ]
   }

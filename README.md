@@ -49,7 +49,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 4. **Dodaj urządzenie w HA** (Ustawienia → Urządzenia → ESPHome; klucz API z `secrets.yaml`). Pojawią się encje o nazwach z prefiksem `tekla` (np. `sensor.tekla_kociol_temperatura`).
 5. **Zainstaluj kartę** – wybierz jedną z dwóch dróg:
    - **HACS (zalecane):** HACS → ⋮ → *Niestandardowe repozytoria* → adres `https://github.com/GieOeRZet/PelletCAN`, kategoria **Dashboard** (Lovelace) → *Dodaj* → znajdź „PelletCAN” → *Pobierz*. Zasób dashboardu doda się sam (`/hacsfiles/PelletCAN/pelletcan-card.js`). Aktualizacje pojawią się w HACS.
-   - **Ręcznie:** skopiuj zawartość folderu `dist/` do `/config/www/community/pelletcan/` (powstanie `pelletcan-card.js`, `tekla-panel-card.js` i folder `img/`; pliki muszą leżeć razem). W Ustawienia → Dashboardy → ⋮ → Zasoby dodaj *moduł JavaScript* o adresie `/local/community/pelletcan/pelletcan-card.js?v=1`; po każdej aktualizacji zmień `?v=` i odśwież stronę (Ctrl+F5).
+   - **Ręcznie:** skopiuj zawartość folderu `dist/` do `/config/www/community/pelletcan/` (powstanie `pelletcan-card.js`, `tekla-panel-card.js`, `pelletcan-lang.js` i folder `img/`; pliki muszą leżeć razem). W Ustawienia → Dashboardy → ⋮ → Zasoby dodaj *moduł JavaScript* o adresie `/local/community/pelletcan/pelletcan-card.js?v=1`; po każdej aktualizacji zmień `?v=` i odśwież stronę (Ctrl+F5).
 6. **Nie dodawaj obu naraz** – jeśli przechodzisz z instalacji ręcznej na HACS, usuń najpierw stary zasób `/local/community/pelletcan/...`.
 7. **Dodaj kartę** na dashboard – [opis poniżej](#dodanie-karty-i-konfiguracja).
 
@@ -100,6 +100,7 @@ Karta **sama znajduje encje** urządzenia po nazwie (domyślny prefiks `tekla`).
 | Opcja | Domyślnie | Opis |
 |---|---|---|
 | `screen` | `main` | ekran startowy (`main`, `heat`, `water`, `burn`, `menu`, `alarm`, `info` i inne – lista w edytorze) |
+| `language` | `pl` | język interfejsu: `pl`, `en`, `dk`, `de`, `se`, `lt`, `sk`, `cz`, `es`, `ro`, `est` (też kody `da sv cs et`) albo `auto` (język Home Assistant); wybór także w edytorze – pole „Język / Language” |
 | `lite` | `false` | tryb lite – patrz [niżej](#tryb-lite); tylko w YAML, nie ma go w edytorze |
 | `entity_prefix` | `tekla` | fragment nazwy urządzenia używany do wykrywania encji |
 | `esphome_node` | `tekla_estyma` | nazwa węzła ESPHome (usługi `esphome.<węzeł>_...`) |
@@ -189,6 +190,7 @@ Karta używa `img/kociol.*`, `img/palnik.*`, `img/bojler.*` (png, webp, jpg, jpe
 | `esphome/secrets.example.yaml` | wzór `secrets.yaml` |
 | `dist/pelletcan-card.js` | karta – jedyny plik dodawany jako zasób dashboardu |
 | `dist/tekla-panel-card.js` | rdzeń karty, pobierany przez `pelletcan-card.js` |
+| `dist/pelletcan-lang.js` | tłumaczenia interfejsu (generowany z `docs/lang/pelletcan-lang.txt` przez `tools/gen_lang.py`) |
 | `dist/img/` | grafiki kotła, palnika i bojlera (można podmienić) |
 | `docs/rejestry/` | katalog rejestrów CANopen (opis + CSV) |
 | `docs/img/` | zrzuty ekranu do tego README |
