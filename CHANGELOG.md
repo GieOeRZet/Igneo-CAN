@@ -2,6 +2,10 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.8 – Drobne poprawki paska
+- Napis MENU jest częścią ikony: ma dokładnie szerokość trzech linii (niezależnie od czcionki), a odstęp od dolnej linii jest taki jak odstęp między liniami.
+- Ilość paliwa (np. „81kg") większą czcionką, górna krawędź napisu bez zmian.
+
 ## v1.7 – Ikony dolnego paska jak w panelu
 - Ikony dolnego paska (zasobnik, płomień, grzejnik, kran, power, menu) mają kształty prześledzone ze zdjęcia panelu zamiast poprzednich uproszczonych; napis MENU pogrubiony, ilość paliwa wąską czcionką jak na panelu. Zasobnik wypełnia się nadal procentowo (5 rzędów kropek).
 

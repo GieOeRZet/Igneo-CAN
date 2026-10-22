@@ -523,7 +523,7 @@ class TeklaPanelCard extends HTMLElement {
       <div class="tag" data-act="bdlg"><b>${isNaN(this._v('boiler_set')) ? '-' : Math.round(this._v('boiler_set'))}</b>${this._chipHtml(ctx.bm)}</div>
       ${ctx.bm < 2 ? `<div class="tbar" data-act="prog" data-kind="2" data-back="main">${this._sched(this._todayBands(2, []))}</div>` : ''}
       <div class="bbar">
-        <div class="cell"><svg viewBox="0 0 35 17.1" class="ic mic"><path d="M0 1.3H35M0 8.5H35M0 15.8H35" stroke="#d6e4ff" stroke-width="2.6" fill="none"/></svg><small class="mn" data-go="menu"></small></div>
+        <div class="cell"><svg viewBox="0 0 35 30.2" class="ic mic"><path d="M0 1.3H35M0 8.5H35M0 15.8H35" stroke="#d6e4ff" stroke-width="2.6" fill="none"/><text x="0" y="29.7" textLength="35" lengthAdjust="spacingAndGlyphs" font-size="11" font-weight="700" fill="#d6e4ff" font-family="Roboto Condensed,Roboto,Arial,sans-serif">MENU</text></svg><small class="mn" data-go="menu"></small></div>
         <div class="cell" data-act="fuel"><small class="fl">${fuel === '-' ? '-' : fuel + 'kg'}</small>${this._hopper()}</div>
         <div class="cell" data-go="burn">${bar(this._v('burner_code') % 256 === 5 ? 'g' : [1, 2].includes(this._v('burner_code') % 256) ? 'g gb' : '')}${this._on('ban') ? '<i class="ban"></i>' : ''}<svg viewBox="${ICO.flame.vb}" class="ic2" fill="#d6e4ff" fill-rule="evenodd"><path d="${ICO.flame.d}"/></svg></div>
         <div class="cell" data-go="heat">${bar(this._on('co_pump') ? 'g' : '')}<span class="radi"><svg viewBox="${ICO.radi.vb}" class="ic2" fill="#d6e4ff" fill-rule="evenodd"><path d="${ICO.radi.d}"/></svg><sup>1</sup></span></div>
@@ -757,14 +757,13 @@ class TeklaPanelCard extends HTMLElement {
     .cell small.fl{position:absolute;top:.9cqw;font-size:3.3cqw;font-weight:700;color:#e3ecff}
     .cell em{font-style:normal;font-size:3.6cqw;line-height:.4;color:#d6e4ff}
     .mnb{position:absolute;left:0;bottom:0;width:14.28%;height:15.5cqw}
-    .mn::after{content:'MENU';position:absolute;bottom:3.8cqw;left:50%;transform:translateX(-50%);font-size:1.95cqw;font-weight:700;letter-spacing:.05em;color:#d6e4ff}
     .radi{position:relative;display:flex}.radi sup{position:absolute;right:-2cqw;top:-.8cqw;font-size:3cqw;color:#d6e4ff}
     /* dolny pasek 1:1 z panelu (wymiary ze zdjecia, 1 px zdjecia = .1683cqw) */
     .cell{padding-top:0}
     .cell>svg,.cell>.radi{position:absolute!important;left:50%;margin:0!important;transform:translateX(-50%)}
-    .cell small.fl{top:1.2cqw;font-size:2.5cqw;line-height:1;font-weight:500;letter-spacing:-.02em;transform:scaleX(.85)}
+    .cell small.fl{top:1.07cqw;font-size:3.4cqw;line-height:1;font-weight:500;letter-spacing:-.02em;transform:scaleX(.85)}
     /* ikony dolnego paska: ksztalty sledzone ze zdjecia panelu */
-    .cell>.mic{width:5.9cqw!important;height:2.88cqw!important;top:6.0cqw}
+    .cell>.mic{width:5.9cqw!important;height:5.08cqw!important;top:6.0cqw}
     .cell[data-act=fuel]>svg{width:6.66cqw!important;height:5.52cqw!important;top:6.75cqw;left:calc(50% + 0.04cqw)}
     .cell[data-go=burn]>svg.ic2{width:4.88cqw!important;height:6.55cqw!important;top:5.13cqw;left:calc(50% + 0.2cqw)}
     .cell[data-go=heat]>.radi{top:5.47cqw;left:calc(50% + -0.56cqw);display:block}.cell[data-go=heat] .radi svg{width:5.02cqw!important;height:6.14cqw!important;display:block}

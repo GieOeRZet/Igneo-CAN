@@ -13,8 +13,9 @@
     ]
   },
   "card": {
-    "version": "1.7",
+    "version": "1.8",
     "changelog": [
+      "Dolny pasek: napis MENU na szerokość linii, odstęp od ostatniej linii taki jak między liniami; większa czcionka ilości paliwa (górna krawędź bez zmian).",
       "Dolny pasek: ikony (zasobnik, płomień, grzejnik, kran, power, menu) odwzorowane kształtem ze zdjęcia panelu, napis MENU i ilość paliwa jak na panelu.",
       "Dolny pasek odwzorowany z panelu (wymiary ikon, odstępy, czcionki). Ikona zasobnika wraca do poprzedniego rozmiaru (nieco niżej), nadal z procentowym wypełnieniem.",
       "Wskaźniki nad ikonami: palnik – zielony, pulsuje przy rozpalaniu/rozżarzaniu, świeci ciągle przy modulacji; CO i CWU – zielone gdy pracuje odpowiednia pompa, inaczej zgaszone.",
