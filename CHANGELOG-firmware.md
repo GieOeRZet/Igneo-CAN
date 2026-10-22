@@ -2,6 +2,13 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4 – ESP jako węzeł w zakładce Sieć
+- ESP ma teraz własny numer węzła **90** (86 = CAN IO BIG, 87 = urządzenie kotła – zajęte, stąd „Unknown”). Wysyła boot-up + heartbeat NMT (0x790, co 1 s) i odpowiada na zapytania tożsamości – panel w Menu → Sieć powinien pokazać „PelletCAN  Node ID=90  SW v1.4”.
+- Domyślnie `can_heartbeat: "true"`, `can_node_id: "90"` (zmiana względem 1.3 – wymień swój PelletCAN.yaml lub ustaw ręcznie).
+- Wersja softu raportowana jako `v<wersja>`.
+- „CAN diag” zapisuje zawartość heartbeatów/NMT wszystkich węzłów (0x700–0x77F) i ponawia wpis co 5 min – widać, kto wysyła 0x757.
+- Niesprawdzone kompilacją ESPHome (składnia YAML sprawdzona).
+
 ## v1.3 – Diagnostyka magistrali
 - **Encja „CAN diag”**: podsłuch magistrali trafia do HA (historia = log) – zapisy panelu i innych węzłów (`ZAPIS id=… 0xIDX.sub dane=…`), nowe i zmienione rejestry SDO, zmiany bajtów PDO. Wstrzymana w czasie skanu i migawki. Dzięki niej rejestry zmieniane na panelu (np. Temp. maksymalna CWU, ustawienia kotła i CO) znajdujemy bez czytania logów ESPHome.
 - **Encja „CAN ID ramek”**: lista unikalnych ID ramek widzianych na magistrali (do 60).

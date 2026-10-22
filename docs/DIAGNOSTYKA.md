@@ -17,7 +17,7 @@ Wszystko dzieje się w HA, bez czytania logów ESPHome. Włączone domyślnie (`
 3. **Polecenia Pompy CWU i Wymiennika (Test wyjść)** – ruszaj nimi na panelu: w „CAN diag” pojawi się zapis (jeśli rejestr jest w węźle 4) albo zmiana bajtu PDO węzła 86. Dodatkowo skan węzła 86:
    `esphome.tekla_estyma_sdo_scan` z `from_index: 25088`, `to_index: 25632` (0x6200–0x6420), `sub: 1`, `node: 86`. Przerwanie: `sdo_scan_stop`.
 4. **Bit „Podajnik palnika pracuje”**: włącz/wyłącz podajnik palnika w Test wyjść i obejrzyj zmianę w `PDO 0x456` (CAN diag lub SDO ostatni odczyt).
-5. **Sieć na panelu**: ESP odpowiada jako węzeł `can_node_id` (domyślnie 87) na zapytania o tożsamość: nazwa **PelletCAN** (0x1008), wersja softu (0x100A) i 0x1018. Po wgraniu wejdź w Menu → Sieć. Gdy dalej „Unknown”: sprawdź w „CAN diag”/„SDO ostatni odczyt” wpisy `IDENT …` (jakie węzły i indeksy pyta panel) i przyślij je. Opcja `can_heartbeat: "true"` dodaje heartbeat NMT.
+5. **Sieć na panelu**: ESP odpowiada jako węzeł `can_node_id` (domyślnie 90; 86 i 87 są zajęte przez kocioł) na zapytania o tożsamość: nazwa **PelletCAN** (0x1008), wersja softu (0x100A) i 0x1018. Po wgraniu wejdź w Menu → Sieć. Gdy dalej „Unknown”: sprawdź w „CAN diag”/„SDO ostatni odczyt” wpisy `IDENT …` (jakie węzły i indeksy pyta panel) i przyślij je. Od v1.4 heartbeat NMT jest domyślnie włączony (`can_heartbeat`).
 
 ## Przydatne ustawienia (plik `PelletCAN.yaml`)
 `sniff`, `can_debug` (loguje wszystkie ramki w logach ESPHome – tylko do diagnozy), `can_node_id`, `can_identity`, `can_heartbeat`.
