@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.4"
+  fw_version: "1.4.1"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -364,6 +364,21 @@ wifi:
   # Staly adres IP (opcjonalny): blok "wifi: manual_ip" w pliku uzytkownika PelletCAN.yaml; bez niego ESP bierze adres z DHCP.
 
 globals:
+  # v1.4.1: zbiorczy raport skanu sieci przez panel (kto pytal, kto odpowiedzial)
+  - id: net_q_lo
+    type: uint64_t
+    initial_value: '0'
+  - id: net_q_hi
+    type: uint64_t
+    initial_value: '0'
+  - id: net_t
+    type: uint32_t
+    initial_value: '0'
+  - id: net_esp
+    type: int
+    initial_value: '0'
+  - id: net_txt
+    type: std::string
   - id: scan_on
     type: bool
     initial_value: "false"
@@ -594,6 +609,18 @@ canbus:
               const uint8_t scs = x[0];
               // v2.27: identyfikacja urzadzen (panel -> zakladka Siec): loguj NOWE ramki SDO 0x1000/0x1008/0x1018 (zapytania i odpowiedzi, kazdy wezel)
               if (sidx == 0x1000 || sidx == 0x1008 || sidx == 0x1018) {
+                {  // v1.4.1: zbiorczy raport skanu
+                  const int nn = req ? (int) can_id - 0x600 : (int) can_id - 0x580;
+                  char tb[40];
+                  if (req && nn >= 0 && nn < 128) {
+                    if (nn < 64) id(net_q_lo) |= (1ULL << nn); else id(net_q_hi) |= (1ULL << (nn - 64));
+                    if (!(sidx == 0x1018 && ssub == 2)) { snprintf(tb, sizeof(tb), "Q%d:%04X.%u ", nn, (unsigned) sidx, (unsigned) ssub); if (id(net_txt).size() < 200 && id(net_txt).find(tb) == std::string::npos) id(net_txt) += tb; }
+                  } else if (rsp) {
+                    snprintf(tb, sizeof(tb), "R%d:%04X.%u=%02X%02X%02X%02X ", nn, (unsigned) sidx, (unsigned) ssub, x[7], x[6], x[5], x[4]);
+                    if (id(net_txt).size() < 200 && id(net_txt).find(tb) == std::string::npos) id(net_txt) += tb;
+                  }
+                  id(net_t) = millis() | 1;
+                }
                 static std::set<std::string> ident_seen;
                 const std::string k = std::string(req ? "REQ " : "RSP ") + b;
                 const std::string kk = std::to_string((unsigned) can_id) + k;
@@ -687,6 +714,7 @@ canbus:
               if (std::string("${can_identity}") != "true") return;
               const uint32_t me = 0x600 + ${can_node_id};
               if ((uint32_t) can_id != me || x.size() < 4) return;
+              id(net_esp)++; id(net_t) = millis() | 1;
               const uint8_t cs = x[0];
               std::vector<uint8_t> r(8, 0);
               const uint32_t rid = 0x580 + ${can_node_id};
@@ -1186,6 +1214,21 @@ canbus:
               }
 
 interval:
+  # v1.4.1: po 4 s ciszy w skanie tozsamosci - jedna linia podsumowania do "CAN diag"
+  - interval: 1s
+    then:
+      - lambda: |-
+          if (id(net_t) == 0 || millis() - id(net_t) < 4000) return;
+          int cnt = 0, lo = -1, hi = -1;
+          for (int i = 0; i < 128; i++) {
+            const bool q = i < 64 ? ((id(net_q_lo) >> i) & 1) : ((id(net_q_hi) >> (i - 64)) & 1);
+            if (q) { cnt++; if (lo < 0) lo = i; hi = i; }
+          }
+          char sb[255];
+          snprintf(sb, sizeof(sb), "SKAN SIECI: panel pytal %d wezlow (%d..%d), ESP(%d) pytany %dx, %s", cnt, lo, hi, (int) ${can_node_id}, id(net_esp), id(net_txt).c_str());
+          id(can_diag).publish_state(sb);
+          id(sdo_last).publish_state(sb);
+          id(net_q_lo) = 0; id(net_q_hi) = 0; id(net_t) = 0; id(net_esp) = 0; id(net_txt).clear();
   # v1.3: heartbeat NMT wezla ${can_node_id} (opcjonalny, can_heartbeat: "true")
   - interval: 1s
     then:

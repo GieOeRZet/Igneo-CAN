@@ -1,7 +1,8 @@
 {
   "firmware": {
-    "version": "1.4",
+    "version": "1.4.1",
     "changelog": [
+      "Raport skanu sieci (SKAN SIECI) w „CAN diag” – weryfikacja zakładki Sieć panelu bez dostępu do panelu.",
       "ESP jako węzeł 90 w zakładce Sieć panelu (heartbeat + tożsamość), zawartość heartbeatów w „CAN diag”. Wymień PelletCAN.yaml (nowe domyślne can_node_id/can_heartbeat).",
       "Wcześniej (1.3): Diagnostyka magistrali w HA: encje „CAN diag” (zapisy panelu, zmiany rejestrów i PDO) i „CAN ID ramek”; ESP odpowiada na zapytania tożsamości węzła (nazwa PelletCAN, wersja) dla zakładki Sieć panelu.",
       "Nowe ustawienia w PelletCAN.yaml: can_node_id, can_identity, can_heartbeat – wymień swój plik PelletCAN.yaml na nowy.",

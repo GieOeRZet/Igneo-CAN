@@ -2,6 +2,10 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.1 – Raport skanu sieci
+- Po każdym skanie tożsamości przez panel (np. po restarcie ESP) ESP wysyła do „CAN diag” i „SDO ostatni odczyt” jedną linię `SKAN SIECI: …` – ile węzłów panel zapytał (zakres), ile razy zapytał ESP (węzeł 90), jakie węzły odpowiedziały i z jakim kodem produktu (`R86:1018.2=00010002`), oraz każde inne zapytanie niż kod produktu (`Q…`). Pozwala sprawdzić zakładkę Sieć bez patrzenia na panel.
+- Wersja 1.4.1 (poprawka numeracji: `fw_version`).
+
 ## v1.4 – ESP jako węzeł w zakładce Sieć
 - ESP ma teraz własny numer węzła **90** (86 = CAN IO BIG, 87 = urządzenie kotła – zajęte, stąd „Unknown”). Wysyła boot-up + heartbeat NMT (0x790, co 1 s) i odpowiada na zapytania tożsamości – panel w Menu → Sieć powinien pokazać „PelletCAN  Node ID=90  SW v1.4”.
 - Domyślnie `can_heartbeat: "true"`, `can_node_id: "90"` (zmiana względem 1.3 – wymień swój PelletCAN.yaml lub ustaw ręcznie).
