@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.10 – Konfiguracja
+- Przywrócona pozycja **Konfiguracja** w menu (od poziomu 1, przed Testem wyjść). Ekran pokazuje: Język, Alarm dźwiękowy (przełącznik jak na panelu, bez rejestru), Tryb pracy karty (sterowanie / lustro), Węzeł ESPHome, Poziom menu, wersje firmware i karty.
+
 ## v1.9 – Przyciski + / − w oknie Paliwo
 - Przyciski + i − zmieniają ilość paliwa w zbiorniku o 1 kg (przytrzymanie: powtarzanie). Wartość i zapełnienie (kg / pojemność) pokazują się od razu, zapis do kotła (rejestr 0x3601) idzie po 0,6 s od ostatniego kliknięcia. W trybie lustra nieaktywne. Wymaga firmware ≥ 1.4.6.
 

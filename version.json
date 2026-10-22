@@ -15,8 +15,9 @@
     ]
   },
   "card": {
-    "version": "1.9",
+    "version": "1.10",
     "changelog": [
+      "Menu: przywrócona pozycja Konfiguracja (od poziomu 1) z ekranem: język, alarm dźwiękowy, tryb karty, węzeł ESPHome, poziom menu, wersje firmware i karty.",
       "Okno Paliwo: przyciski + i − zmieniają ilość paliwa (±1 kg, przytrzymanie powtarza). Wymaga firmware ≥ 1.4.6.",
       "Dolny pasek: napis MENU na szerokość linii, odstęp od ostatniej linii taki jak między liniami; większa czcionka ilości paliwa (górna krawędź bez zmian).",
       "Dolny pasek: ikony (zasobnik, płomień, grzejnik, kran, power, menu) odwzorowane kształtem ze zdjęcia panelu, napis MENU i ilość paliwa jak na panelu.",
