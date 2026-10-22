@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.7 – Ikony dolnego paska jak w panelu
+- Ikony dolnego paska (zasobnik, płomień, grzejnik, kran, power, menu) mają kształty prześledzone ze zdjęcia panelu zamiast poprzednich uproszczonych; napis MENU pogrubiony, ilość paliwa wąską czcionką jak na panelu. Zasobnik wypełnia się nadal procentowo (5 rzędów kropek).
+
 ## v1.6 – Dolny pasek jak w panelu
 - Dolny pasek odwzorowany 1:1 ze zdjęcia panelu: rozmiary i położenie ikon, napis MENU (mniejszy, pod liniami), czcionka ilości paliwa, wysokość i szerokość wskaźników. Ikona zasobnika wraca do poprzedniego rozmiaru i jest nieco obniżona; wypełnienie procentowe bez zmian.
 - **Wskaźnik nad palnikiem**: zielony; pulsuje przy rozpalaniu i rozżarzaniu, świeci ciągle przy modulacji (jak dioda na obudowie), poza tym zgaszony.

@@ -50,6 +50,8 @@ const SCREEN_OPTS = [
 ];
 // harmonogramy (godziny komfortu) – na razie przepisane z panelu, do czasu odczytu z rejestrów
 const SCHED_DEF = { cwu: [[0, 24]], co: [[2.5, 10], [16.5, 21]] };
+const ICO = {"hopper":{"vb":"0 0 39.6 32.8","d":"M39.0 0.1L37.5 0.4L36.8 1.6L36.9 16.2L36.5 18.8L35.8 20.5L35.0 21.1L28.2 30.1L28.1 30.9L28.9 32.0L29.6 32.0L30.9 31.0L32.9 28.1L37.6 22.5L39.2 19.9L39.5 18.6L39.6 1.4ZM1.5 0.0L0.4 0.8L0.0 1.9L0.2 17.4L0.8 20.1L1.9 22.1L2.8 22.9L3.1 23.8L9.1 31.1L10.8 32.1L11.5 31.0L11.4 29.9L7.8 24.9L5.0 21.9L3.2 19.0L3.0 17.9L3.1 2.0L2.8 0.4Z"},"flame":{"vb":"0 0 29.0 38.9","d":"M17.2 0.1L14.8 0.0L12.8 0.6L11.0 1.5L9.1 3.2L8.5 4.4L8.2 6.0L8.6 12.4L7.9 13.2L3.4 13.2L2.0 13.9L1.6 14.4L1.8 15.5L4.1 16.5L4.8 17.1L5.2 18.5L5.2 19.5L4.6 21.2L1.6 24.2L0.0 27.9L0.1 30.4L0.6 32.6L1.9 35.5L3.6 37.9L5.2 38.9L6.1 38.6L6.1 37.4L5.4 34.4L5.4 32.8L6.2 29.2L8.4 26.6L10.1 25.8L12.5 23.5L13.1 19.9L13.9 18.9L14.8 19.0L16.1 19.9L18.6 23.5L19.0 25.5L18.8 29.4L19.4 29.6L20.8 28.6L21.9 28.6L23.5 30.2L24.0 32.1L24.0 34.2L23.6 35.9L22.2 37.9L22.4 38.4L23.1 38.4L24.2 37.1L26.0 35.9L28.2 32.5L29.0 28.6L29.0 25.9L28.4 22.5L27.1 19.5L26.2 15.6L26.2 14.2L26.9 12.5L26.9 11.5L26.4 11.1L25.1 11.5L23.9 13.0L22.8 13.5L21.0 12.9L18.6 10.5L17.4 7.6L16.8 5.2L17.2 3.1L18.1 1.6L17.9 0.6Z"},"radi":{"vb":"0 0 29.8 36.5","d":"M4.0 0.2L3.4 1.2L2.8 3.6L0.0 6.2L0.4 7.2L2.9 9.5L3.2 10.2L3.5 19.8L3.4 26.8L2.9 27.6L0.9 29.4L0.2 30.8L2.9 32.4L3.5 33.5L3.8 35.5L4.6 36.4L5.5 36.4L6.0 35.9L6.2 32.1L7.1 31.1L8.0 30.9L9.6 31.0L10.5 31.6L10.9 32.5L11.0 35.6L11.9 36.5L12.9 36.4L13.4 35.8L13.6 32.1L14.6 31.2L15.8 30.9L16.8 30.9L18.0 31.9L18.4 32.8L18.5 35.8L19.2 36.4L20.1 36.2L20.6 35.6L21.0 32.2L21.9 31.4L22.8 31.0L24.0 31.0L25.2 31.6L25.9 32.5L26.1 35.8L26.8 36.4L28.0 36.1L28.4 35.8L28.8 32.8L29.5 30.6L28.6 26.0L28.8 11.5L29.8 6.1L28.5 0.6L28.0 0.2L26.6 0.1L25.8 1.1L25.0 4.9L24.1 5.6L23.1 5.8L21.6 4.6L20.9 0.9L20.1 0.1L19.0 0.1L18.0 1.4L17.8 4.8L17.2 5.5L16.1 5.9L14.4 5.1L13.9 3.9L13.8 1.1L13.0 0.1L11.9 0.0L10.6 1.2L10.6 3.4L10.2 5.0L9.5 5.6L7.6 5.8L6.8 5.1L6.5 4.5L6.2 0.8L5.2 0.0ZM23.1 7.4L24.4 7.6L25.0 8.2L25.6 9.9L25.9 27.1L25.4 28.6L23.8 30.1L23.0 30.1L21.4 28.5L21.0 27.6L21.2 9.6L21.8 8.2ZM7.6 7.4L9.8 7.6L10.4 8.2L10.6 9.2L10.9 26.9L10.4 28.9L9.1 30.1L7.6 30.1L7.0 29.5L6.2 27.9L6.4 9.4L6.8 8.0ZM16.2 7.2L16.9 7.4L17.6 8.1L18.0 9.6L18.2 24.2L18.1 27.9L17.2 29.8L16.6 30.2L15.1 29.9L13.9 28.5L13.5 27.4L13.8 9.5L14.5 7.9Z"},"faucet":{"vb":"0 0 40.6 43.5","d":"M37.0 35.5L36.4 36.0L35.8 38.1L34.8 39.5L34.6 41.1L36.5 43.4L38.1 43.5L39.0 43.1L40.4 41.8L40.6 40.0L40.4 39.0L38.6 35.9ZM1.6 9.2L0.5 10.0L0.0 11.1L0.0 22.1L0.2 23.0L1.2 24.2L2.6 24.4L3.5 23.8L3.9 22.6L4.0 11.6L3.8 10.0L3.2 9.5ZM6.6 1.1L5.9 2.9L5.8 4.6L6.1 6.2L6.9 7.2L8.6 8.1L9.8 8.1L14.0 7.0L15.5 7.4L16.2 8.5L16.1 10.1L15.6 10.8L13.1 11.5L11.0 13.2L8.1 13.6L7.6 14.8L7.5 16.4L7.9 18.2L9.0 19.0L25.2 18.9L28.4 19.5L30.1 20.8L31.6 21.4L32.6 22.6L34.2 25.8L34.4 28.6L34.9 29.8L37.6 30.1L39.4 29.5L39.5 27.2L38.6 22.6L37.5 20.2L33.6 16.6L30.6 14.9L27.0 13.9L25.5 12.6L24.8 11.5L22.5 11.1L21.8 10.6L21.5 10.0L21.6 7.9L22.5 7.1L24.5 7.2L27.2 8.1L28.4 8.1L30.4 7.2L31.4 6.4L31.9 5.0L31.9 3.1L31.6 2.2L30.5 0.9L27.5 0.0L22.6 1.2L19.5 0.1L18.2 0.0L15.8 1.0L14.1 1.1L12.2 0.5L8.9 0.0L7.4 0.5Z"},"power":{"vb":"0 0 45.1 44.0","d":"M42.5 39.2L42.0 39.6L41.4 41.2L41.6 43.1L42.5 44.0L44.1 43.9L44.9 43.4L45.1 42.8L45.1 40.6L44.4 39.5ZM35.4 39.1L34.6 39.6L33.8 40.9L33.6 42.1L34.8 43.8L36.2 44.0L37.8 43.2L38.2 41.4L37.4 39.8ZM28.4 39.1L27.4 39.6L26.1 40.9L26.0 42.0L26.9 43.5L28.1 44.0L29.0 44.0L30.5 43.0L30.9 41.1L29.5 39.5ZM26.1 2.8L25.1 3.6L25.0 4.9L28.0 7.0L30.2 8.0L34.4 11.9L36.2 14.9L37.6 18.6L38.0 20.2L38.0 24.9L37.6 27.0L35.9 31.0L34.6 32.5L34.9 34.5L35.9 34.9L37.1 34.2L37.9 33.4L39.5 30.1L41.2 23.8L41.2 20.5L39.5 14.9L38.0 11.9L36.4 9.6L32.2 5.8L30.9 5.2L27.1 2.8ZM14.5 2.5L12.1 3.8L10.4 5.1L8.9 5.6L6.6 7.5L3.6 10.8L2.6 13.1L1.6 14.6L0.0 19.8L0.1 25.4L1.6 30.2L3.0 32.6L3.6 34.4L6.9 37.6L10.8 40.5L15.0 42.1L19.6 42.9L20.2 42.6L21.0 41.6L20.4 40.5L12.6 38.4L7.9 34.8L5.2 31.4L3.2 27.1L3.1 19.8L3.6 16.8L5.5 13.2L9.0 9.2L13.8 6.2L15.4 5.6L16.0 5.0L16.2 4.4L16.0 3.6L15.2 2.8ZM19.8 0.0L19.1 0.6L18.9 1.5L19.1 4.2L19.0 20.5L19.5 21.5L21.2 21.8L22.2 20.6L22.2 1.0L21.2 0.0Z"}};
+const HOP_ROWS = [[8.0, [5.5, 11.2, 17.2, 22.9, 28.8, 34.6]], [14.0, [8.3, 14.2, 19.9, 25.8, 31.4]], [19.7, [11.2, 17.1, 22.6, 28.4]], [25.4, [14.2, 20.1, 25.8]], [31.2, [16.9, 22.6]]]; // zasobnik: rzedy kropek (od gory), uklad ze zdjecia panelu
 const BURNER = { 0: 'Wyłączony', 1: 'Rozpalanie', 2: 'Rozżarzanie', 5: 'Modulacja', 6: 'Wygaszanie', 7: 'Czyszczenie', 8: 'Pauza', 9: 'Stop', 10: 'Alarm' };
 const MENU = [
   ['boiler', 'Kocioł'], ['burner_s', 'Palnik'], ['co_s', 'Ogrzewanie'], ['cwu_s', 'Ciepła woda użytkowa'],
@@ -453,12 +455,11 @@ class TeklaPanelCard extends HTMLElement {
       <div class="qok" data-act="ok" style="left:82.4cqw;top:45.8cqw;width:10.1cqw;height:6.67cqw;background:linear-gradient(#5b6a8a,#3e4a68);border-color:#2c3550">OK</div></div>`;
   }
   _hopper() {
-    // lejek zasobnika wypełniany "kropkami" proporcjonalnie do paliwa: 0 / 25 / 50 / 75 / 100 %
-    const lv = Math.ceil(this._fuelPct() * 5 - 1e-9);
-    const rows = [[1.4, [2.6, 4.6, 6.6, 8.6, 10.6, 12.4]], [3.2, [3.6, 5.6, 7.6, 9.6, 11.6]], [5.0, [2.6, 4.6, 6.6, 8.6, 10.6, 12.4]], [7.0, [3.6, 5.6, 7.6, 9.6, 11.6]], [9.0, [4.6, 6.6, 8.6, 10.6]]]; // rzędy naprzemiennie przesunięte
+    // zasobnik wypelniany "kropkami" proporcjonalnie do paliwa: 0 / 20 / 40 / 60 / 80 / 100 % (rzedy od dolu)
+    const lv = Math.ceil(this._fuelPct() * HOP_ROWS.length - 1e-9);
     let dots = '';
-    for (let i = 0; i < lv; i++) { const [y, xs] = rows[4 - i]; dots += xs.map(x => `<circle cx="${x}" cy="${y}" r=".6"/>`).join(''); }
-    return `<svg viewBox="0 0 15 12" class="ic2" style="width:6.8cqw;height:5.5cqw" fill="none" stroke="#d6e4ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 .6V6.2L4.6 10.8"/><path d="M13.8 .6V6.2L10.4 10.8"/><g fill="#d6e4ff" stroke="none">${dots}</g></svg>`;
+    for (let i = 0; i < lv; i++) { const [y, xs] = HOP_ROWS[HOP_ROWS.length - 1 - i]; dots += xs.map(x => `<circle cx="${x}" cy="${y}" r="1.5"/>`).join(''); }
+    return `<svg viewBox="${ICO.hopper.vb}" class="ic2" fill="#d6e4ff"><path d="${ICO.hopper.d}"/>${dots}</svg>`;
   }
   _brow(first, gear, second) {
     return `<div class="brow"><div class="c1">${first}</div><div class="c">${second || ''}</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
@@ -522,13 +523,13 @@ class TeklaPanelCard extends HTMLElement {
       <div class="tag" data-act="bdlg"><b>${isNaN(this._v('boiler_set')) ? '-' : Math.round(this._v('boiler_set'))}</b>${this._chipHtml(ctx.bm)}</div>
       ${ctx.bm < 2 ? `<div class="tbar" data-act="prog" data-kind="2" data-back="main">${this._sched(this._todayBands(2, []))}</div>` : ''}
       <div class="bbar">
-        <div class="cell"><svg viewBox="0 0 32 15" class="ic mic"><path d="M0 1H32M0 8H32M0 15H32" stroke="#cfe0ff" stroke-width="1.5" fill="none"/></svg><small class="mn" data-go="menu"></small></div>
+        <div class="cell"><svg viewBox="0 0 35 17.1" class="ic mic"><path d="M0 1.3H35M0 8.5H35M0 15.8H35" stroke="#d6e4ff" stroke-width="2.6" fill="none"/></svg><small class="mn" data-go="menu"></small></div>
         <div class="cell" data-act="fuel"><small class="fl">${fuel === '-' ? '-' : fuel + 'kg'}</small>${this._hopper()}</div>
-        <div class="cell" data-go="burn">${bar(this._v('burner_code') % 256 === 5 ? 'g' : [1, 2].includes(this._v('burner_code') % 256) ? 'g gb' : '')}${this._on('ban') ? '<i class="ban"></i>' : ''}<svg viewBox="0 0 12 17" class="ic2" style="width:5.8cqw;height:7.7cqw" fill="#d6e4ff"><path d="M6.4 .2C3.6 2 3.5 4.4 2.8 5.6L0 6.4C1.5 6.6 2.2 7 2 8.2C-.2 10.5-.6 13.5 2 15.5C2.8 16.4 3.6 17 3.6 17.2C1.8 15.2 2.4 12.5 4.4 11C5.6 10 6.2 9 6.2 8C7 9 7.6 10 7.3 11.6C8.4 11.4 9.2 10.4 9.6 9.4C10.6 11.6 10.4 14.6 8.4 17C11.2 16 12.2 13.6 11.9 11C11.8 8.5 10.6 6.6 11.4 4.8C9.2 5.8 8.2 5.4 7.4 4C6.6 2.8 6.5 1.4 6.4 .2Z"/></svg></div>
-        <div class="cell" data-go="heat">${bar(this._on('co_pump') ? 'g' : '')}<span class="radi"><svg viewBox="0 0 12.5 16.3" class="ic2" style="width:6.4cqw;height:8.3cqw" fill="#d6e4ff"><rect x="2.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="4.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="6.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="8.4" y="0" width="1.3" height="16.3" rx=".6"/><rect x="10.4" y="0" width="1.3" height="16.3" rx=".6"/><rect x="0" y="2.6" width="12.2" height="1.1" rx=".5"/><rect x="0" y="12.6" width="12.2" height="1.1" rx=".5"/></svg><sup>1</sup></span></div>
+        <div class="cell" data-go="burn">${bar(this._v('burner_code') % 256 === 5 ? 'g' : [1, 2].includes(this._v('burner_code') % 256) ? 'g gb' : '')}${this._on('ban') ? '<i class="ban"></i>' : ''}<svg viewBox="${ICO.flame.vb}" class="ic2" fill="#d6e4ff" fill-rule="evenodd"><path d="${ICO.flame.d}"/></svg></div>
+        <div class="cell" data-go="heat">${bar(this._on('co_pump') ? 'g' : '')}<span class="radi"><svg viewBox="${ICO.radi.vb}" class="ic2" fill="#d6e4ff" fill-rule="evenodd"><path d="${ICO.radi.d}"/></svg><sup>1</sup></span></div>
         <div class="cell"></div>
-        <div class="cell" data-go="water">${bar(this._on('cwu_pump') ? 'g' : '')}<svg viewBox="0 0 17 17" class="ic2" style="width:7.6cqw;height:7.6cqw" fill="#d6e4ff"><rect x="2.5" y="0" width="10.8" height="2.7" rx="1.2"/><rect x="5.4" y="2.5" width="4.6" height="3"/><path d="M3.7 5.5H12C13.8 5.5 14.6 6.7 14.6 8.3V11.5H12.4V9.3C12.4 8.3 12 7.9 11 7.9H3.7Z"/><rect x=".5" y="3.5" width="1.7" height="6.8" rx=".8"/><path d="M15 12.8C13.4 14.8 13 15.6 13 16.3A2 2 0 0 0 17 16.3C17 15.6 16.6 14.8 15 12.8Z" transform="translate(-.4 -.1)"/></svg></div>
-        <div class="cell" data-act="quick">${bar(sw ? 'g' : 'r')}<svg viewBox="0 0 24 24" class="ic2" style="width:9.6cqw;height:9.6cqw;margin:-.4cqw 0 0 0" fill="none" stroke="#d6e4ff" stroke-width="1.45" stroke-linecap="round"><path d="M7.87 5.89A7.8 7.8 0 0 0 12 20.3"/><path d="M16.13 5.89A7.8 7.8 0 0 1 18.89 16.16"/><path d="M12 4.3V11.8"/><g fill="#d6e4ff" stroke="none"><circle cx="14.6" cy="20.3" r=".9"/><circle cx="16.8" cy="20.3" r=".9"/><circle cx="19" cy="20.3" r=".9"/></g></svg></div>
+        <div class="cell" data-go="water">${bar(this._on('cwu_pump') ? 'g' : '')}<svg viewBox="${ICO.faucet.vb}" class="ic2" fill="#d6e4ff" fill-rule="evenodd"><path d="${ICO.faucet.d}"/></svg></div>
+        <div class="cell" data-act="quick">${bar(sw ? 'g' : 'r')}<svg viewBox="${ICO.power.vb}" class="ic2" fill="#d6e4ff" fill-rule="evenodd"><path d="${ICO.power.d}"/></svg></div>
       </div>
       <div class="mnb" data-go="menu"></div>${alarm ? '<div class="alic" data-go="alarm" data-back="main">!</div>' : ''}`;
   }
@@ -756,19 +757,20 @@ class TeklaPanelCard extends HTMLElement {
     .cell small.fl{position:absolute;top:.9cqw;font-size:3.3cqw;font-weight:700;color:#e3ecff}
     .cell em{font-style:normal;font-size:3.6cqw;line-height:.4;color:#d6e4ff}
     .mnb{position:absolute;left:0;bottom:0;width:14.28%;height:15.5cqw}
-    .mn::after{content:'MENU';position:absolute;bottom:4.1cqw;left:50%;transform:translateX(-50%);font-size:1.7cqw;font-weight:600;letter-spacing:.04em;color:#d6e4ff}
+    .mn::after{content:'MENU';position:absolute;bottom:3.8cqw;left:50%;transform:translateX(-50%);font-size:1.95cqw;font-weight:700;letter-spacing:.05em;color:#d6e4ff}
     .radi{position:relative;display:flex}.radi sup{position:absolute;right:-2cqw;top:-.8cqw;font-size:3cqw;color:#d6e4ff}
     /* dolny pasek 1:1 z panelu (wymiary ze zdjecia, 1 px zdjecia = .1683cqw) */
     .cell{padding-top:0}
     .cell>svg,.cell>.radi{position:absolute!important;left:50%;margin:0!important;transform:translateX(-50%)}
-    .cell>.mic{width:5.4cqw!important;height:2.52cqw!important;top:6.23cqw}
-    .cell small.fl{top:1.2cqw;font-size:2.6cqw;line-height:1;font-weight:500;letter-spacing:-.02em}
-    .cell[data-act=fuel]>svg{top:7.1cqw}
-    .cell[data-go=burn]>svg.ic2{width:4.7cqw!important;height:6.56cqw!important;top:5.44cqw}
-    .cell[data-go=heat]>.radi{top:5.65cqw}.cell[data-go=heat] .radi svg{width:4.65cqw!important;height:6.06cqw!important}
-    .cell[data-go=heat] .radi sup{right:-1.9cqw;top:-.4cqw;font-size:2.4cqw}
-    .cell[data-go=water]>svg.ic2{width:7.24cqw!important;height:7.24cqw!important;top:5cqw}
-    .cell[data-act=quick]>svg.ic2{width:9.6cqw!important;height:9.6cqw!important;top:3.7cqw}
+    .cell small.fl{top:1.2cqw;font-size:2.5cqw;line-height:1;font-weight:500;letter-spacing:-.02em;transform:scaleX(.85)}
+    /* ikony dolnego paska: ksztalty sledzone ze zdjecia panelu */
+    .cell>.mic{width:5.9cqw!important;height:2.88cqw!important;top:6.0cqw}
+    .cell[data-act=fuel]>svg{width:6.66cqw!important;height:5.52cqw!important;top:6.75cqw;left:calc(50% + 0.04cqw)}
+    .cell[data-go=burn]>svg.ic2{width:4.88cqw!important;height:6.55cqw!important;top:5.13cqw;left:calc(50% + 0.2cqw)}
+    .cell[data-go=heat]>.radi{top:5.47cqw;left:calc(50% + -0.56cqw);display:block}.cell[data-go=heat] .radi svg{width:5.02cqw!important;height:6.14cqw!important;display:block}
+    .cell[data-go=heat] .radi sup{right:auto;left:calc(100% + .9cqw);top:-.1cqw;font-size:2.7cqw;line-height:1}
+    .cell[data-go=water]>svg.ic2{width:6.83cqw!important;height:7.32cqw!important;top:4.88cqw;left:calc(50% + 0.16cqw)}
+    .cell[data-act=quick]>svg.ic2{width:7.59cqw!important;height:7.41cqw!important;top:4.88cqw;left:calc(50% + 0.24cqw)}
     .ind{top:1.4cqw;height:1.3cqw;width:9.6cqw;margin-left:-4.8cqw;border-radius:.5cqw}
     .ind.g,.ind.gb{background:#3ee34a;box-shadow:0 0 1.4cqw #3ee34a}
     .ind.gb{animation:ignb 3s ease-in-out infinite}
