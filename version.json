@@ -13,8 +13,10 @@
     ]
   },
   "card": {
-    "version": "1.5",
+    "version": "1.6",
     "changelog": [
+      "Dolny pasek odwzorowany z panelu (wymiary ikon, odstępy, czcionki). Ikona zasobnika wraca do poprzedniego rozmiaru (nieco niżej), nadal z procentowym wypełnieniem.",
+      "Wskaźniki nad ikonami: palnik – zielony, pulsuje przy rozpalaniu/rozżarzaniu, świeci ciągle przy modulacji; CO i CWU – zielone gdy pracuje odpowiednia pompa, inaczej zgaszone.",
       "Okno Paliwo: licznik przy przycisku podajnika pokazuje 30 s (kocioł wyłączony: 600 s), po naciśnięciu odlicza, po zatrzymaniu lub końcu wraca do wartości początkowej.",
       "Dolny pasek: napis MENU i ikona zasobnika wyrównane do dołu ikony grzejnika; zielona dioda aktualizacji zastąpiona pulsującym wskaźnikiem jak nad przyciskiem power.",
       "Test wyjść: tło i wiersze jak na pozostałych ekranach (gradient), przyciski wyboru w kolorze strzałek historii alarmów.",

@@ -458,7 +458,7 @@ class TeklaPanelCard extends HTMLElement {
     const rows = [[1.4, [2.6, 4.6, 6.6, 8.6, 10.6, 12.4]], [3.2, [3.6, 5.6, 7.6, 9.6, 11.6]], [5.0, [2.6, 4.6, 6.6, 8.6, 10.6, 12.4]], [7.0, [3.6, 5.6, 7.6, 9.6, 11.6]], [9.0, [4.6, 6.6, 8.6, 10.6]]]; // rzędy naprzemiennie przesunięte
     let dots = '';
     for (let i = 0; i < lv; i++) { const [y, xs] = rows[4 - i]; dots += xs.map(x => `<circle cx="${x}" cy="${y}" r=".6"/>`).join(''); }
-    return `<svg viewBox="0 0 15 12" class="ic2" style="width:10.9cqw;height:8.7cqw;margin-top:0" fill="none" stroke="#d6e4ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 .6V6.2L4.6 10.8"/><path d="M13.8 .6V6.2L10.4 10.8"/><g fill="#d6e4ff" stroke="none">${dots}</g></svg>`;
+    return `<svg viewBox="0 0 15 12" class="ic2" style="width:6.8cqw;height:5.5cqw" fill="none" stroke="#d6e4ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 .6V6.2L4.6 10.8"/><path d="M13.8 .6V6.2L10.4 10.8"/><g fill="#d6e4ff" stroke="none">${dots}</g></svg>`;
   }
   _brow(first, gear, second) {
     return `<div class="brow"><div class="c1">${first}</div><div class="c">${second || ''}</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
@@ -522,12 +522,12 @@ class TeklaPanelCard extends HTMLElement {
       <div class="tag" data-act="bdlg"><b>${isNaN(this._v('boiler_set')) ? '-' : Math.round(this._v('boiler_set'))}</b>${this._chipHtml(ctx.bm)}</div>
       ${ctx.bm < 2 ? `<div class="tbar" data-act="prog" data-kind="2" data-back="main">${this._sched(this._todayBands(2, []))}</div>` : ''}
       <div class="bbar">
-        <div class="cell"><svg viewBox="0 0 24 24" class="ic"><path d="M3 7h18M3 12h18M3 17h18" stroke="#cfe0ff" stroke-width="2" fill="none"/></svg><small class="mn" data-go="menu"></small></div>
+        <div class="cell"><svg viewBox="0 0 32 15" class="ic mic"><path d="M0 1H32M0 8H32M0 15H32" stroke="#cfe0ff" stroke-width="1.5" fill="none"/></svg><small class="mn" data-go="menu"></small></div>
         <div class="cell" data-act="fuel"><small class="fl">${fuel === '-' ? '-' : fuel + 'kg'}</small>${this._hopper()}</div>
-        <div class="cell" data-go="burn">${bar(burning ? 'y' : '')}${this._on('ban') ? '<i class="ban"></i>' : ''}<svg viewBox="0 0 12 17" class="ic2" style="width:5.8cqw;height:7.7cqw" fill="#d6e4ff"><path d="M6.4 .2C3.6 2 3.5 4.4 2.8 5.6L0 6.4C1.5 6.6 2.2 7 2 8.2C-.2 10.5-.6 13.5 2 15.5C2.8 16.4 3.6 17 3.6 17.2C1.8 15.2 2.4 12.5 4.4 11C5.6 10 6.2 9 6.2 8C7 9 7.6 10 7.3 11.6C8.4 11.4 9.2 10.4 9.6 9.4C10.6 11.6 10.4 14.6 8.4 17C11.2 16 12.2 13.6 11.9 11C11.8 8.5 10.6 6.6 11.4 4.8C9.2 5.8 8.2 5.4 7.4 4C6.6 2.8 6.5 1.4 6.4 .2Z"/></svg></div>
-        <div class="cell" data-go="heat">${bar(this._on('co_pump') ? 'w' : '')}<span class="radi"><svg viewBox="0 0 12.5 16.3" class="ic2" style="width:6.4cqw;height:8.3cqw" fill="#d6e4ff"><rect x="2.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="4.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="6.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="8.4" y="0" width="1.3" height="16.3" rx=".6"/><rect x="10.4" y="0" width="1.3" height="16.3" rx=".6"/><rect x="0" y="2.6" width="12.2" height="1.1" rx=".5"/><rect x="0" y="12.6" width="12.2" height="1.1" rx=".5"/></svg><sup>1</sup></span></div>
+        <div class="cell" data-go="burn">${bar(this._v('burner_code') % 256 === 5 ? 'g' : [1, 2].includes(this._v('burner_code') % 256) ? 'g gb' : '')}${this._on('ban') ? '<i class="ban"></i>' : ''}<svg viewBox="0 0 12 17" class="ic2" style="width:5.8cqw;height:7.7cqw" fill="#d6e4ff"><path d="M6.4 .2C3.6 2 3.5 4.4 2.8 5.6L0 6.4C1.5 6.6 2.2 7 2 8.2C-.2 10.5-.6 13.5 2 15.5C2.8 16.4 3.6 17 3.6 17.2C1.8 15.2 2.4 12.5 4.4 11C5.6 10 6.2 9 6.2 8C7 9 7.6 10 7.3 11.6C8.4 11.4 9.2 10.4 9.6 9.4C10.6 11.6 10.4 14.6 8.4 17C11.2 16 12.2 13.6 11.9 11C11.8 8.5 10.6 6.6 11.4 4.8C9.2 5.8 8.2 5.4 7.4 4C6.6 2.8 6.5 1.4 6.4 .2Z"/></svg></div>
+        <div class="cell" data-go="heat">${bar(this._on('co_pump') ? 'g' : '')}<span class="radi"><svg viewBox="0 0 12.5 16.3" class="ic2" style="width:6.4cqw;height:8.3cqw" fill="#d6e4ff"><rect x="2.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="4.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="6.2" y="0" width="1.3" height="16.3" rx=".6"/><rect x="8.4" y="0" width="1.3" height="16.3" rx=".6"/><rect x="10.4" y="0" width="1.3" height="16.3" rx=".6"/><rect x="0" y="2.6" width="12.2" height="1.1" rx=".5"/><rect x="0" y="12.6" width="12.2" height="1.1" rx=".5"/></svg><sup>1</sup></span></div>
         <div class="cell"></div>
-        <div class="cell" data-go="water">${bar(this._on('cwu_pump') ? 'w' : '')}<svg viewBox="0 0 17 17" class="ic2" style="width:7.6cqw;height:7.6cqw" fill="#d6e4ff"><rect x="2.5" y="0" width="10.8" height="2.7" rx="1.2"/><rect x="5.4" y="2.5" width="4.6" height="3"/><path d="M3.7 5.5H12C13.8 5.5 14.6 6.7 14.6 8.3V11.5H12.4V9.3C12.4 8.3 12 7.9 11 7.9H3.7Z"/><rect x=".5" y="3.5" width="1.7" height="6.8" rx=".8"/><path d="M15 12.8C13.4 14.8 13 15.6 13 16.3A2 2 0 0 0 17 16.3C17 15.6 16.6 14.8 15 12.8Z" transform="translate(-.4 -.1)"/></svg></div>
+        <div class="cell" data-go="water">${bar(this._on('cwu_pump') ? 'g' : '')}<svg viewBox="0 0 17 17" class="ic2" style="width:7.6cqw;height:7.6cqw" fill="#d6e4ff"><rect x="2.5" y="0" width="10.8" height="2.7" rx="1.2"/><rect x="5.4" y="2.5" width="4.6" height="3"/><path d="M3.7 5.5H12C13.8 5.5 14.6 6.7 14.6 8.3V11.5H12.4V9.3C12.4 8.3 12 7.9 11 7.9H3.7Z"/><rect x=".5" y="3.5" width="1.7" height="6.8" rx=".8"/><path d="M15 12.8C13.4 14.8 13 15.6 13 16.3A2 2 0 0 0 17 16.3C17 15.6 16.6 14.8 15 12.8Z" transform="translate(-.4 -.1)"/></svg></div>
         <div class="cell" data-act="quick">${bar(sw ? 'g' : 'r')}<svg viewBox="0 0 24 24" class="ic2" style="width:9.6cqw;height:9.6cqw;margin:-.4cqw 0 0 0" fill="none" stroke="#d6e4ff" stroke-width="1.45" stroke-linecap="round"><path d="M7.87 5.89A7.8 7.8 0 0 0 12 20.3"/><path d="M16.13 5.89A7.8 7.8 0 0 1 18.89 16.16"/><path d="M12 4.3V11.8"/><g fill="#d6e4ff" stroke="none"><circle cx="14.6" cy="20.3" r=".9"/><circle cx="16.8" cy="20.3" r=".9"/><circle cx="19" cy="20.3" r=".9"/></g></svg></div>
       </div>
       <div class="mnb" data-go="menu"></div>${alarm ? '<div class="alic" data-go="alarm" data-back="main">!</div>' : ''}`;
@@ -756,8 +756,23 @@ class TeklaPanelCard extends HTMLElement {
     .cell small.fl{position:absolute;top:.9cqw;font-size:3.3cqw;font-weight:700;color:#e3ecff}
     .cell em{font-style:normal;font-size:3.6cqw;line-height:.4;color:#d6e4ff}
     .mnb{position:absolute;left:0;bottom:0;width:14.28%;height:15.5cqw}
-    .mn::after{content:'MENU';position:absolute;bottom:2.17cqw;left:50%;transform:translateX(-50%);font-size:2.8cqw;font-weight:700;color:#d6e4ff}
+    .mn::after{content:'MENU';position:absolute;bottom:4.1cqw;left:50%;transform:translateX(-50%);font-size:1.7cqw;font-weight:600;letter-spacing:.04em;color:#d6e4ff}
     .radi{position:relative;display:flex}.radi sup{position:absolute;right:-2cqw;top:-.8cqw;font-size:3cqw;color:#d6e4ff}
+    /* dolny pasek 1:1 z panelu (wymiary ze zdjecia, 1 px zdjecia = .1683cqw) */
+    .cell{padding-top:0}
+    .cell>svg,.cell>.radi{position:absolute!important;left:50%;margin:0!important;transform:translateX(-50%)}
+    .cell>.mic{width:5.4cqw!important;height:2.52cqw!important;top:6.23cqw}
+    .cell small.fl{top:1.2cqw;font-size:2.6cqw;line-height:1;font-weight:500;letter-spacing:-.02em}
+    .cell[data-act=fuel]>svg{top:7.1cqw}
+    .cell[data-go=burn]>svg.ic2{width:4.7cqw!important;height:6.56cqw!important;top:5.44cqw}
+    .cell[data-go=heat]>.radi{top:5.65cqw}.cell[data-go=heat] .radi svg{width:4.65cqw!important;height:6.06cqw!important}
+    .cell[data-go=heat] .radi sup{right:-1.9cqw;top:-.4cqw;font-size:2.4cqw}
+    .cell[data-go=water]>svg.ic2{width:7.24cqw!important;height:7.24cqw!important;top:5cqw}
+    .cell[data-act=quick]>svg.ic2{width:9.6cqw!important;height:9.6cqw!important;top:3.7cqw}
+    .ind{top:1.4cqw;height:1.3cqw;width:9.6cqw;margin-left:-4.8cqw;border-radius:.5cqw}
+    .ind.g,.ind.gb{background:#3ee34a;box-shadow:0 0 1.4cqw #3ee34a}
+    .ind.gb{animation:ignb 3s ease-in-out infinite}
+    @keyframes ignb{0%,100%{background:#31477f;box-shadow:0 0 0 #3ee34a00}50%{background:#3ee34a;box-shadow:0 0 1.4cqw #3ee34a}}
     .ind{position:absolute;top:1.9cqw;left:50%;width:9.8cqw;height:1cqw;margin-left:-4.9cqw;background:#31477f;border-radius:.6cqw}
     .ind.y{background:#ece23a;box-shadow:0 0 1.4cqw #ece23a}.ind.w{background:#cfe0ff;box-shadow:0 0 1.2cqw #9fc0ff}.ind.g{background:#86e61f;box-shadow:0 0 1.4cqw #86e61f}.ind.r{background:#2c3e70}
     .ban{position:absolute;right:30%;bottom:17%;width:3.4cqw;height:3.4cqw;border-radius:50%;background:#f0301f;box-shadow:0 0 0 .35cqw #fff3,0 0 1.2cqw #f0301f}.ban::after{content:'';position:absolute;left:18%;right:18%;top:42%;height:16%;background:#fff;border-radius:.3cqw}

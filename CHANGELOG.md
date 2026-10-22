@@ -2,6 +2,11 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.6 – Dolny pasek jak w panelu
+- Dolny pasek odwzorowany 1:1 ze zdjęcia panelu: rozmiary i położenie ikon, napis MENU (mniejszy, pod liniami), czcionka ilości paliwa, wysokość i szerokość wskaźników. Ikona zasobnika wraca do poprzedniego rozmiaru i jest nieco obniżona; wypełnienie procentowe bez zmian.
+- **Wskaźnik nad palnikiem**: zielony; pulsuje przy rozpalaniu i rozżarzaniu, świeci ciągle przy modulacji (jak dioda na obudowie), poza tym zgaszony.
+- **Wskaźniki nad CO i CWU**: zielone, gdy pracuje odpowiednia pompa; gdy nie – zgaszone.
+
 ## v1.5 – Poprawki wyglądu
 - **Okno Paliwo**: licznik sekund przy przycisku podajnika pokazuje 30 s (przy wyłączonym kotle 600 s). Po naciśnięciu przycisku odlicza co 1 s; po ponownym naciśnięciu (stop) lub końcu odliczania wraca do wartości początkowej. Przycisk uruchamia podajnik (encja „Podajnik: Podaj paliwo”), w trybie lustra nieaktywny.
 - **Dolny pasek**: napis MENU ma dolną krawędź na wysokości dołu ikony grzejnika; ikona zasobnika powiększona do tej samej wysokości.
