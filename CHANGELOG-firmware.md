@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.2
+- Raport `SKAN SIECI` wysyłany także podczas ciągłego skanu (co 20 s), nie tylko po ciszy – w v1.4.1 raport nie pojawiał się, gdy panel skanuje bez przerwy.
+
 ## v1.4.1 – Raport skanu sieci
 - Po każdym skanie tożsamości przez panel (np. po restarcie ESP) ESP wysyła do „CAN diag” i „SDO ostatni odczyt” jedną linię `SKAN SIECI: …` – ile węzłów panel zapytał (zakres), ile razy zapytał ESP (węzeł 90), jakie węzły odpowiedziały i z jakim kodem produktu (`R86:1018.2=00010002`), oraz każde inne zapytanie niż kod produktu (`Q…`). Pozwala sprawdzić zakładkę Sieć bez patrzenia na panel.
 - Wersja 1.4.1 (poprawka numeracji: `fw_version`).
