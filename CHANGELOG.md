@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.14 – Ogrzewanie 1: przełączniki
+- NASTAWY CO (od poziomu 1): **Stała pompa** i **Obniżenie Tco dla ochrony powrotu** są przełączane i odczytywane. Wymaga firmware ≥ 1.4.10.
+
 ## v1.13 – Ogrzewanie 1: NASTAWY (klucz 1)
 - Menu → Ogrzewanie 1 → NASTAWY (od poziomu 1): odczyt i zapis **Zwiększenie temp. źródła**, **Temp. maksymalna**, **Wsp. korekcji t. CO**, **MAX Tzew pomp komf./ekon.**, **Obniżenie temperatury CO**, **MIN temperatura CO pomp** i **Czas mieszacza**. Pozostałe (Źródło, Czujnik pokojowy, Czujnik CO, Stała pompa, Obniżenie Tco dla ochrony powrotu) nadal „-”. Wymaga firmware ≥ 1.4.9.
 
