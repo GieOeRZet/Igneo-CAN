@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.11
+- **CO1 NASTAWY**: `set_param` 61 = Źródło (0x22D1, 0 Kocioł / 1 Bufor), 62 = Czujnik CO (0x22A5, 0/1); znalezione różnicą skanu po zmianie na panelu (Źródło Kocioł→Bufor: 0x22D1 256→257; Czujnik CO wł.→wył.: 0x22A5 257→256). Pozostaje Czujnik pokojowy (nieznany).
+
 ## v1.4.10
 - **CO1 NASTAWY**: `set_param` 59 = Stała pompa (0x22F1, 0/1), 60 = Obniżenie Tco dla ochrony powrotu (0x22F9, 0/1); znalezione różnicą skanu po przełączeniu na panelu (257→256 i 256→257). Encje „CO1 stala pompa”, „CO1 obnizenie Tco ochrona powrotu”.
 

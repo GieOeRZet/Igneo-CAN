@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.15 – Ogrzewanie 1: Źródło i Czujnik CO
+- NASTAWY CO (od poziomu 1): **Źródło** (Kocioł / Bufor) i **Czujnik CO** są przełączane i odczytywane. Czujnik pokojowy nadal „-”. Wymaga firmware ≥ 1.4.11.
+
 ## v1.14 – Ogrzewanie 1: przełączniki
 - NASTAWY CO (od poziomu 1): **Stała pompa** i **Obniżenie Tco dla ochrony powrotu** są przełączane i odczytywane. Wymaga firmware ≥ 1.4.10.
 
