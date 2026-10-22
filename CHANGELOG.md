@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.9 – Przyciski + / − w oknie Paliwo
+- Przyciski + i − zmieniają ilość paliwa w zbiorniku o 1 kg (przytrzymanie: powtarzanie). Wartość i zapełnienie (kg / pojemność) pokazują się od razu, zapis do kotła (rejestr 0x3601) idzie po 0,6 s od ostatniego kliknięcia. W trybie lustra nieaktywne. Wymaga firmware ≥ 1.4.6.
+
 ## v1.8 – Drobne poprawki paska
 - Napis MENU jest częścią ikony: ma dokładnie szerokość trzech linii (niezależnie od czcionki), a odstęp od dolnej linii jest taki jak odstęp między liniami.
 - Ilość paliwa (np. „81kg") większą czcionką, górna krawędź napisu bez zmian.

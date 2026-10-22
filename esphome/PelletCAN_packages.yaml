@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.4.5"
+  fw_version: "1.4.6"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -196,11 +196,11 @@ api:
       then:
         - lambda: |-
             if (std::string("${mirror}") == "true") { ESP_LOGW("igneo", "Zapis ustawien wylaczony (mirror: true)"); return; }
-            static const uint16_t ix[] = {0x2270, 0x2271, 0x2292, 0x2273, 0x2272, 0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2208, 0x2291, 0x22BD, 0x22C1, 0x2142, 0x2146, 0x22C5, 0x22C9, 0x22CD, 0x2212, 0x2210, 0x300D, 0x2256, 0x2257, 0x226A, 0x2289, 0x3704, 0x300C, 0x2290, 0x299A, 0x226B, 0x3605, 0x214E, 0x2152, 0x2258, 0x2999, 0x3715, 0x3716, 0x3717, 0x2153, 0x3003, 0x370B, 0x3700, 0x300E, 0x2214, 0x2216, 0x2218};
-            static const float lo[] = {30, 30, 2.0f, -10, 5, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 20, 20, 20, 20, 0, 0, 0, 0, 1, 5, 0, 0, 0, 0, 20, 1, 0, 5, 5, 0, 1, 0, 5, 10, 1, 0, 50, 5, 0, 0, 5, 2};
-            static const float hi[] = {100, 100, 10.0f, 40, 100, 100, 100, 100, 100, 100, 20, 20, 5, 3, 1, 80, 80, 80, 80, 20, 1, 1, 200, 15, 100, 100, 100, 100, 20, 100, 15, 1, 15, 15, 10, 12, 60, 30, 50, 60, 60, 300, 180, 5, 1, 20, 20};
-            static const uint8_t lv[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1};
-            if (key < 0 || key > 46 || value < lo[key] || value > hi[key]) { ESP_LOGW("igneo", "Ustawienie: zly klucz lub poza zakresem"); return; }
+            static const uint16_t ix[] = {0x2270, 0x2271, 0x2292, 0x2273, 0x2272, 0x2261, 0x2262, 0x2263, 0x2264, 0x2265, 0x2208, 0x2291, 0x22BD, 0x22C1, 0x2142, 0x2146, 0x22C5, 0x22C9, 0x22CD, 0x2212, 0x2210, 0x300D, 0x2256, 0x2257, 0x226A, 0x2289, 0x3704, 0x300C, 0x2290, 0x299A, 0x226B, 0x3605, 0x214E, 0x2152, 0x2258, 0x2999, 0x3715, 0x3716, 0x3717, 0x2153, 0x3003, 0x370B, 0x3700, 0x300E, 0x2214, 0x2216, 0x2218, 0x3601};
+            static const float lo[] = {30, 30, 2.0f, -10, 5, 0, 0, 0, 0, 0, 0, 0, 0, -3, 0, 20, 20, 20, 20, 0, 0, 0, 0, 1, 5, 0, 0, 0, 0, 20, 1, 0, 5, 5, 0, 1, 0, 5, 10, 1, 0, 50, 5, 0, 0, 5, 2, 0};
+            static const float hi[] = {100, 100, 10.0f, 40, 100, 100, 100, 100, 100, 100, 20, 20, 5, 3, 1, 80, 80, 80, 80, 20, 1, 1, 200, 15, 100, 100, 100, 100, 20, 100, 15, 1, 15, 15, 10, 12, 60, 30, 50, 60, 60, 300, 180, 5, 1, 20, 20, 1500};
+            static const uint8_t lv[] = {0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 1, 1, 1, 0};
+            if (key < 0 || key > 47 || value < lo[key] || value > hi[key]) { ESP_LOGW("igneo", "Ustawienie: zly klucz lub poza zakresem"); return; }
             id(access_t) = millis();
             if (lv[key] > id(access_level)) { ESP_LOGW("igneo", "Ustawienie wymaga wyzszego poziomu dostepu (PIN)"); return; }
             int raw;
@@ -218,6 +218,7 @@ api:
             else if (key == 32 || key == 33) raw = 0x0100 | (int) lroundf(value * 10.0f);
             else if (key >= 24 && key <= 39) raw = 0x0100 | (int) lroundf(value);
             else raw = (int) lroundf(value);
+            if (key == 47 && !isnan(id(tank_cap).state) && value > id(tank_cap).state) { ESP_LOGW("igneo", "Paliwo wieksze niz pojemnosc zbiornika - zapis odrzucony"); return; }
             if (key == 0 && value > id(power_max).state) { ESP_LOGW("igneo", "Moc min > Moc max - zapis odrzucony"); return; }
             if (key == 1 && value < id(power_min).state) { ESP_LOGW("igneo", "Moc max < Moc min - zapis odrzucony"); return; }
             id(reg_write).execute((int) ix[key], raw, 2);

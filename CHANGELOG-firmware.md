@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.6
+- **Paliwo w zbiorniku – zapis** (`set_param` klucz 47 = rejestr 0x3601, kg, 0…pojemność zbiornika; poziom 0). Pod przyciski + i − w oknie Paliwo karty. Procent zapełnienia liczony jak dotąd: kg / pojemność (0x3601 / 0x3600).
+
 ## v1.4.5
 - **Podajnik palnika pracuje**: poprzednie źródło (PDO 0x456 bajt 0 bit 1) nigdy się nie ustawiało. Nowe: PDO 0x356 (węzeł 86) bajt 2 bit 0 – z logów rośnie dokładnie w tej samej chwili co podajnik główny (cykl 20 s, różnica rzędu ms), a opada po kilku sekundach. Do potwierdzenia testem wyjść „Podajnik palnika”.
 

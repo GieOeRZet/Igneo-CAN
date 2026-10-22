@@ -252,11 +252,28 @@ class TeklaPanelCard extends HTMLElement {
     }
     f.v = v;
   }
-  // zapełnienie zbiornika 0..1: z encji w % (fuel_pct), a gdy jej brak – z kg / pojemność
+  // ilość paliwa [kg]: po kliknięciu + / − pokazujemy wartość zadaną do czasu potwierdzenia z kotła (maks. 8 s)
+  _fuelKg() {
+    const p = this._fp;
+    if (p && Date.now() - p.t < 8000 && this._v('fuel') !== p.kg) return p.kg;
+    if (p) this._fp = null;
+    return this._v('fuel');
+  }
+  _fuelStep(d) {
+    const cap = this._v('fuel_cap'), cur = this._fuelKg();
+    if (isNaN(cur)) return;
+    const kg = Math.max(0, Math.min(isNaN(cap) ? 9999 : cap, Math.round(cur) + d));
+    this._fp = { kg, t: Date.now() };
+    clearTimeout(this._fpT); this._fpT = setTimeout(() => this._svc('set_param', { key: 47, value: kg }), 600);
+    clearTimeout(this._fpR); this._fpR = setTimeout(() => this._built && this._render(true), 8200);
+    this._render(true);
+  }
+  // zapełnienie zbiornika 0..1: z kg / pojemność (spójnie z ESP: 0x3601 / 0x3600), a gdy brak kg – z encji w % (fuel_pct)
   _fuelPct() {
+    const kg = this._fuelKg(), cap = this._v('fuel_cap');
+    if (this._fp && !isNaN(kg) && !isNaN(cap) && cap > 0) return Math.max(0, Math.min(1, kg / cap));
     const p = this._v('fuel_pct');
     if (!isNaN(p)) return Math.max(0, Math.min(1, p / 100));
-    const kg = this._v('fuel'), cap = this._v('fuel_cap');
     return isNaN(kg) || isNaN(cap) || cap <= 0 ? 0 : Math.max(0, Math.min(1, kg / cap));
   }
   // licznik przy przycisku podajnika: stan spoczynku 30 s (kocioł wyłączony: 600 s); po starcie odlicza co 1 s, po zatrzymaniu/końcu wraca
@@ -358,8 +375,9 @@ class TeklaPanelCard extends HTMLElement {
       const a = e.target.closest('[data-go],[data-act]'); if (!a || !this._hass) return;
       if (a.dataset.go) { this._go(a.dataset.go, a.dataset.back); return; }
       const act = a.dataset.act;
-      if (this._mirror() && ['bdlg', 'cdlg', 'bm', 'bmslide', 'bval', 'bslide', 'cm', 'cmslide', 'cval', 'cslide', 'pday', 'phr', 'pall', 'pok', 'setmode', 'slider', 'out', 'feedgo'].includes(act)) return;
+      if (this._mirror() && ['bdlg', 'cdlg', 'bm', 'bmslide', 'bval', 'bslide', 'cm', 'cmslide', 'cval', 'cslide', 'pday', 'phr', 'pall', 'pok', 'setmode', 'slider', 'out', 'feedgo', 'fuelpm'].includes(act)) return;
       if (act === 'quick') { this._modal = true; this._render(true); }
+      else if (act === 'fuelpm') { if (this._fhold) { this._fhold = false; return; } this._fuelStep(+a.dataset.d); }
       else if (act === 'feedgo') this._fcGo();
       else if (act === 'fuel') { this._modal = 'fuel'; this._render(true); }
       else if (act === 'ok') { if (['boiler', 'co', 'cwu'].includes(this._modal)) this._commit(); else { this._modal = false; this._render(true); } }
@@ -402,6 +420,14 @@ class TeklaPanelCard extends HTMLElement {
         ev.detail = { entityId: this.E[a.dataset.e] }; this.dispatchEvent(ev);
       }
     });
+    // przytrzymanie + / −: po 0,45 s powtarza co 0,12 s
+    const fstop = () => { clearTimeout(this._fh0); clearInterval(this._fh1); };
+    root.addEventListener('pointerdown', e => {
+      const a = e.target.closest('[data-act=fuelpm]'); if (!a || this._mirror() || !this._hass) return;
+      fstop(); this._fhold = false;
+      this._fh0 = setTimeout(() => { this._fhold = true; this._fuelStep(+a.dataset.d); this._fh1 = setInterval(() => this._fuelStep(+a.dataset.d), 120); }, 450);
+    });
+    ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => root.addEventListener(t, fstop));
     root.addEventListener('scroll', e => {
       const t = e.target; if (t && t.classList && t.classList.contains('list')) this._scroll[this._scr] = t.scrollTop;
     }, true);
@@ -436,7 +462,7 @@ class TeklaPanelCard extends HTMLElement {
   }
   _fuelDlg() {
     // wymiary 1:1 ze zdjęcia panelu (dialog 1555 px = 94,2 cqw => 0,0606 cqw/px)
-    const kg = this._v('fuel'), cap = this._v('fuel_cap'), ft = this._v('feed_time');
+    const kg = this._fuelKg(), cap = this._v('fuel_cap'), ft = this._v('feed_time');
     const pct = this._fuelPct();
     const barTop = 9.58, barH = 32.7, y = barTop + barH * (1 - pct);
     const chev = (d, top) => `<svg viewBox="0 0 24 13" class="fch" style="top:${top.toFixed(2)}cqw"><path d="${d}" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/></svg>`;
@@ -448,9 +474,9 @@ class TeklaPanelCard extends HTMLElement {
         ${chev('M2 11L12 2.5L22 11', y - 3.03 - 1.25)}${chev('M2 2L12 10.5L22 2', y + 2.73 - 1.25)}
         <span class="fe">E</span></div>
       <span class="ftt">Paliwo</span>
-      <span class="fbt" style="left:47.2cqw;top:15.7cqw;height:7.4cqw;width:11cqw">+</span>
+      <span class="fbt" data-act="fuelpm" data-d="1" style="left:47.2cqw;top:15.7cqw;height:7.4cqw;width:11cqw">+</span>
       <span class="fkg">${isNaN(kg) ? '-' : Math.round(kg)}kg</span>
-      <span class="fbt" style="left:47.2cqw;top:32.8cqw;height:7.4cqw;width:11cqw">&minus;</span>
+      <span class="fbt" data-act="fuelpm" data-d="-1" style="left:47.2cqw;top:32.8cqw;height:7.4cqw;width:11cqw">&minus;</span>
       <span class="fbt fau" data-act="feedgo">${this._augSvg(this._feeding() || this._fcLeft() !== null)}</span><span class="fts">${this._fcShow()}s</span>
       <div class="qok" data-act="ok" style="left:82.4cqw;top:45.8cqw;width:10.1cqw;height:6.67cqw;background:linear-gradient(#5b6a8a,#3e4a68);border-color:#2c3550">OK</div></div>`;
   }
@@ -513,7 +539,7 @@ class TeklaPanelCard extends HTMLElement {
     let day = d.toLocaleDateString('pl-PL', { weekday: 'long' }); day = day.charAt(0).toUpperCase() + day.slice(1);
     const time = d.toLocaleTimeString('pl-PL', { hour: 'numeric', minute: '2-digit' });
     const bar = (cls) => `<i class="ind ${cls}"></i>`;
-    const fuel = this._s('fuel') && !isNaN(this._v('fuel')) ? Math.round(this._v('fuel')) : '-';
+    const fuel = this._s('fuel') && !isNaN(this._fuelKg()) ? Math.round(this._fuelKg()) : '-';
     return `
       <div class="top"><span class="tm">${time}</span><span class="dy">${day}</span>
         <span class="ot"><svg viewBox="0 0 108 68" class="wx" fill="#dbe7ff"><g stroke="#dbe7ff" stroke-width="5" stroke-linecap="round" fill="none"><circle cx="79" cy="32" r="14"/><path d="M79 5V9M79 55V59M52 32H56M102 32H106M60 13L63 16M98 13L95 16M98 51L95 48"/></g><path d="M12 68A12 12 0 0 1 13 44A18 18 0 0 1 46 36A15 15 0 0 1 74 50A9 9 0 0 1 72 68Z" stroke="#4a5a8c" stroke-width="3"/></svg>${this._p(out)}</span></div>
