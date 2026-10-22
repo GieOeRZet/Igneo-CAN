@@ -1,7 +1,8 @@
 {
   "firmware": {
-    "version": "1.4.8",
+    "version": "1.4.9",
     "changelog": [
+      "Ogrzewanie 1 NASTAWY (klucz 1): 0x22B1, 0x22D5, 0x22D9, 0x22DD, 0x22E1, 0x22E5, 0x22E9, 0x22B5 – odczyt i zapis (set_param 51–58). Wymaga karty ≥ 1.13.",
       "Kocioł NASTAWY: Minimalna temp. pomp (0x2207), Minimalna temp. powrotu (0x216C), Czas mieszacza (0x216E) – odczyt i zapis (set_param 48–50). Wymaga karty ≥ 1.12.",
       "Test wyjść: Pompa CWU (rejestr 0x2296, 256 = A, 257 = OFF, 258 = ON; wyjście nr 20). Wymaga karty ≥ 1.11.",
       "Zapis ilości paliwa (rejestr 0x3601) dla przycisków + i − w oknie Paliwo karty.",
@@ -17,8 +18,9 @@
     ]
   },
   "card": {
-    "version": "1.12",
+    "version": "1.13",
     "changelog": [
+      "Ogrzewanie 1 NASTAWY: Zwiększenie temp. źródła, Temp. maksymalna, Wsp. korekcji, MAX Tzew komf./ekon., Obniżenie temp. CO, MIN temp. CO pomp, Czas mieszacza edytowalne (poziom 1). Wymaga firmware ≥ 1.4.9.",
       "Kocioł NASTAWY: Minimalna temp. pomp, Minimalna temp. powrotu i Czas mieszacza edytowalne (poziom 1). Wymaga firmware ≥ 1.4.8.",
       "Test wyjść: Pompa CWU sterowana z karty (rejestr 0x2296); stan Podajnika palnika czytany poprawnie (21 wartości). Wymaga firmware ≥ 1.4.7.",
       "Menu: przywrócona pozycja Konfiguracja (od poziomu 1) z ekranem: język, alarm dźwiękowy, tryb karty, węzeł ESPHome, poziom menu, wersje firmware i karty.",

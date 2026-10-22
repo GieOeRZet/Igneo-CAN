@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.9
+- **Ogrzewanie 1 (CO) → NASTAWY (poziom 1)**: `set_param` klucze 51–58: 51 Zwiększenie temp. źródła (0x22B1, 0–30 °C), 52 Temp. maksymalna (0x22D5, 30–80 °C), 53 Wsp. korekcji t. CO (0x22D9, 0–20), 54 MAX Tzew pomp komf. (0x22DD, 0–30 °C), 55 MAX Tzew pomp ekon. (0x22E1, 0–30 °C), 56 Obniżenie temperatury CO (0x22E5, 0–40 °C – wg wzorca, niepotwierdzone zmianą), 57 MIN temperatura CO pomp (0x22E9, 20–60 °C), 58 Czas mieszacza (0x22B5, 60–360 s). Nowe encje „CO1 …”, odczyt po starcie i po PIN-ie. Rejestry znalezione zmianą wartości na panelu i skanem SDO.
+
 ## v1.4.8
 - **Kocioł NASTAWY**: `set_param` klucz 48 = Minimalna temp. pomp (0x2207, 20–70 °C), 49 = Minimalna temp. powrotu (0x216C, 35–75 °C), 50 = Czas mieszacza (0x216E, 60–360 s); nowe encje „Kociol minimalna temp. pomp”, „Kociol minimalna temp. powrotu”, „Kociol czas mieszacza”, odczyt po starcie i po PIN-ie (poziom 1). Rejestry znalezione zmianą wartości na panelu i skanem SDO. Wybieg pompy i Rezerwa paliwa stop: rejestry nieznane.
 

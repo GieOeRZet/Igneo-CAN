@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.13 – Ogrzewanie 1: NASTAWY (klucz 1)
+- Menu → Ogrzewanie 1 → NASTAWY (od poziomu 1): odczyt i zapis **Zwiększenie temp. źródła**, **Temp. maksymalna**, **Wsp. korekcji t. CO**, **MAX Tzew pomp komf./ekon.**, **Obniżenie temperatury CO**, **MIN temperatura CO pomp** i **Czas mieszacza**. Pozostałe (Źródło, Czujnik pokojowy, Czujnik CO, Stała pompa, Obniżenie Tco dla ochrony powrotu) nadal „-”. Wymaga firmware ≥ 1.4.9.
+
 ## v1.12 – Kocioł NASTAWY: pompy, powrót, mieszacz
 - Menu → Kocioł → NASTAWY (od poziomu 1): **Minimalna temp. pomp** (20–70 °C), **Minimalna temp. powrotu** (35–75 °C) i **Czas mieszacza** (60–360 s) są teraz odczytywane i zapisywane. **Wybieg pompy** i **Rezerwa paliwa stop** nadal „-” (rejestry nieznalezione). Wymaga firmware ≥ 1.4.8.
 
