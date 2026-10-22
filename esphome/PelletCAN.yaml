@@ -47,6 +47,20 @@ substitutions:
   # Antena zewnetrzna U.FL na XIAO ESP32-C6: "true" dopiero PO podpieciu anteny (bez niej Wi-Fi zniknie).
   external_antenna: "false"
 
+  # Piny SPI i modul CAN (domyslnie: XIAO ESP32-C6 + Seeed CAN Bus Breakout z MCP2515). Inny ESP/modul: wpisz swoje piny.
+  # Inny ESP lub inny modul CAN (MCP2515): zmien te wartosci w PelletCAN.yaml (nie edytuj rdzenia).
+  # Zapis jak w ESPHome: GPIO17, albo nazwa pinu plytki (np. D7) - wg dokumentacji Twojej plytki.
+  # Pamietaj tez o sekcji "esp32: board:" w PelletCAN.yaml (inna plytka = inny board).
+  pin_spi_clk: GPIO19     # SCK  (XIAO ESP32-C6: D8)
+  pin_spi_mosi: GPIO18    # MOSI (XIAO ESP32-C6: D10)
+  pin_spi_miso: GPIO20    # MISO (XIAO ESP32-C6: D9)
+  pin_can_cs: GPIO17      # CS   (XIAO ESP32-C6: D7) - wejscie CS modulu MCP2515
+  can_spi_rate: 1MHz      # predkosc SPI do MCP2515; przy zaklocieniach na dluzszych kabelkach sprobuj 500kHz lub 250kHz
+  # Przelacznik antenowy - tylko XIAO ESP32-C6 (uzywany gdy external_antenna: "true"); na innych plytkach zostaw bez zmian.
+  pin_rf_switch: GPIO3    # niski = antena wewnetrzna aktywna
+  pin_rf_antenna: GPIO14  # wysoki = antena zewnetrzna U.FL
+  # Wejscie INT modulu MCP2515 nie jest uzywane (odbior przez odpytywanie SPI), nie trzeba go podlaczac.
+
   # ===================================================================
   # 6. POZIOMY DOSTEPU (PIN)
   # ===================================================================

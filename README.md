@@ -40,6 +40,7 @@ Karta nie wymaga szablonów (template sensors) ani helperów w HA. Elementy bez 
 - Płytka **Seeed XIAO ESP32-C6** z **Seeed CAN Bus Breakout** (MCP2515, kwarc 16 MHz).
 - Połączenie CAN z kotłem (CAN-H, CAN-L, masa); zworka P1 na płytce = terminator 120 Ω (domyślnie rozłączona).
 - Piny SPI: SCK = GPIO19 (D8), MISO = GPIO20 (D9), MOSI = GPIO18 (D10), CS = GPIO17 (D7).
+- Inny ESP lub moduł MCP2515: piny i prędkość SPI ustawiasz w `PelletCAN.yaml` w substitutions (`pin_spi_clk`, `pin_spi_mosi`, `pin_spi_miso`, `pin_can_cs`, `can_spi_rate`; dla XIAO ESP32-C6 z anteną zewnętrzną także `pin_rf_switch`, `pin_rf_antenna`) i sekcję `esp32: board:`. Bitrate i kwarc: `can_bitrate`, `can_clock`.
 - Prędkość magistrali `125KBPS`, kwarc `16MHZ` (substitutions `can_bitrate`, `can_clock` – zmień, jeśli CAN pokazuje błąd).
 
 ## Instalacja – krok po kroku

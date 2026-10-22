@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.16 – Ogrzewanie 1: Czujnik pokojowy
+- NASTAWY CO (od poziomu 1): **Czujnik pokojowy** (brak / CTP1 / CTP2 / videROOM / termostat / CAN) odczytywany i zmieniany. Menu CO ma teraz wszystkie pozycje. Wymaga firmware ≥ 1.4.12.
+
 ## v1.15 – Ogrzewanie 1: Źródło i Czujnik CO
 - NASTAWY CO (od poziomu 1): **Źródło** (Kocioł / Bufor) i **Czujnik CO** są przełączane i odczytywane. Czujnik pokojowy nadal „-”. Wymaga firmware ≥ 1.4.11.
 

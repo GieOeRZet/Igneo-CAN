@@ -2,6 +2,10 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.12
+- **Piny w substitutions**: `pin_spi_clk`, `pin_spi_mosi`, `pin_spi_miso`, `pin_can_cs`, `can_spi_rate`, `pin_rf_switch`, `pin_rf_antenna` (domyślnie XIAO ESP32-C6 + Seeed CAN Bus Breakout, jak dotąd). Użytkownik z innym ESP lub modułem MCP2515 zmienia je w `PelletCAN.yaml`, rdzeń zostaje bez zmian.
+- **CO1 NASTAWY**: `set_param` 63 = Czujnik pokojowy (0x22A1: 0 brak, 1 CTP1, 2 CTP2, 3 videROOM, 4 termostat, 5 CAN); znaleziony zmianą termostat→brak na panelu (260→256). Encja „CO1 czujnik pokojowy”.
+
 ## v1.4.11
 - **CO1 NASTAWY**: `set_param` 61 = Źródło (0x22D1, 0 Kocioł / 1 Bufor), 62 = Czujnik CO (0x22A5, 0/1); znalezione różnicą skanu po zmianie na panelu (Źródło Kocioł→Bufor: 0x22D1 256→257; Czujnik CO wł.→wył.: 0x22A5 257→256). Pozostaje Czujnik pokojowy (nieznany).
 

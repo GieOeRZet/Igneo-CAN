@@ -177,7 +177,7 @@
 {
 "t": "x",
 "old": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror',",
-"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', boiler_pump_min: 'kociol_minimalna_temp_pomp', boiler_ret_min: 'kociol_minimalna_temp_powrotu', boiler_mixer_time: 'kociol_czas_mieszacza', co_source: 'co1_zrodlo_0_kociol_1_bufor', co_co_sensor: 'co1_czujnik_co_0_1', co_const_pump: 'co1_stala_pompa_0_1', co_ret_protect: 'co1_obnizenie_tco_ochrona_powrotu_0_1', co_src_inc: 'co1_zwiekszenie_temp_zrodla', co_tmax: 'co1_temperatura_maksymalna', co_corr: 'co1_wspolczynnik_korekcji_t_co', co_out_comf: 'co1_max_tzew_pomp_komfort', co_out_eco: 'co1_max_tzew_pomp_ekon', co_lower: 'co1_obnizenie_temperatury_co', co_pump_min: 'co1_min_temperatura_co_pomp', co_mixer_time: 'co1_czas_mieszacza', mix_co1: 'mieszacz_co1_stan', mix_ret: 'mieszacz_powrotu_stan', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_src: 'cwu_zrodlo', cwu_src_inc: 'cwu_zwiekszenie_temp_zrodla', cwu_delta: 'cwu_delta_zalaczenia_pompy', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
+"new": "  stats: 'statystyki_kotla', mirror: 'tryb_mirror', ret_temp: 'temperatura_powrotu', boiler_pump_min: 'kociol_minimalna_temp_pomp', boiler_ret_min: 'kociol_minimalna_temp_powrotu', boiler_mixer_time: 'kociol_czas_mieszacza', co_room: 'co1_czujnik_pokojowy_0_brak_1_ctp1_2_ctp2_3_videroom_4_termostat_5_can', co_source: 'co1_zrodlo_0_kociol_1_bufor', co_co_sensor: 'co1_czujnik_co_0_1', co_const_pump: 'co1_stala_pompa_0_1', co_ret_protect: 'co1_obnizenie_tco_ochrona_powrotu_0_1', co_src_inc: 'co1_zwiekszenie_temp_zrodla', co_tmax: 'co1_temperatura_maksymalna', co_corr: 'co1_wspolczynnik_korekcji_t_co', co_out_comf: 'co1_max_tzew_pomp_komfort', co_out_eco: 'co1_max_tzew_pomp_ekon', co_lower: 'co1_obnizenie_temperatury_co', co_pump_min: 'co1_min_temperatura_co_pomp', co_mixer_time: 'co1_czas_mieszacza', mix_co1: 'mieszacz_co1_stan', mix_ret: 'mieszacz_powrotu_stan', boiler_hyst_on: 'histereza_zalaczenia_kotla', boiler_hyst_off: 'histereza_wylaczenia_kotla', co_hyst: 'co1_histereza', co_calib: 'co1_kalibracja_czujnika', co_mode_s: 'co1_tryb_pracy_0_reczny_1_pogodowy', co_cur_m20: 'co1_krzywa_pogodowa_20_c', co_cur_0: 'co1_krzywa_pogodowa_0_c', co_cur_10: 'co1_krzywa_pogodowa_10_c', cwu_hyst: 'cwu_histereza', cwu_src: 'cwu_zrodlo', cwu_src_inc: 'cwu_zwiekszenie_temp_zrodla', cwu_delta: 'cwu_delta_zalaczenia_pompy', cwu_boost: 'cwu_zagrzej_teraz_0_1', cwu_prio: 'cwu_priorytet_0_1',"
 },
 {
 "t": "x",
@@ -283,6 +283,7 @@
       { t: 'Obniżenie Tco dla ochrony powrotu', r: 'co_ret_protect', opts: ['Wyłączone', 'Włączone'], sk: 60, tog: true },
       { t: 'Źródło', r: 'co_source', opts: ['Kocioł', 'Bufor'], sk: 61 },
       { t: 'Czujnik CO', r: 'co_co_sensor', opts: ['Wyłączony', 'Włączony'], sk: 62, tog: true },
+      { t: 'Czujnik pokojowy', r: 'co_room', opts: ['brak', 'CTP1', 'CTP2', 'videROOM', 'termostat', 'CAN'], sk: 63 },
     ];
     C.prototype._po = function (k) {
       const c = PR[k], v = this._v(c.r);
@@ -650,7 +651,7 @@
         P('Temperatura CO zadana ręcznie [°C]', this._po(10), 10), P('Temperatura CO dla -20°C [°C]', this._po(11), 11),
         P('Temperatura CO dla  0°C [°C]', this._po(12), 12), P('Temperatura CO dla 10°C [°C]', this._po(13), 13)];
       const na = t => `<div class="row na"><span class="l">${t}</span><span class="v">-</span></div>`;
-      if (l >= 1) r.push(KEYDIV(1), P('Źródło', this._po(33), 33), P('Zwiększenie temperatury źródła [°C]', this._po(23), 23), na('Czujnik pokojowy'), P('Temp. maksymalna [°C]', this._po(24), 24),
+      if (l >= 1) r.push(KEYDIV(1), P('Źródło', this._po(33), 33), P('Zwiększenie temperatury źródła [°C]', this._po(23), 23), P('Czujnik pokojowy', this._po(35), 35), P('Temp. maksymalna [°C]', this._po(24), 24),
         P('Czujnik CO', this._po(34), 34), P('Wsp. korekcji t. CO [°C/°C]', this._po(25), 25), P('MAX Tzew pomp komf. [°C]', this._po(26), 26), P('MAX Tzew pomp ekon. [°C]', this._po(27), 27),
         P('Obniżenie temperatury CO [°C]', this._po(28), 28), P('MIN temperatura CO pomp [°C]', this._po(29), 29), P('Czas mieszacza [s]', this._po(30), 30), P('Stała pompa', this._po(31), 31),
         P('Obniżenie Tco dla ochrony powrotu', this._po(32), 32));
@@ -912,7 +913,7 @@
       ['Menu → Kocioł → NASTAWY (użytkownik)', ['boiler_hyst_on', 'boiler_hyst_off'], 0],
       ['Menu → Kocioł → NASTAWY (klucz 1)', ['boiler_pump_min', 'boiler_ret_min', 'boiler_mixer_time'], 1],
       ['Menu → Ogrzewanie obwód 1 → NASTAWY (użytkownik)', ['co_hyst', 'co_calib', 'co_mode_s', 'co_cur_m20', 'co_cur_0', 'co_cur_10'], 0],
-      ['Menu → Ogrzewanie obwód 1 → NASTAWY (klucz 1)', ['co_src_inc', 'co_tmax', 'co_corr', 'co_out_comf', 'co_out_eco', 'co_lower', 'co_pump_min', 'co_mixer_time', 'co_const_pump', 'co_ret_protect', 'co_source', 'co_co_sensor'], 1],
+      ['Menu → Ogrzewanie obwód 1 → NASTAWY (klucz 1)', ['co_src_inc', 'co_tmax', 'co_corr', 'co_out_comf', 'co_out_eco', 'co_lower', 'co_pump_min', 'co_mixer_time', 'co_const_pump', 'co_ret_protect', 'co_source', 'co_co_sensor', 'co_room'], 1],
       ['Menu → Palnik → NASTAWY (klucz 1)', ['fan_mod_1', 'fan_mod_2', 'fan_mod_3', 'fan_mod_4', 'fan_mod_5', 'p_prefeed', 'p_feed_max', 'p_photo', 'p_blow_ign', 'p_blow_glow', 'p_blow_stop', 'p_glow_time', 'p_glow_fuel', 'p_stop_time', 'p_lambda', 'p_o2_30', 'p_o2_100', 'p_cleans', 'p_clean_gap', 'p_pause_time', 'p_pause_power', 'p_pause_blow'], 1],
       ['Menu → Palnik → NASTAWY (klucz 2)', ['p_inertia', 'p_grate_time', 'p_burner_feed', 'p_feeder_period', 'p_min_rpm'], 1],
       ['Menu → Statystyki i Test wyjść (klucz 1)', ['stats', 'blower_mode', 'blower_auto', 'blower_off', 'blower_on', 'feeder_mode', 'feeder_auto', 'feeder_off', 'feeder_on'], 1],
@@ -1132,7 +1133,7 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '1.15';
+    const CARD_VER = '1.16';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };

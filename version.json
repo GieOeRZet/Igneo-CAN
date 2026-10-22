@@ -1,7 +1,8 @@
 {
   "firmware": {
-    "version": "1.4.11",
+    "version": "1.4.12",
     "changelog": [
+      "Piny i układ CAN w substitutions (pin_spi_clk/mosi/miso, pin_can_cs, can_spi_rate, pin_rf_switch, pin_rf_antenna) – łatwe dostrojenie pod inny ESP / moduł MCP2515 w PelletCAN.yaml. Nowy: Czujnik pokojowy CO1 (0x22A1, set_param 63). Wymaga karty ≥ 1.16 (czujnik pokojowy).",
       "Ogrzewanie 1 NASTAWY: Źródło (0x22D1: 0 Kocioł / 1 Bufor) i Czujnik CO (0x22A5) – set_param 61–62. Wymaga karty ≥ 1.15.",
       "Ogrzewanie 1 NASTAWY: Stała pompa (0x22F1) i Obniżenie Tco dla ochrony powrotu (0x22F9) – set_param 59–60. Wymaga karty ≥ 1.14.",
       "Ogrzewanie 1 NASTAWY (klucz 1): 0x22B1, 0x22D5, 0x22D9, 0x22DD, 0x22E1, 0x22E5, 0x22E9, 0x22B5 – odczyt i zapis (set_param 51–58). Wymaga karty ≥ 1.13.",
@@ -20,8 +21,9 @@
     ]
   },
   "card": {
-    "version": "1.15",
+    "version": "1.16",
     "changelog": [
+      "Ogrzewanie 1 NASTAWY: Czujnik pokojowy (brak, CTP1, CTP2, videROOM, termostat, CAN). Wymaga firmware ≥ 1.4.12.",
       "Ogrzewanie 1 NASTAWY: Źródło i Czujnik CO. Wymaga firmware ≥ 1.4.11.",
       "Ogrzewanie 1 NASTAWY: przełączniki Stała pompa i Obniżenie Tco dla ochrony powrotu. Wymaga firmware ≥ 1.4.10.",
       "Ogrzewanie 1 NASTAWY: Zwiększenie temp. źródła, Temp. maksymalna, Wsp. korekcji, MAX Tzew komf./ekon., Obniżenie temp. CO, MIN temp. CO pomp, Czas mieszacza edytowalne (poziom 1). Wymaga firmware ≥ 1.4.9.",
