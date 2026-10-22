@@ -2,6 +2,12 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.5 – Poprawki wyglądu
+- **Okno Paliwo**: licznik sekund przy przycisku podajnika pokazuje 30 s (przy wyłączonym kotle 600 s). Po naciśnięciu przycisku odlicza co 1 s; po ponownym naciśnięciu (stop) lub końcu odliczania wraca do wartości początkowej. Przycisk uruchamia podajnik (encja „Podajnik: Podaj paliwo”), w trybie lustra nieaktywny.
+- **Dolny pasek**: napis MENU ma dolną krawędź na wysokości dołu ikony grzejnika; ikona zasobnika powiększona do tej samej wysokości.
+- **Przycisk MENU**: zamiast zielonej kropki pulsujący zielony wskaźnik (jak nad przyciskiem power), gdy jest dostępna aktualizacja.
+- **Test wyjść**: tło i wiersze w stylu pozostałych ekranów (gradient, delikatne separatory), pola wyboru w kolorze strzałek z historii alarmów; mniejsze podpisy CLOSE/OPEN.
+
 ## v1.4 – Tłumaczenia
 - **Języki interfejsu**: PL, EN, DK, DE, SE, LT, SK, CZ, ES, RO, EST. Wybór w edytorze karty (pole „Język / Language”, także „Auto” = język Home Assistant) albo w YAML: `language: en` (kody: `pl en da de sv lt sk cs es ro et`; aliasy `dk se cz est`).
 - Nowy plik `dist/pelletcan-lang.js` (generowany z `docs/lang/pelletcan-lang.txt` skryptem `tools/gen_lang.py`) – ~245 tekstów × 10 języków (ekrany, NASTAWY, statystyki, test wyjść, alarmy, nazwy dni). Brak tłumaczenia = tekst polski. Dopisanie/poprawka tłumaczenia: edytuj plik .txt i uruchom `python3 tools/gen_lang.py`.

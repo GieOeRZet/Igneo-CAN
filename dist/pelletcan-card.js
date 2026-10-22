@@ -1,4 +1,4 @@
-/* PelletCAN-card v1.4 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
+/* PelletCAN-card v1.5 - JEDEN plik wejsciowy karty Tekla/Estyma Igneo Touch (zastepuje lancuch tekla-panel-card-v78 ... v86).
    Rejestruje karte custom:tekla-panel-card (tryb lite: lite: true w konfiguracji karty; typ tekla-panel-card_lite = alias).
    Dziala tak: pobiera rdzen tekla-panel-card.js (z tego samego katalogu) (baza v6.9), naklada poprawki (lista EDITS) i dolacza moduly:
      poprawki ekranow (menu, PROGRAM, NASTAWY) | paski harmonogramu | poziomy dostepu z ESP + parametry palnika/CWU | Antylegionella | Ogrzewanie 1
@@ -1068,10 +1068,10 @@
         if (this.__tInit || !this.shadowRoot) return; this.__tInit = true;
         const R = this.shadowRoot, st = document.createElement('style');
         st.textContent = '.list.tl{top:9.8cqw;bottom:0;padding:0;background:none;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;display:block}.list.tl::-webkit-scrollbar{display:none}'
-          + '.tr{position:relative;height:10.55cqw;flex:none;background:linear-gradient(#2b4b9e,#28459a)}.tr:after{content:"";position:absolute;left:0;right:0;bottom:0;height:.4cqw;background:#1b9fe9}'
+          + '.tr{position:relative;height:10.55cqw;flex:none;background:none}.tr:after{content:"";position:absolute;left:1.2cqw;right:1.2cqw;bottom:0;height:.3cqw;background:#ffffff22}'
           + '.tr .nm{position:absolute;left:6.2cqw;top:.5cqw;height:10.55cqw;display:flex;align-items:center;font-size:4.4cqw;color:#fff;white-space:nowrap;max-width:60.2cqw;overflow:hidden}'
-          + '.tr .tc{position:absolute;top:.4cqw;width:10cqw;margin-left:-5cqw;text-align:center;font-size:3cqw;line-height:3cqw;font-weight:700;letter-spacing:-.02em;white-space:nowrap;color:#dfe9ff;pointer-events:none}'
-          + '.tr .tb{position:absolute;top:3.6cqw;width:6.2cqw;height:6.2cqw;box-sizing:border-box;border-radius:1.3cqw;background:linear-gradient(#5d89dc,#4873c5);box-shadow:inset 0 0 .5cqw #2c4f9f,0 .2cqw .5cqw #0004}'
+          + '.tr .tc{position:absolute;top:.4cqw;width:10cqw;margin-left:-5cqw;text-align:center;font-size:2.6cqw;line-height:3cqw;font-weight:700;letter-spacing:-.02em;white-space:nowrap;color:#dfe9ff;pointer-events:none}'
+          + '.tr .tb{position:absolute;top:3.6cqw;width:6.2cqw;height:6.2cqw;box-sizing:border-box;border-radius:.5cqw;background:linear-gradient(#6a93d8,#5079c0);border:.3cqw solid #86a9e4}'
           + '.tr .tb svg{position:absolute;inset:.5cqw;width:5.1cqw;height:5.1cqw}.tr .tb svg path{fill:none;stroke:#c4ee1a;stroke-width:3.9;stroke-linecap:round;stroke-linejoin:round}'
           + '.tr .tb.cl{cursor:pointer}.tr .tb.cl:active{filter:brightness(1.3)}.tr .tb.dis{opacity:1}.tr.ro .nm{opacity:.55}'
           + '.tr .tsl{position:absolute;left:27.8cqw;top:4.2cqw;width:37.6cqw;height:4cqw;margin:0;background:none;-webkit-appearance:none;appearance:none;cursor:pointer}.tr .tsl:disabled{opacity:.6;cursor:default}'
@@ -1115,7 +1115,7 @@
     const C = customElements.get('tekla-panel-card');
     if (C.prototype.__v93) return;
     C.prototype.__v93 = true;
-    const CARD_VER = '1.4';
+    const CARD_VER = '1.5';
     const MAN = 'https://raw.githubusercontent.com/GieOeRZet/PelletCAN/main/version.json';
     const SK = 'igneo_upd_skip';
     const U = window.__igneoUpd = window.__igneoUpd || { m: null, t: 0 };
@@ -1142,7 +1142,7 @@
     const om = C.prototype._main;
     C.prototype._main = function (ctx) {
       const h = om.call(this, ctx); wire(this);
-      return this._upd().length ? h.replace('<small class="mn" data-go="menu"></small>', '<small class="mn" data-go="menu"></small><i class="udot"></i>') : h;
+      return this._upd().length ? h.replace('<small class="mn" data-go="menu"></small>', '<small class="mn" data-go="menu"></small><i class="ind g upul"></i>') : h;
     };
     const omenu = C.prototype._menu;
     C.prototype._menu = function () {
@@ -1167,7 +1167,7 @@
     const wire = self => {
       if (self.__v93w || !self.shadowRoot) return; self.__v93w = true;
         const R = self.shadowRoot, st = document.createElement('style');
-        st.textContent = '.udot{position:absolute;top:1.1cqw;right:1.3cqw;width:2.7cqw;height:2.7cqw;border-radius:50%;background:#2ee66b;box-shadow:0 0 1.4cqw #2ee66b;pointer-events:none}'
+        st.textContent = '.upul{pointer-events:none;animation:upul 1.4s ease-in-out infinite}@keyframes upul{0%,100%{opacity:.35;box-shadow:0 0 .4cqw #86e61f}50%{opacity:1;box-shadow:0 0 2cqw #86e61f}}'
           + '.row.upd .l,.row.upd ha-icon{color:#4cf08a!important}'
           + '.updbtn{margin:0 0 2cqw;padding:2.2cqw 0!important;text-align:center;font-size:4.4cqw;color:#fff;background:linear-gradient(#6a93d8,#5079c0);border:.3cqw solid #86a9e4;border-radius:.6cqw;cursor:pointer}'
           + '.auth{display:flex!important;align-items:center;justify-content:space-between;gap:2cqw}.zq{display:inline-flex;align-items:center;gap:1.2cqw;padding:.4cqw 1.6cqw .4cqw .4cqw;border-radius:5cqw;background:#fff;color:#0a8f4a;font-size:2.7cqw;font-weight:600;line-height:1;cursor:pointer;opacity:.92;flex:none}.zq:hover{opacity:1}.zq i{display:inline-block;width:4.6cqw;height:4.6cqw;border-radius:50%;background:#0a9a4f;padding:.9cqw;box-sizing:border-box}.zq svg{width:100%;height:100%;display:block}.inf{overflow-y:auto;max-height:100%;scrollbar-width:none}.inf::-webkit-scrollbar{display:none}.inf .wh{color:#fff}.inf .upt{font-size:3.8cqw;padding-top:1.6cqw}.inf .chg{font-size:3.2cqw;padding:.4cqw 0!important;color:#dfe8ff}.updbtn{margin-bottom:1cqw!important;padding:1.6cqw 0!important}';

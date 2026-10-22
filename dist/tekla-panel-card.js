@@ -257,6 +257,22 @@ class TeklaPanelCard extends HTMLElement {
     const kg = this._v('fuel'), cap = this._v('fuel_cap');
     return isNaN(kg) || isNaN(cap) || cap <= 0 ? 0 : Math.max(0, Math.min(1, kg / cap));
   }
+  // licznik przy przycisku podajnika: stan spoczynku 30 s (kocioł wyłączony: 600 s); po starcie odlicza co 1 s, po zatrzymaniu/końcu wraca
+  _fcLeft() {
+    const c = this._fc; if (!c) return null;
+    const l = Math.ceil(c.d - (Date.now() - c.t) / 1000);
+    if (l <= 0) { this._fc = null; return null; }
+    return l;
+  }
+  _fcShow() { const l = this._fcLeft(); return l !== null ? l : (this._on('power_switch') || !this.E.power_switch ? 30 : 600); }
+  _fcGo() {
+    if (this._fcLeft() !== null) { this._fc = null; clearInterval(this._fcT); const a = this.E.feeder_auto; if (a && this._hass) this._hass.callService('button', 'press', { entity_id: a }); this._render(true); return; }
+    const e = this.E.feeder_on; if (e && this._hass) this._hass.callService('button', 'press', { entity_id: e });
+    this._fc = { t: Date.now(), d: this._on('power_switch') || !this.E.power_switch ? 30 : 600 };
+    clearInterval(this._fcT);
+    this._fcT = setInterval(() => { if (!this._built || this._modal !== 'fuel' || this._fcLeft() === null) { clearInterval(this._fcT); this._fc = null; } if (this._built) this._render(true); }, 1000);
+    this._render(true);
+  }
   _feeding() { return !!this._ft && Date.now() - this._ft.dec < 15000; }
   _s(k) { return this._hass && this.E[k] && this._hass.states[this.E[k]]; }
   _v(k) { const s = this._s(k); if (!s) return NaN; const n = parseFloat(s.state); return isNaN(n) ? NaN : n; }
@@ -340,8 +356,9 @@ class TeklaPanelCard extends HTMLElement {
       const a = e.target.closest('[data-go],[data-act]'); if (!a || !this._hass) return;
       if (a.dataset.go) { this._go(a.dataset.go, a.dataset.back); return; }
       const act = a.dataset.act;
-      if (this._mirror() && ['bdlg', 'cdlg', 'bm', 'bmslide', 'bval', 'bslide', 'cm', 'cmslide', 'cval', 'cslide', 'pday', 'phr', 'pall', 'pok', 'setmode', 'slider', 'out'].includes(act)) return;
+      if (this._mirror() && ['bdlg', 'cdlg', 'bm', 'bmslide', 'bval', 'bslide', 'cm', 'cmslide', 'cval', 'cslide', 'pday', 'phr', 'pall', 'pok', 'setmode', 'slider', 'out', 'feedgo'].includes(act)) return;
       if (act === 'quick') { this._modal = true; this._render(true); }
+      else if (act === 'feedgo') this._fcGo();
       else if (act === 'fuel') { this._modal = 'fuel'; this._render(true); }
       else if (act === 'ok') { if (['boiler', 'co', 'cwu'].includes(this._modal)) this._commit(); else { this._modal = false; this._render(true); } }
       else if (act === 'cancel') { this._modal = false; this._render(true); }
@@ -432,7 +449,7 @@ class TeklaPanelCard extends HTMLElement {
       <span class="fbt" style="left:47.2cqw;top:15.7cqw;height:7.4cqw;width:11cqw">+</span>
       <span class="fkg">${isNaN(kg) ? '-' : Math.round(kg)}kg</span>
       <span class="fbt" style="left:47.2cqw;top:32.8cqw;height:7.4cqw;width:11cqw">&minus;</span>
-      <span class="fbt fau">${this._augSvg(this._feeding())}</span><span class="fts">${isNaN(ft) ? '-' : Math.round(ft)}s</span>
+      <span class="fbt fau" data-act="feedgo">${this._augSvg(this._feeding() || this._fcLeft() !== null)}</span><span class="fts">${this._fcShow()}s</span>
       <div class="qok" data-act="ok" style="left:82.4cqw;top:45.8cqw;width:10.1cqw;height:6.67cqw;background:linear-gradient(#5b6a8a,#3e4a68);border-color:#2c3550">OK</div></div>`;
   }
   _hopper() {
@@ -441,7 +458,7 @@ class TeklaPanelCard extends HTMLElement {
     const rows = [[1.4, [2.6, 4.6, 6.6, 8.6, 10.6, 12.4]], [3.2, [3.6, 5.6, 7.6, 9.6, 11.6]], [5.0, [2.6, 4.6, 6.6, 8.6, 10.6, 12.4]], [7.0, [3.6, 5.6, 7.6, 9.6, 11.6]], [9.0, [4.6, 6.6, 8.6, 10.6]]]; // rzędy naprzemiennie przesunięte
     let dots = '';
     for (let i = 0; i < lv; i++) { const [y, xs] = rows[4 - i]; dots += xs.map(x => `<circle cx="${x}" cy="${y}" r=".6"/>`).join(''); }
-    return `<svg viewBox="0 0 15 12" class="ic2" style="width:6.8cqw;height:5.5cqw;margin-top:1cqw" fill="none" stroke="#d6e4ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 .6V6.2L4.6 10.8"/><path d="M13.8 .6V6.2L10.4 10.8"/><g fill="#d6e4ff" stroke="none">${dots}</g></svg>`;
+    return `<svg viewBox="0 0 15 12" class="ic2" style="width:10.9cqw;height:8.7cqw;margin-top:0" fill="none" stroke="#d6e4ff" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M1.2 .6V6.2L4.6 10.8"/><path d="M13.8 .6V6.2L10.4 10.8"/><g fill="#d6e4ff" stroke="none">${dots}</g></svg>`;
   }
   _brow(first, gear, second) {
     return `<div class="brow"><div class="c1">${first}</div><div class="c">${second || ''}</div><div class="c"></div><div class="c"></div><div class="c"></div><div class="c"></div>
@@ -739,7 +756,7 @@ class TeklaPanelCard extends HTMLElement {
     .cell small.fl{position:absolute;top:.9cqw;font-size:3.3cqw;font-weight:700;color:#e3ecff}
     .cell em{font-style:normal;font-size:3.6cqw;line-height:.4;color:#d6e4ff}
     .mnb{position:absolute;left:0;bottom:0;width:14.28%;height:15.5cqw}
-    .mn::after{content:'MENU';position:absolute;bottom:3cqw;left:50%;transform:translateX(-50%);font-size:2.8cqw;font-weight:700;color:#d6e4ff}
+    .mn::after{content:'MENU';position:absolute;bottom:2.17cqw;left:50%;transform:translateX(-50%);font-size:2.8cqw;font-weight:700;color:#d6e4ff}
     .radi{position:relative;display:flex}.radi sup{position:absolute;right:-2cqw;top:-.8cqw;font-size:3cqw;color:#d6e4ff}
     .ind{position:absolute;top:1.9cqw;left:50%;width:9.8cqw;height:1cqw;margin-left:-4.9cqw;background:#31477f;border-radius:.6cqw}
     .ind.y{background:#ece23a;box-shadow:0 0 1.4cqw #ece23a}.ind.w{background:#cfe0ff;box-shadow:0 0 1.2cqw #9fc0ff}.ind.g{background:#86e61f;box-shadow:0 0 1.4cqw #86e61f}.ind.r{background:#2c3e70}
