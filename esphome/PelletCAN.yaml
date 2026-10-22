@@ -92,6 +92,7 @@ substitutions:
   can_node_id: "90"          # numer wezla CAN ESP (dziesietnie; 86 i 87 sa zajete przez urzadzenia kotla)
   can_identity: "true"       # odpowiedzi SDO 0x1000/0x1008/0x100A/0x1018 (nazwa PelletCAN + wersja softu w zakladce Siec panelu)
   can_heartbeat: "true"      # boot-up + heartbeat NMT wezla (panel dzieki temu widzi urzadzenie na liscie Siec)
+  can_product: "1"          # kod produktu (dziesietnie), wg ktorego panel dobiera nazwe w zakladce Siec; CAN IO BIG = 65538
 
 esphome:
   name: ${name}

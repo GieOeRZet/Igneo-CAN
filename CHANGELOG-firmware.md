@@ -2,6 +2,10 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.4
+- Nowe ustawienie `can_product` (kod produktu 0x1018 sub2, dziesiętnie, domyślnie 1). Panel w zakładce Sieć rozpoznaje urządzenia wyłącznie po tym kodzie (CAN IO BIG = 65538). Pozwala sprawdzić, jaki kod pokaże nazwę/wersję.
+- Ustalone w 1.4.2–1.4.3: panel skanuje węzły 1–127 cyklicznie, pyta tylko o 0x1018 sub2 i widzi ESP jako węzeł 90.
+
 ## v1.4.3
 - Raport `SKAN SIECI` obejmuje też zapytania/odpowiedzi 0x1001 i 0x100A (wersja softu) – sprawdzamy, skąd panel bierze „SW v…” węzła 86.
 
