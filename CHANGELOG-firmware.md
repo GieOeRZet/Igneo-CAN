@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.13
+- **Kocioł NASTAWY**: `set_param` 64 = Wybieg pompy (0x3708, 0–120 min, flaga+bajt; znaleziony skanem po zmianie 0→13 na panelu: 256→269), 65 = Rezerwa paliwa stop (0x3604, 0–100 kg, liczba; 0→17). Encje „Kociol wybieg pompy”, „Kociol rezerwa paliwa stop”. Menu Kocioł NASTAWY kompletne.
+
 ## v1.4.12
 - **Piny w substitutions**: `pin_spi_clk`, `pin_spi_mosi`, `pin_spi_miso`, `pin_can_cs`, `can_spi_rate`, `pin_rf_switch`, `pin_rf_antenna` (domyślnie XIAO ESP32-C6 + Seeed CAN Bus Breakout, jak dotąd). Użytkownik z innym ESP lub modułem MCP2515 zmienia je w `PelletCAN.yaml`, rdzeń zostaje bez zmian.
 - **CO1 NASTAWY**: `set_param` 63 = Czujnik pokojowy (0x22A1: 0 brak, 1 CTP1, 2 CTP2, 3 videROOM, 4 termostat, 5 CAN); znaleziony zmianą termostat→brak na panelu (260→256). Encja „CO1 czujnik pokojowy”.

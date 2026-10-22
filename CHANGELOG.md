@@ -2,6 +2,9 @@
 
 Historia zmian firmware: [CHANGELOG-firmware.md](CHANGELOG-firmware.md).
 
+## v1.17 – Kocioł NASTAWY: Wybieg pompy i Rezerwa paliwa stop
+- Menu → Kocioł → NASTAWY (od poziomu 1): **Wybieg pompy** (0–120 min) i **Rezerwa paliwa stop** (0–100 kg) odczytywane i zapisywane. Menu Kocioł NASTAWY ma teraz wszystkie pozycje. Wymaga firmware ≥ 1.4.13.
+
 ## v1.16 – Ogrzewanie 1: Czujnik pokojowy
 - NASTAWY CO (od poziomu 1): **Czujnik pokojowy** (brak / CTP1 / CTP2 / videROOM / termostat / CAN) odczytywany i zmieniany. Menu CO ma teraz wszystkie pozycje. Wymaga firmware ≥ 1.4.12.
 
