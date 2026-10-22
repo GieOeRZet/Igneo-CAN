@@ -2,6 +2,9 @@
 
 Najnowsze na górze. Karta ma osobny plik: [CHANGELOG.md](CHANGELOG.md).
 
+## v1.4.3
+- Raport `SKAN SIECI` obejmuje też zapytania/odpowiedzi 0x1001 i 0x100A (wersja softu) – sprawdzamy, skąd panel bierze „SW v…” węzła 86.
+
 ## v1.4.2
 - Raport `SKAN SIECI` wysyłany także podczas ciągłego skanu (co 20 s), nie tylko po ciszy – w v1.4.1 raport nie pojawiał się, gdy panel skanuje bez przerwy.
 

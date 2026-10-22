@@ -49,7 +49,7 @@ substitutions:
   pin_autolock_min: "5"    # blokada poziomu po tylu minutach bezczynnosci (0 = bez blokady)
   burner_eff_kw: "0.90"    # sprawnosc kotla do mocy [kW] (potwierdzone z panelem)
   burner_eff_fuel: "0.85"  # EMPIRYCZNY wspolczynnik do spalania [kg/h] (dopasowanie do panelu)
-  fw_version: "1.4.2"
+  fw_version: "1.4.3"
 
   # ===================================================================
   # ZAPIS DO KOTLA - osobna flaga na kazda funkcje ("true" = wolno zapisywac, "false" = tylko odczyt).
@@ -611,7 +611,7 @@ canbus:
               const uint8_t ssub = x[3];
               const uint8_t scs = x[0];
               // v2.27: identyfikacja urzadzen (panel -> zakladka Siec): loguj NOWE ramki SDO 0x1000/0x1008/0x1018 (zapytania i odpowiedzi, kazdy wezel)
-              if (sidx == 0x1000 || sidx == 0x1008 || sidx == 0x1018) {
+              if (sidx == 0x1000 || sidx == 0x1001 || sidx == 0x1008 || sidx == 0x100A || sidx == 0x1018) {
                 {  // v1.4.1: zbiorczy raport skanu
                   const int nn = req ? (int) can_id - 0x600 : (int) can_id - 0x580;
                   char tb[40];

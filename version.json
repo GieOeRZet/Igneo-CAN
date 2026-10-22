@@ -1,7 +1,8 @@
 {
   "firmware": {
-    "version": "1.4.2",
+    "version": "1.4.3",
     "changelog": [
+      "SKAN SIECI obejmuje 0x1001/0x100A (wersja softu).",
       "Raport SKAN SIECI także przy ciągłym skanie panelu (co 20 s).",
       "Raport skanu sieci (SKAN SIECI) w „CAN diag” – weryfikacja zakładki Sieć panelu bez dostępu do panelu.",
       "ESP jako węzeł 90 w zakładce Sieć panelu (heartbeat + tożsamość), zawartość heartbeatów w „CAN diag”. Wymień PelletCAN.yaml (nowe domyślne can_node_id/can_heartbeat).",
